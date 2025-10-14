@@ -20,14 +20,14 @@ public class Movement {
         leftRear = hardwareMap.get(DcMotor.class, "leftRear");
         rightRear = hardwareMap.get(DcMotor.class, "rightRear");
 
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 }
 
     public void movementLoop (Gamepad gamepad){
          double x = gamepad.left_stick_x;
         double y = -gamepad.left_stick_y;
-        double heading = -gamepad.right_stick_x;
+        double heading = gamepad.right_stick_x;
 
         x = x * 1.1; // Counteract imperfect strafing
         double rx = heading;
