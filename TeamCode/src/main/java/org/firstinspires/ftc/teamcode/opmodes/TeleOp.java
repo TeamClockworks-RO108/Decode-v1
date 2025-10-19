@@ -19,8 +19,10 @@ public class TeleOp extends OpMode {
     public void init() {
         movement = new Movement(hardwareMap);
         shooter = new Shooter(hardwareMap);
+        // shooter command setup
         toggleShooter.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTER) );
         launchGE.onPress(() -> shooter.command(Shooter.Command.ACTIVATE_FLAP));
+
         shooter.setupShooter();
     }
     @Override
@@ -30,11 +32,12 @@ public class TeleOp extends OpMode {
 
     @Override
     public void loop() {
-       movement.movementLoop(gamepad1);
+        // drive loop
+        movement.movementLoop(gamepad1);
+        // shooter controls
+        toggleShooter.update(gamepad1.cross);
+        launchGE.update(gamepad1.triangle);
 
-       toggleShooter.update(gamepad1.cross);
-       launchGE.update(gamepad1.triangle);
-       shooter.updateShooter();
+        shooter.updateShooter();
     }
-
 }
