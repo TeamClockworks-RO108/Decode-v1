@@ -12,7 +12,7 @@ public class TeleOp extends OpMode {
      private Movement movement = null;
      private Shooter shooter = null;
 
-     private EdgeDetector toggleShooter = new EdgeDetector(false);
+     private EdgeDetector toggleShooting = new EdgeDetector(false);
      private EdgeDetector launchGE = new EdgeDetector(false);
      private EdgeDetector toggleIntake = new EdgeDetector(false);
     private EdgeDetector toggleIdle = new EdgeDetector(false);
@@ -21,7 +21,7 @@ public class TeleOp extends OpMode {
         movement = new Movement(hardwareMap);
         shooter = new Shooter(hardwareMap);
         // shooter command setup
-        toggleShooter.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTER));
+        toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
         launchGE.onPress(() -> shooter.command(Shooter.Command.ACTIVATE_FLAP));
         toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
         toggleIdle.onPress(() -> shooter.command(Shooter.Command.TOGGLE_IDLE));
@@ -38,10 +38,10 @@ public class TeleOp extends OpMode {
         // drive loop
         movement.movementLoop(gamepad1);
         // shooter controls
-        toggleShooter.update(gamepad1.cross);
+        toggleShooting.update(gamepad1.right_bumper);
         launchGE.update(gamepad1.triangle);
-        toggleIntake.update(gamepad1.square);
-        toggleIdle.update(gamepad1.left_bumper);
+        toggleIntake.update(gamepad1.left_bumper);
+        toggleIdle.update(gamepad1.square);
 
         shooter.updateShooter();
     }
