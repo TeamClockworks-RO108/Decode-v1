@@ -1,13 +1,18 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Shooter.Shooter;
 import org.firstinspires.ftc.teamcode.movement.Movement;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "teleop")
 public class TeleOp extends OpMode {
+
+    private Telemetry telemetryA;
 
      private Movement movement = null;
      private Shooter shooter = null;
@@ -22,11 +27,13 @@ public class TeleOp extends OpMode {
         shooter = new Shooter(hardwareMap);
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
-        launchGE.onPress(() -> shooter.command(Shooter.Command.ACTIVATE_FLAP));
+        launchGE.onPress(() -> shooter.command(Shooter.Command.LAUNCH));
         toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
         toggleIdle.onPress(() -> shooter.command(Shooter.Command.TOGGLE_IDLE));
 
         shooter.setupShooter();
+
+        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
     @Override
     public void start() {
@@ -43,6 +50,10 @@ public class TeleOp extends OpMode {
         toggleIntake.update(gamepad1.left_bumper);
         toggleIdle.update(gamepad1.square);
 
-        shooter.updateShooter();
+        shooter.updateShooter(telemetryA);
+
+        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
+        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
+        telemetryA.update();
     }
 }

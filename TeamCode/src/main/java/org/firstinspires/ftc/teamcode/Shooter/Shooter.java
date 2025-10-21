@@ -5,8 +5,11 @@ import android.util.Log;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.opmodes.ShooterCt;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public class Shooter {
@@ -21,7 +24,7 @@ public class Shooter {
 
     private final double intakeHumanPower = 0.5;
 
-    private final double flyWheelTicks = 3000;
+    private double flyWheelTicks = ShooterCt.target;
     private final double flapDown = 0.25;
     private final double flapUp = 0.5;
 
@@ -32,17 +35,28 @@ public class Shooter {
     private final double barrierOff = 0.2;
     private final double barrierOn = 0.6;
 
+    private double targetVelocity;
+    private double flywheelVelocity;
+
+    public double getFlywheelVelocity() {
+        return flywheel.getVelocity();
+    }
+
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+
     private enum State{
         INTAKE,
         IDLE,
         SHOOTING,
-        BARRIER_RAISE,
+        BARRIER_RAISE, // launch chain
         FLAP_UP,
     }
 
     public enum Command{
         TOGGLE_SHOOTING,
-        ACTIVATE_FLAP,
+        LAUNCH,
         TOGGLE_INTAKE,
         TOGGLE_IDLE
     }
@@ -69,9 +83,10 @@ public class Shooter {
     }
 
     public void setupShooter(){
+        // IDLE -> human load position
         fsm.onStateEnter(State.IDLE, () -> {
             intakeMotor.setPower(intakeHumanPower);
-            flywheel.setVelocity(0);
+            targetVelocity = 0;
             pivot.setPosition(pivotIdle);
         });
         fsm.onStateUpdate(State.IDLE, () -> {
@@ -86,14 +101,13 @@ public class Shooter {
             return null;
         });
 
-        // when
+        // SHOOTING -> launch position
         fsm.onStateEnter(State.SHOOTING,  () -> {
-            flywheel.setVelocity(flyWheelTicks);
+            targetVelocity = flyWheelTicks;
             intakeMotor.setPower(intakeIdlePower);
             pivot.setPosition(pivotUp);
         });
         fsm.onStateUpdate(State.SHOOTING,  () -> {
-            // from SHOOTING, you can go to INTAKE, IDLE, and ACTIVATE_FLAP
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
                 return State.INTAKE;
@@ -102,13 +116,14 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.IDLE;
             }
-            if(unexecutedCommand == Command.ACTIVATE_FLAP){
+            if(unexecutedCommand == Command.LAUNCH){
                 unexecutedCommand = null;
                 return State.BARRIER_RAISE;
             }
             return null;
         });
 
+        // BARRIER_RAISE and FLAP_UP -> launch sequence chain
         fsm.onStateEnter(State.BARRIER_RAISE, () -> {
             barrier.setPosition(barrierOff);
         });
@@ -118,32 +133,27 @@ public class Shooter {
             }
             return null;
         });
-
-        // when FLAP_UP, move the servo to flapUp
         fsm.onStateEnter(State.FLAP_UP, () -> {
             flap.setPosition(flapUp);
         });
         fsm.onStateUpdate(State.FLAP_UP, (current, timeSinceTransition) -> {
-            // wait for 200 milliseconds, return to RUNNING
             if(timeSinceTransition > 200){
                 return State.SHOOTING;
             }
             return null;
         });
-        // when leaving FLAP_UP, move the servo back
         fsm.onStateExit(State.FLAP_UP,  () -> {
             flap.setPosition(flapDown);
             barrier.setPosition(barrierOn);
         });
 
-        // when INTAKE, start intakeMotor and set pivot down
+        // INTAKE -> intake mechanism
         fsm.onStateEnter(State.INTAKE, () -> {
             intakeMotor.setPower(intakePower);
-            flywheel.setVelocity(0);
+            targetVelocity = 0;
             pivot.setPosition(pivotDown);
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
-            // from INTAKE, you go to SHOOTING and IDLE
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
                 unexecutedCommand = null;
                 return State.SHOOTING;
@@ -154,18 +164,39 @@ public class Shooter {
             }
             return null;
         });
-        // when leaving INTAKE reset the the pivot servo
-        fsm.onStateExit(State.INTAKE, () -> {
-            pivot.setPosition(pivotUp);
-        });
 
         // final initialisation
         fsm.init();
     }
 
-    public void updateShooter(){
+    public void updateShooter(Telemetry telemetry){
         fsm.update();
-        String str = "" + fsm.getCurrentState();
-        Log.d("stateFlywheel", str);
+        flywheel.setVelocity(targetVelocity);
+        if (flyWheelTicks != ShooterCt.target)
+            flyWheelTicks = ShooterCt.target;
+        if (ShooterCt.active) {
+            PIDFCoefficients coef = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+            boolean changed = false;
+            if (coef.f != ShooterCt.kf) {
+                changed = true;
+                coef.f = ShooterCt.kf;
+            }
+            if (coef.p != ShooterCt.kp) {
+                changed = true;
+                coef.p = ShooterCt.kp;
+            }
+            if (coef.i != ShooterCt.ki) {
+                changed = true;
+                coef.i = ShooterCt.ki;
+            }
+            if (coef.d != ShooterCt.kd) {
+                changed = true;
+                coef.d = ShooterCt.kd;
+            }
+            if (changed) {
+                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coef);
+            }
+        }
+
     }
 }
