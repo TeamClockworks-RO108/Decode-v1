@@ -15,5 +15,5 @@ public class ShooterCt {
 
     public static boolean active = true;
 
-    public static double target = 1500;
+    public static double target = 1180;
 }

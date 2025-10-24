@@ -19,8 +19,8 @@ public class Shooter {
     private Servo pivot;
     private Servo barrier;
 
-    private final double intakePower = 0.7;
-    private final double intakeIdlePower = 0.3;
+    private final double intakePower = 0.8;
+    private final double intakeIdlePower = 0.2;
 
     private final double intakeHumanPower = 0.5;
 
