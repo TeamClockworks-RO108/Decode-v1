@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public class Shooter {
@@ -17,11 +16,9 @@ public class Shooter {
     private Servo barrier;
 
     private final double intakePower = 0.8;
-    private final double intakeIdlePower = 0.2;
-
+    private final double intakeShooterPower = 0.2;
     private final double intakeHumanPower = 0.5;
 
-    private double flyWheelTicks = ShooterCt.target;
     private final double flapDown = 0.25;
     private final double flapUp = 0.5;
 
@@ -33,7 +30,6 @@ public class Shooter {
     private final double barrierOn = 0.6;
 
     private double targetVelocity;
-    private double flywheelVelocity;
 
     public double getFlywheelVelocity() {
         return flywheel.getVelocity();
@@ -63,11 +59,13 @@ public class Shooter {
 
     public Shooter(HardwareMap hardwareMap){
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flap = hardwareMap.get(Servo.class, "flap");
         pivot = hardwareMap.get(Servo.class, "pivot");
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
         barrier = hardwareMap.get(Servo.class, "barrier");
+
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, ShooterConstants.flywheelCoeffs);
 
         flap.setDirection(Servo.Direction.REVERSE);
         flap.setPosition(flapDown);
@@ -100,8 +98,8 @@ public class Shooter {
 
         // SHOOTING -> launch position
         fsm.onStateEnter(State.SHOOTING,  () -> {
-            targetVelocity = flyWheelTicks;
-            intakeMotor.setPower(intakeIdlePower);
+            targetVelocity = ShooterConstants.target;
+            intakeMotor.setPower(intakeShooterPower);
             pivot.setPosition(pivotUp);
         });
         fsm.onStateUpdate(State.SHOOTING,  () -> {
@@ -166,29 +164,30 @@ public class Shooter {
         fsm.init();
     }
 
-    public void updateShooter(Telemetry telemetry){
+    public void updateShooter(){
         fsm.update();
         flywheel.setVelocity(targetVelocity);
-        if (flyWheelTicks != ShooterCt.target)
-            flyWheelTicks = ShooterCt.target;
-        if (ShooterCt.active) {
+
+        // this will mostly have to be removed
+        // the flywheel has been configured
+        if (ShooterConstants.active) {
             PIDFCoefficients coef = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
             boolean changed = false;
-            if (coef.f != ShooterCt.kf) {
+            if (coef.f != ShooterConstants.kf) {
                 changed = true;
-                coef.f = ShooterCt.kf;
+                coef.f = ShooterConstants.kf;
             }
-            if (coef.p != ShooterCt.kp) {
+            if (coef.p != ShooterConstants.kp) {
                 changed = true;
-                coef.p = ShooterCt.kp;
+                coef.p = ShooterConstants.kp;
             }
-            if (coef.i != ShooterCt.ki) {
+            if (coef.i != ShooterConstants.ki) {
                 changed = true;
-                coef.i = ShooterCt.ki;
+                coef.i = ShooterConstants.ki;
             }
-            if (coef.d != ShooterCt.kd) {
+            if (coef.d != ShooterConstants.kd) {
                 changed = true;
-                coef.d = ShooterCt.kd;
+                coef.d = ShooterConstants.kd;
             }
             if (changed) {
                 flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coef);

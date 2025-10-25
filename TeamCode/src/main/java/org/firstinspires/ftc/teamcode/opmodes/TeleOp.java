@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "teleop")
 public class TeleOp extends OpMode {
-
     private Telemetry telemetryA;
 
      private Movement movement = null;
@@ -50,10 +49,10 @@ public class TeleOp extends OpMode {
         toggleIntake.update(gamepad1.left_bumper);
         toggleIdle.update(gamepad1.square);
 
-        shooter.updateShooter(telemetryA);
+        shooter.updateShooter();
 
-        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
-        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
-        telemetryA.update();
+//        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
+//        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
+//        telemetryA.update();
     }
 }
