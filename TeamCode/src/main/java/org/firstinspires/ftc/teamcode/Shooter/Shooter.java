@@ -26,8 +26,8 @@ public class Shooter {
     private final double pivotIdle = 0.32;
     private final double pivotUp = 0.4;
 
-    private final double barrierOff = 0.2;
-    private final double barrierOn = 0.6;
+    private final double barrierOff = 0.6;
+    private final double barrierOn = 0.2;
 
     private double targetVelocity;
 
