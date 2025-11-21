@@ -16,7 +16,7 @@ public class Shooter {
     private Servo barrier;
 
     private final double intakePower = 0.8;
-    private final double intakeShooterPower = 0.2;
+    private final double intakeShooterPower = 0.1;
     private final double intakeHumanPower = 0.5;
 
     private final double flapDown = 0.25;
@@ -26,7 +26,7 @@ public class Shooter {
     private final double pivotIdle = 0.32;
     private final double pivotUp = 0.4;
 
-    private final double barrierOff = 0.6;
+    private final double barrierOff = 0.65;
     private final double barrierOn = 0.2;
 
     private double targetVelocity;
@@ -123,7 +123,7 @@ public class Shooter {
             barrier.setPosition(barrierOff);
         });
         fsm.onStateUpdate(State.BARRIER_RAISE, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 200) {
+            if (timeSinceTransition > 150) {
                 return State.FLAP_UP;
             }
             return null;
@@ -132,7 +132,7 @@ public class Shooter {
             flap.setPosition(flapUp);
         });
         fsm.onStateUpdate(State.FLAP_UP, (current, timeSinceTransition) -> {
-            if(timeSinceTransition > 200){
+            if(timeSinceTransition > 250){
                 return State.SHOOTING;
             }
             return null;

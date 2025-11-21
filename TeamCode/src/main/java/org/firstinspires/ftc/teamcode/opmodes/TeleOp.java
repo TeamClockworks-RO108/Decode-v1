@@ -51,8 +51,8 @@ public class TeleOp extends OpMode {
 
         shooter.updateShooter();
 
-//        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
-//        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
-//        telemetryA.update();
+        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
+        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
+        telemetryA.update();
     }
 }

@@ -14,5 +14,5 @@ public class ShooterConstants {
     );
 
     public static boolean active = false;
-    public static double target = 1180;
+    public static double target = 1250;
 }

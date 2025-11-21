@@ -17,10 +17,10 @@ public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(8)
-            .forwardZeroPowerAcceleration(-34)
-            .lateralZeroPowerAcceleration(-64.5)
-            .useSecondaryTranslationalPIDF(false)
-            .useSecondaryHeadingPIDF(false)
+            .forwardZeroPowerAcceleration(-27.632)
+            .lateralZeroPowerAcceleration(-55.93984)
+            .useSecondaryTranslationalPIDF(true)
+            .useSecondaryHeadingPIDF(true)
             .useSecondaryDrivePIDF(false)
             .centripetalScaling(0.00023)
             .translationalPIDFCoefficients(new PIDFCoefficients(0.04, 0, 0.0017, 0))
@@ -38,28 +38,28 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(65.45)
-            .yVelocity(65.85)
+            .xVelocity(80.092)
+            .yVelocity(62.42043)
             .useBrakeModeInTeleOp(true);
 
     public static ThreeWheelIMUConstants localizerConstants =
             new ThreeWheelIMUConstants()
-                    .forwardTicksToInches(.002)
-                    .strafeTicksToInches(-.002)
-                    .turnTicksToInches(-.002)
-                    .rightPodY(-103 / (2 * 25.4))
-                    .leftPodY(103 / (2 * 25.4))
-                    .strafePodX(-80 / (25.4))
-                    .rightEncoder_HardwareMapName("rightFront")
-                    .leftEncoder_HardwareMapName("leftFront")
-                    .strafeEncoder_HardwareMapName("strafeEncoder")
-                    .leftEncoderDirection(Encoder.REVERSE)
-                    .rightEncoderDirection(Encoder.REVERSE)
-                    .strafeEncoderDirection(Encoder.FORWARD)
+                    .forwardTicksToInches(.00199)
+                    .strafeTicksToInches(-.00196)
+                    .turnTicksToInches(-.00202)
+                    .rightPodY(35 / (25.4)) // millimeters to inches
+                    .leftPodY(-35 / (25.4))
+                    .strafePodX(-5 / (25.4))
+                    .rightEncoder_HardwareMapName("leftRear") // set manually
+                    .leftEncoder_HardwareMapName("rightRear")
+                    .strafeEncoder_HardwareMapName("rightFront")
+                    .leftEncoderDirection(Encoder.FORWARD)
+                    .rightEncoderDirection(Encoder.FORWARD)
+                    .strafeEncoderDirection(Encoder.REVERSE)
                     .IMU_HardwareMapName("imu")
                     .IMU_Orientation(
                             new RevHubOrientationOnRobot(
-                                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                                    RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                                     RevHubOrientationOnRobot.UsbFacingDirection.UP
                             )
                     );
