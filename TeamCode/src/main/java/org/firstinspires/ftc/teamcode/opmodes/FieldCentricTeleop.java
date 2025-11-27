@@ -23,7 +23,7 @@ public class FieldCentricTeleop extends PedroOpMode {
     @Override
     public void init() {
         super.init();
-        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap, false);
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
         launchGE.onPress(() -> shooter.command(Shooter.Command.LAUNCH));

@@ -19,14 +19,14 @@ public class Constants {
             .mass(8)
             .forwardZeroPowerAcceleration(-27.632)
             .lateralZeroPowerAcceleration(-55.93984)
-            .useSecondaryTranslationalPIDF(true)
-            .useSecondaryHeadingPIDF(true)
+            .useSecondaryTranslationalPIDF(false)
+            .useSecondaryHeadingPIDF(false)
             .useSecondaryDrivePIDF(false)
             .centripetalScaling(0.00023)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.04, 0, 0.0017, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.04, 0))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.12, 0, 0.01, 0))
+            .headingPIDFCoefficients(new PIDFCoefficients(1.2, 0, 0.05, 0))
             .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.006, 0.0004, 0.0008, 0.6, 0)
+                    new FilteredPIDFCoefficients(0.005, 0.0000, 0.0001, 0, 0)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
