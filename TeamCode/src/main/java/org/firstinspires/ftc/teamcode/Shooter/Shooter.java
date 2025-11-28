@@ -25,16 +25,16 @@ public class Shooter {
     private final double intakeHumanPower = 0.5;
 
     private final double flapDown = 0.3;
-    private final double flapUp = 0.6;
+    private final double flapUp = 0.12;
 
-    private final double pivotDown = 0.68;
+    private final double pivotIntake = 0.68;
     private final double pivotIdle = 0.88;
-    private final double pivotUp = 0.98;
+    private final double pivotShoot = 0.96;
 
     private final double barrierUp = 0.65;
     private final double barrierDown = 0.1;
 
-    private boolean isAuto;
+    private boolean isAuto = false;
 
     private final double leftGripperOpen = 0.5;
     private final double leftGripperClosed = 0.32;
@@ -53,7 +53,8 @@ public class Shooter {
         return targetVelocity;
     }
 
-    private enum State{
+    private enum State {
+        DEAD,
         INTAKE,
         IDLE,
         SHOOTING,
@@ -61,14 +62,14 @@ public class Shooter {
         FLAP_UP,
     }
 
-    public enum Command{
+    public enum Command {
         TOGGLE_SHOOTING,
         LAUNCH,
         TOGGLE_INTAKE,
         TOGGLE_IDLE
     }
 
-    private StateMachine<State> fsm = new StateMachine<>(State.IDLE);
+    private StateMachine<State> fsm;
     private Command unexecutedCommand;
 
     public Shooter(HardwareMap hardwareMap, boolean isAuto){
@@ -84,34 +85,52 @@ public class Shooter {
         flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, ShooterConstants.flywheelCoeffs);
 
         flap.setDirection(Servo.Direction.REVERSE);
-        flap.setPosition(flapDown);
-        barrier.setPosition(barrierDown);
-        pivot.setPosition(pivotUp);
-
         leftGripper.setDirection(Servo.Direction.REVERSE);
-        leftGripper.setPosition(leftGripperOpen);
-        rightGripper.setPosition(rightGripperOpen);
 
         this.isAuto = isAuto;
+
+        if (isAuto) {
+            fsm = new StateMachine<>(State.DEAD);
+        } else {
+            fsm = new StateMachine<>(State.IDLE);
+            flap.setPosition(flapDown);
+            barrier.setPosition(barrierDown);
+            pivot.setPosition(pivotShoot);
+
+            leftGripper.setPosition(leftGripperOpen);
+            rightGripper.setPosition(rightGripperOpen);
+        }
     }
 
     public void command(Command command) {
-
-        if(!isAuto) {
+        if(!isAuto)
             this.unexecutedCommand = command;
-            return;
-        } else
+        else
             queue.offer(command);
     }
 
     public void setupShooter(){
+        // DEAD -> do nothing, wait for start
+        fsm.onStateUpdate(State.DEAD, () -> {
+            if (unexecutedCommand == Command.TOGGLE_IDLE) {
+                unexecutedCommand = null;
+                return State.IDLE;
+            }
+            return null;
+        });
+        fsm.onStateExit(State.DEAD, () -> {
+            flap.setPosition(flapDown);
+            barrier.setPosition(barrierDown);
+
+            leftGripper.setPosition(leftGripperClosed);
+            rightGripper.setPosition(rightGripperClosed);
+        });
+
         // IDLE -> human load position
         fsm.onStateEnter(State.IDLE, () -> {
             intakeMotor.setPower(intakeHumanPower);
             targetVelocity = 0;
             pivot.setPosition(pivotIdle);
-            rightGripper.setPosition(rightGripperOpen);
-            leftGripper.setPosition(leftGripperOpen);
         });
         fsm.onStateUpdate(State.IDLE, () -> {
             if (unexecutedCommand == Command.TOGGLE_INTAKE) {
@@ -131,8 +150,8 @@ public class Shooter {
             intakeMotor.setPower(intakeShooterPower);
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 50)
-                pivot.setPosition(pivotUp);
+            if (timeSinceTransition > 120)
+                pivot.setPosition(pivotShoot);
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
                 return State.INTAKE;
@@ -178,7 +197,7 @@ public class Shooter {
         fsm.onStateEnter(State.INTAKE, () -> {
             intakeMotor.setPower(intakePower);
             targetVelocity = 0;
-            pivot.setPosition(pivotDown);
+            pivot.setPosition(pivotIntake);
             rightGripper.setPosition(rightGripperOpen);
             leftGripper.setPosition(leftGripperOpen);
 
