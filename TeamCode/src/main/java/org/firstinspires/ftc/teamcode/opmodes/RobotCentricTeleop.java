@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @TeleOp(name = "RobotCentricTeleop")
 public class RobotCentricTeleop extends OpMode {
-    private Telemetry telemetryA;
+//    private Telemetry telemetryA;
 
     private Movement movement = null;
     private Shooter shooter = null;
@@ -33,11 +33,11 @@ public class RobotCentricTeleop extends OpMode {
 
         shooter.setupShooter();
 
-        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+//        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
     @Override
     public void start() {
-
+        shooter.command(Shooter.Command.TOGGLE_IDLE);
     }
 
     @Override
@@ -52,8 +52,8 @@ public class RobotCentricTeleop extends OpMode {
 
         shooter.updateShooter();
 
-        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
-        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
-        telemetryA.update();
+//        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
+//        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
+//        telemetryA.update();
     }
 }

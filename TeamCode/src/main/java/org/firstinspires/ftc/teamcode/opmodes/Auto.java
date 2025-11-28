@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,11 +17,13 @@ public class Auto extends OpMode {
     private Shooter shooter;
     private Follower follower;
 
-    private PathChain goToShooting;
+    private PathChain goShoot, goFirstIntake, goShootFirstIntake, goHome;
 
     public Pose startPositon = new Pose(10,10, Math.toRadians(45)),
                 shootPosition= new Pose( 41, 41, Math.toRadians(40)),
-                firstBatchPosition = new Pose(50, 40, Math.toRadians(90));
+                firstIntakePosition = new Pose(51, 42, Math.toRadians(-90)),
+                firstIntakeTake = new Pose(51, -3, Math.toRadians(-90)),
+                homePosition = new Pose(45, 15, Math.toRadians(0));
 
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
@@ -29,7 +32,10 @@ public class Auto extends OpMode {
         START_POSITION,
         SHOOT_POSITION,
         SHOOT_A1, SHOOT_A2, SHOOT_A3, // preload
-        GO_TO_FIRST_SET
+        FIRST_INTAKE,
+        SHOOT_FIRST_INTAKE,
+        SHOOT_B1, SHOOT_B2, SHOOT_B3,
+        GO_HOME
     }
 
     @Override
@@ -60,7 +66,7 @@ public class Auto extends OpMode {
 
     public void setupFSM(){
         fsm.onStateEnter(State.START_POSITION, () -> {
-            follower.followPath(goToShooting);
+            follower.followPath(goShoot);
         });
         fsm.onStateUpdate(State.START_POSITION, () -> {
             if(!follower.isBusy()) {
@@ -81,9 +87,36 @@ public class Auto extends OpMode {
 
         setShootArtifact(State.SHOOT_A1, State.SHOOT_A2);
         setShootArtifact(State.SHOOT_A2, State.SHOOT_A3);
-        setShootArtifact(State.SHOOT_A3, State.GO_TO_FIRST_SET);
+        setShootArtifact(State.SHOOT_A3, State.FIRST_INTAKE);
 
+        fsm.onStateEnter(State.FIRST_INTAKE, () -> {
+            follower.followPath(goFirstIntake);
+            shooter.command(Shooter.Command.TOGGLE_INTAKE);
+        });
+        fsm.onStateUpdate(State.FIRST_INTAKE, () -> {
+            if (!follower.isBusy())
+                return State.SHOOT_FIRST_INTAKE;
+            return null;
+        });
 
+        fsm.onStateEnter(State.SHOOT_FIRST_INTAKE, () -> {
+            follower.followPath(goShootFirstIntake);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        });
+        fsm.onStateUpdate(State.SHOOT_FIRST_INTAKE, () -> {
+            if (!follower.isBusy())
+                return State.SHOOT_B1;
+            return null;
+        });
+
+        setShootArtifact(State.SHOOT_B1, State.SHOOT_B2);
+        setShootArtifact(State.SHOOT_B2, State.SHOOT_B3);
+        setShootArtifact(State.SHOOT_B3, State.GO_HOME);
+
+        fsm.onStateEnter(State.GO_HOME, () -> {
+            follower.followPath(goHome);
+            shooter.command(Shooter.Command.TOGGLE_IDLE);
+        });
 
         fsm.init();
     }
@@ -105,9 +138,25 @@ public class Auto extends OpMode {
     }
 
     public void setupPaths(){
-         goToShooting = follower.pathBuilder()
+         goShoot = follower.pathBuilder()
                 .addPath(new BezierCurve(startPositon, shootPosition))
                 .setLinearHeadingInterpolation(startPositon.getHeading(), shootPosition.getHeading())
+                .build();
+
+         goFirstIntake = follower.pathBuilder()
+                 .addPath(new BezierCurve(shootPosition, firstIntakePosition))
+                 .setLinearHeadingInterpolation(shootPosition.getHeading(), firstIntakeTake.getHeading())
+                 .addPath(new BezierLine(firstIntakePosition, firstIntakeTake))
+                 .build();
+
+        goShootFirstIntake = follower.pathBuilder()
+                .addPath(new BezierCurve(firstIntakeTake, shootPosition))
+                .setLinearHeadingInterpolation(firstIntakePosition.getHeading(), shootPosition.getHeading())
+                .build();
+
+        goHome = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPosition, homePosition))
+                .setLinearHeadingInterpolation(shootPosition.getHeading(), homePosition.getHeading())
                 .build();
     }
 }

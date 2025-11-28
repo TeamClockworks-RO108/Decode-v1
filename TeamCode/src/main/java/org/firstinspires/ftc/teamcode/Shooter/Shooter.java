@@ -69,7 +69,7 @@ public class Shooter {
         TOGGLE_IDLE
     }
 
-    private StateMachine<State> fsm;
+    private StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
     private Command unexecutedCommand;
 
     public Shooter(HardwareMap hardwareMap, boolean isAuto){
@@ -89,17 +89,14 @@ public class Shooter {
 
         this.isAuto = isAuto;
 
-        if (isAuto) {
-            fsm = new StateMachine<>(State.DEAD);
-        } else {
-            fsm = new StateMachine<>(State.IDLE);
-            flap.setPosition(flapDown);
-            barrier.setPosition(barrierDown);
-            pivot.setPosition(pivotShoot);
-
-            leftGripper.setPosition(leftGripperOpen);
-            rightGripper.setPosition(rightGripperOpen);
-        }
+//        if (!isAuto) {
+//            flap.setPosition(flapDown);
+//            barrier.setPosition(barrierDown);
+//            pivot.setPosition(pivotShoot);
+//
+//            leftGripper.setPosition(leftGripperOpen);
+//            rightGripper.setPosition(rightGripperOpen);
+//        }
     }
 
     public void command(Command command) {

@@ -36,6 +36,13 @@ public class FieldCentricTeleop extends PedroOpMode {
     }
 
     @Override
+    public void start() {
+        super.start();
+
+        shooter.command(Shooter.Command.TOGGLE_IDLE);
+    }
+
+    @Override
     public void loop() {
         super.loop();
 
