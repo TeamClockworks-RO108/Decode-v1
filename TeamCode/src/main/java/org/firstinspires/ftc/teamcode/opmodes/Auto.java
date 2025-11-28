@@ -23,7 +23,7 @@ public class Auto extends OpMode {
                 shootPosition= new Pose( 41, 41, Math.toRadians(40)),
                 firstIntakePosition = new Pose(51, 42, Math.toRadians(-90)),
                 firstIntakeTake = new Pose(51, -3, Math.toRadians(-90)),
-                homePosition = new Pose(45, 15, Math.toRadians(0));
+                homePosition = new Pose(45, 15, Math.toRadians(90));
 
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
