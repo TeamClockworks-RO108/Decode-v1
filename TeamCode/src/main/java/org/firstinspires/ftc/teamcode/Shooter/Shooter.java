@@ -56,6 +56,7 @@ public class Shooter {
     private enum State {
         DEAD,
         INTAKE,
+        INTAKE_REJECT,
         IDLE,
         SHOOTING,
         BARRIER_RAISE, // launch chain
@@ -67,7 +68,8 @@ public class Shooter {
         LAUNCH,
         TOGGLE_INTAKE,
         TOGGLE_IDLE,
-        TOGGLE_DEAD
+        TOGGLE_DEAD,
+        TOGGLE_INTAKE_REJECT
     }
 
     private StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
@@ -89,15 +91,6 @@ public class Shooter {
         leftGripper.setDirection(Servo.Direction.REVERSE);
 
         this.isAuto = isAuto;
-
-//        if (!isAuto) {
-//            flap.setPosition(flapDown);
-//            barrier.setPosition(barrierDown);
-//            pivot.setPosition(pivotShoot);
-//
-//            leftGripper.setPosition(leftGripperOpen);
-//            rightGripper.setPosition(rightGripperOpen);
-//        }
     }
 
     public void command(Command command) {
@@ -205,7 +198,6 @@ public class Shooter {
             pivot.setPosition(pivotIntake);
             rightGripper.setPosition(rightGripperOpen);
             leftGripper.setPosition(leftGripperOpen);
-
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
@@ -216,11 +208,29 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.IDLE;
             }
+            if (unexecutedCommand == Command.TOGGLE_INTAKE_REJECT) {
+                unexecutedCommand = null;
+                return State.INTAKE_REJECT;
+            }
             return null;
         });
         fsm.onStateExit(State.INTAKE, () -> {
             rightGripper.setPosition(rightGripperClosed);
             leftGripper.setPosition(leftGripperClosed);
+        });
+
+        // REJECT_INTAKE
+        fsm.onStateEnter(State.INTAKE_REJECT, () -> {
+            intakeMotor.setPower(-intakePower);
+            rightGripper.setPosition(rightGripperOpen);
+            leftGripper.setPosition(leftGripperOpen);
+        });
+        fsm.onStateUpdate(State.INTAKE_REJECT, () -> {
+            if (unexecutedCommand == Command.TOGGLE_INTAKE_REJECT) {
+                unexecutedCommand = null;
+                return State.INTAKE;
+            }
+            return null;
         });
 
         // final initialisation

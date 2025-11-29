@@ -19,6 +19,7 @@ public class FieldCentricTeleop extends PedroOpMode {
     private EdgeDetector launchGE = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
     private EdgeDetector toggleIdle = new EdgeDetector(false);
+    private EdgeDetector toggleIntakeReject = new EdgeDetector(false);
 
     @Override
     public void init() {
@@ -29,6 +30,7 @@ public class FieldCentricTeleop extends PedroOpMode {
         launchGE.onPress(() -> shooter.command(Shooter.Command.LAUNCH));
         toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
         toggleIdle.onPress(() -> shooter.command(Shooter.Command.TOGGLE_IDLE));
+        toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
 
         shooter.setupShooter();
 
@@ -51,11 +53,12 @@ public class FieldCentricTeleop extends PedroOpMode {
         launchGE.update(gamepad1.triangle);
         toggleIntake.update(gamepad1.left_bumper);
         toggleIdle.update(gamepad1.square);
+        toggleIntakeReject.update(gamepad1.circle);
 
         shooter.updateShooter();
 
-        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
-        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
-        telemetryA.update();
+//        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
+//        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
+//        telemetryA.update();
     }
 }
