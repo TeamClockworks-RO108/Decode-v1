@@ -13,17 +13,20 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Auto BLUE")
-public class Auto extends OpMode {
+public class AutoBlue extends OpMode {
     private Shooter shooter;
     private Follower follower;
 
     private PathChain goShoot, goFirstIntake, goShootFirstIntake, goHome;
 
-    public Pose startPositon = new Pose(10,10, Math.toRadians(45)),
-                shootPosition= new Pose( 41, 41, Math.toRadians(40)),
-                firstIntakePosition = new Pose(51, 42, Math.toRadians(-90)),
-                firstIntakeTake = new Pose(51, -3, Math.toRadians(-90)),
-                homePosition = new Pose(45, 15, Math.toRadians(90));
+    protected final double firstIntakeX = 49.6;
+    protected final double launchAngle = 45;
+
+    protected Pose startPosition = new Pose(10,10, Math.toRadians(45)),
+                shootPosition = new Pose( 42, 42, Math.toRadians(launchAngle)),
+                firstIntakePosition = new Pose(firstIntakeX, 42, Math.toRadians(-90)),
+                firstIntakeTake = new Pose(firstIntakeX, -3, Math.toRadians(-90)),
+                homePosition = new Pose(45, 15, Math.toRadians(-90));
 
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
@@ -44,7 +47,7 @@ public class Auto extends OpMode {
         shooter.setupShooter();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startPositon);
+        follower.setStartingPose(startPosition);
         follower.update();
 
         setupPaths();
@@ -117,6 +120,11 @@ public class Auto extends OpMode {
             follower.followPath(goHome);
             shooter.command(Shooter.Command.TOGGLE_IDLE);
         });
+        fsm.onStateUpdate(State.GO_HOME, () -> {
+            if (!follower.isBusy()) {
+                shooter.command(Shooter.Command.TOGGLE_DEAD);
+            }
+        });
 
         fsm.init();
     }
@@ -139,8 +147,8 @@ public class Auto extends OpMode {
 
     public void setupPaths(){
          goShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(startPositon, shootPosition))
-                .setLinearHeadingInterpolation(startPositon.getHeading(), shootPosition.getHeading())
+                .addPath(new BezierCurve(startPosition, shootPosition))
+                .setLinearHeadingInterpolation(startPosition.getHeading(), shootPosition.getHeading())
                 .build();
 
          goFirstIntake = follower.pathBuilder()

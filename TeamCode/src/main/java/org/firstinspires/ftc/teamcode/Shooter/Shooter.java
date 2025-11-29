@@ -66,7 +66,8 @@ public class Shooter {
         TOGGLE_SHOOTING,
         LAUNCH,
         TOGGLE_INTAKE,
-        TOGGLE_IDLE
+        TOGGLE_IDLE,
+        TOGGLE_DEAD
     }
 
     private StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
@@ -108,6 +109,9 @@ public class Shooter {
 
     public void setupShooter(){
         // DEAD -> do nothing, wait for start
+        fsm.onStateEnter(State.DEAD, () -> {
+            intakeMotor.setPower(0);
+        });
         fsm.onStateUpdate(State.DEAD, () -> {
             if (unexecutedCommand == Command.TOGGLE_IDLE) {
                 unexecutedCommand = null;
@@ -138,6 +142,10 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.SHOOTING;
             }
+            if (unexecutedCommand == Command.TOGGLE_DEAD) {
+                unexecutedCommand = null;
+                return State.DEAD;
+            }
             return null;
         });
 
@@ -147,7 +155,7 @@ public class Shooter {
             intakeMotor.setPower(intakeShooterPower);
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 120)
+            if (timeSinceTransition > 200)
                 pivot.setPosition(pivotShoot);
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
@@ -178,7 +186,7 @@ public class Shooter {
             flap.setPosition(flapUp);
         });
         fsm.onStateUpdate(State.FLAP_UP, (current, timeSinceTransition) -> {
-            if(timeSinceTransition > 300) {
+            if(timeSinceTransition > 280) {
                 return State.SHOOTING;
             }
             return null;
