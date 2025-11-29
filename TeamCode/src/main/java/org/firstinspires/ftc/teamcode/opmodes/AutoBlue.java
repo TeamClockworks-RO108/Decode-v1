@@ -17,15 +17,21 @@ public class AutoBlue extends OpMode {
     private Shooter shooter;
     private Follower follower;
 
-    private PathChain goShoot, goFirstIntake, goShootFirstIntake, goHome;
+    private PathChain goShoot,
+            goFirstIntake, goShootFirstIntake,
+            goSecondIntake, goShootSecondIntake,
+            goHome;
 
     protected final double firstIntakeX = 49.6;
+    protected final double secondIntakeX = 73.6;
     protected final double launchAngle = 45;
 
     protected Pose startPosition = new Pose(10,10, Math.toRadians(45)),
-                shootPosition = new Pose( 42, 42, Math.toRadians(launchAngle)),
+                shootPosition = new Pose( 43.4, 43.4, Math.toRadians(launchAngle)),
                 firstIntakePosition = new Pose(firstIntakeX, 42, Math.toRadians(-90)),
-                firstIntakeTake = new Pose(firstIntakeX, -3, Math.toRadians(-90)),
+                firstIntakeTakePosition = new Pose(firstIntakeX, -3, Math.toRadians(-90)),
+                secondIntakePosition = new Pose(secondIntakeX, 42, Math.toRadians(-90)),
+                secondIntakeTakePosition = new Pose(secondIntakeX, -6, Math.toRadians(-90)),
                 homePosition = new Pose(45, 15, Math.toRadians(-90));
 
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
@@ -38,6 +44,9 @@ public class AutoBlue extends OpMode {
         FIRST_INTAKE,
         SHOOT_FIRST_INTAKE,
         SHOOT_B1, SHOOT_B2, SHOOT_B3,
+        SECOND_INTAKE,
+        SHOOT_SECOND_INTAKE,
+        SHOOT_C1, SHOOT_C2, SHOOT_C3,
         GO_HOME
     }
 
@@ -68,6 +77,7 @@ public class AutoBlue extends OpMode {
     }
 
     public void setupFSM(){
+        // handle preload
         fsm.onStateEnter(State.START_POSITION, () -> {
             follower.followPath(goShoot);
         });
@@ -92,6 +102,7 @@ public class AutoBlue extends OpMode {
         setShootArtifact(State.SHOOT_A2, State.SHOOT_A3);
         setShootArtifact(State.SHOOT_A3, State.FIRST_INTAKE);
 
+        // handle first intake
         fsm.onStateEnter(State.FIRST_INTAKE, () -> {
             follower.followPath(goFirstIntake);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
@@ -114,7 +125,32 @@ public class AutoBlue extends OpMode {
 
         setShootArtifact(State.SHOOT_B1, State.SHOOT_B2);
         setShootArtifact(State.SHOOT_B2, State.SHOOT_B3);
-        setShootArtifact(State.SHOOT_B3, State.GO_HOME);
+        setShootArtifact(State.SHOOT_B3, State.SECOND_INTAKE);
+
+        // handle second intake
+        fsm.onStateEnter(State.SECOND_INTAKE, () -> {
+            follower.followPath(goSecondIntake);
+            shooter.command(Shooter.Command.TOGGLE_INTAKE);
+        });
+        fsm.onStateUpdate(State.SECOND_INTAKE, () -> {
+            if (!follower.isBusy())
+                return State.SHOOT_SECOND_INTAKE;
+            return null;
+        });
+
+        fsm.onStateEnter(State.SHOOT_SECOND_INTAKE, () -> {
+            follower.followPath(goShootSecondIntake);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        });
+        fsm.onStateUpdate(State.SHOOT_SECOND_INTAKE, () -> {
+            if (!follower.isBusy())
+                return State.SHOOT_C1;
+            return null;
+        });
+
+        setShootArtifact(State.SHOOT_C1, State.SHOOT_C2);
+        setShootArtifact(State.SHOOT_C2, State.SHOOT_C3);
+        setShootArtifact(State.SHOOT_C3, State.GO_HOME);
 
         fsm.onStateEnter(State.GO_HOME, () -> {
             follower.followPath(goHome);
@@ -153,13 +189,24 @@ public class AutoBlue extends OpMode {
 
          goFirstIntake = follower.pathBuilder()
                  .addPath(new BezierCurve(shootPosition, firstIntakePosition))
-                 .setLinearHeadingInterpolation(shootPosition.getHeading(), firstIntakeTake.getHeading())
-                 .addPath(new BezierLine(firstIntakePosition, firstIntakeTake))
+                 .setLinearHeadingInterpolation(shootPosition.getHeading(), firstIntakeTakePosition.getHeading())
+                 .addPath(new BezierLine(firstIntakePosition, firstIntakeTakePosition))
                  .build();
 
         goShootFirstIntake = follower.pathBuilder()
-                .addPath(new BezierCurve(firstIntakeTake, shootPosition))
+                .addPath(new BezierCurve(firstIntakeTakePosition, shootPosition))
                 .setLinearHeadingInterpolation(firstIntakePosition.getHeading(), shootPosition.getHeading())
+                .build();
+
+        goSecondIntake = follower.pathBuilder()
+                .addPath(new BezierCurve(shootPosition, secondIntakePosition))
+                .setLinearHeadingInterpolation(shootPosition.getHeading(), secondIntakeTakePosition.getHeading())
+                .addPath(new BezierLine(secondIntakePosition, secondIntakeTakePosition))
+                .build();
+
+        goShootSecondIntake = follower.pathBuilder()
+                .addPath(new BezierCurve(secondIntakeTakePosition, shootPosition))
+                .setLinearHeadingInterpolation(secondIntakePosition.getHeading(), shootPosition.getHeading())
                 .build();
 
         goHome = follower.pathBuilder()

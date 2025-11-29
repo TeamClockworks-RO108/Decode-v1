@@ -11,7 +11,9 @@ public class AutoRed extends AutoBlue {
         startPosition = new Pose(startPosition.getX(),-startPosition.getY(), -startPosition.getHeading());
         shootPosition = new Pose( shootPosition.getX(), -shootPosition.getY(), -shootPosition.getHeading());
         firstIntakePosition = new Pose(firstIntakePosition.getX(), -firstIntakePosition.getY(), -firstIntakePosition.getHeading());
-        firstIntakeTake = new Pose(firstIntakeTake.getX(), -firstIntakeTake.getY(), -firstIntakePosition.getHeading());
+        firstIntakeTakePosition = new Pose(firstIntakeTakePosition.getX(), -firstIntakeTakePosition.getY(), -firstIntakePosition.getHeading());
+        secondIntakePosition = new Pose(secondIntakePosition.getX(), -secondIntakePosition.getY(), -secondIntakePosition.getHeading());
+        secondIntakeTakePosition = new Pose(secondIntakeTakePosition.getX(), -secondIntakeTakePosition.getY(), -secondIntakePosition.getHeading());
         homePosition = new Pose(homePosition.getX(), -homePosition.getY(), -homePosition.getHeading());
 
         super.init();
