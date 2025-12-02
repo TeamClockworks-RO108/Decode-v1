@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Shooter.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.Shooter;
 import org.firstinspires.ftc.teamcode.movement.Movement;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @TeleOp(name = "RobotCentricTeleop")
 public class RobotCentricTeleop extends OpMode {
-//    private Telemetry telemetryA;
-
     private Movement movement = null;
     private Shooter shooter = null;
 
@@ -31,8 +29,6 @@ public class RobotCentricTeleop extends OpMode {
         toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
 
         shooter.setupShooter();
-
-//        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
     @Override
     public void start() {
@@ -51,9 +47,5 @@ public class RobotCentricTeleop extends OpMode {
         toggleIntakeReject.update(gamepad1.circle);
 
         shooter.updateShooter();
-
-//        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
-//        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
-//        telemetryA.update();
     }
 }

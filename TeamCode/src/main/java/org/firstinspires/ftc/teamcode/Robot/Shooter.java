@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.Shooter;
+package org.firstinspires.ftc.teamcode.Robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -12,13 +11,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class Shooter {
-    private DcMotorEx flywheel;
-    private DcMotor intakeMotor;
-    private Servo flap;
-    private Servo pivot;
-    private Servo barrier;
-    private Servo leftGripper;
-    private Servo rightGripper;
+    private final DcMotorEx flywheel;
+    private final DcMotor intakeMotor;
+    private final Servo flap;
+    private final Servo pivot;
+    private final Servo barrier;
+    private final Servo leftGripper;
+    private final Servo rightGripper;
 
     private final double intakePower = 0.8;
     private final double intakeShooterPower = 0.1;
@@ -45,14 +44,6 @@ public class Shooter {
 
     private final BlockingQueue<Command> queue = new ArrayBlockingQueue<>(16);
 
-    public double getFlywheelVelocity() {
-        return flywheel.getVelocity();
-    }
-
-    public double getTargetVelocity() {
-        return targetVelocity;
-    }
-
     private enum State {
         DEAD,
         INTAKE,
@@ -72,7 +63,7 @@ public class Shooter {
         TOGGLE_INTAKE_REJECT
     }
 
-    private StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
+    private final StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
     private Command unexecutedCommand;
 
     public Shooter(HardwareMap hardwareMap, boolean isAuto){
@@ -85,7 +76,8 @@ public class Shooter {
         rightGripper = hardwareMap.get(Servo.class, "rightGripper");
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, ShooterConstants.flywheelCoeffs);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
+                FlywheelConstants.flywheelCoefficients);
 
         flap.setDirection(Servo.Direction.REVERSE);
         leftGripper.setDirection(Servo.Direction.REVERSE);
@@ -144,7 +136,7 @@ public class Shooter {
 
         // SHOOTING -> launch position
         fsm.onStateEnter(State.SHOOTING,  () -> {
-            targetVelocity = ShooterConstants.target;
+            targetVelocity = FlywheelConstants.target;
             intakeMotor.setPower(intakeShooterPower);
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
@@ -237,42 +229,15 @@ public class Shooter {
         fsm.init();
     }
 
-    public void updateShooter(){
-
+    public void updateShooter() {
         try {
             unexecutedCommand = (!queue.isEmpty() && unexecutedCommand == null) ?
                     queue.take() : unexecutedCommand;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
         fsm.update();
         flywheel.setVelocity(targetVelocity);
-
-        // this will mostly have to be removed
-        // the flywheel has been configured
-        if (ShooterConstants.active) {
-            PIDFCoefficients coef = flywheel.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            boolean changed = false;
-            if (coef.f != ShooterConstants.kf) {
-                changed = true;
-                coef.f = ShooterConstants.kf;
-            }
-            if (coef.p != ShooterConstants.kp) {
-                changed = true;
-                coef.p = ShooterConstants.kp;
-            }
-            if (coef.i != ShooterConstants.ki) {
-                changed = true;
-                coef.i = ShooterConstants.ki;
-            }
-            if (coef.d != ShooterConstants.kd) {
-                changed = true;
-                coef.d = ShooterConstants.kd;
-            }
-            if (changed) {
-                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, coef);
-            }
-        }
-
     }
 }

@@ -8,7 +8,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Shooter.Shooter;
+import org.firstinspires.ftc.teamcode.Robot.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
@@ -189,24 +189,24 @@ public class AutoBlue extends OpMode {
 
          goFirstIntake = follower.pathBuilder()
                  .addPath(new BezierCurve(shootPosition, firstIntakePosition))
-                 .setLinearHeadingInterpolation(shootPosition.getHeading(), firstIntakeTakePosition.getHeading())
+                 .setLinearHeadingInterpolation(shootPosition.getHeading(), firstIntakePosition.getHeading())
                  .addPath(new BezierLine(firstIntakePosition, firstIntakeTakePosition))
                  .build();
 
         goShootFirstIntake = follower.pathBuilder()
                 .addPath(new BezierCurve(firstIntakeTakePosition, shootPosition))
-                .setLinearHeadingInterpolation(firstIntakePosition.getHeading(), shootPosition.getHeading())
+                .setLinearHeadingInterpolation(firstIntakeTakePosition.getHeading(), shootPosition.getHeading())
                 .build();
 
         goSecondIntake = follower.pathBuilder()
                 .addPath(new BezierCurve(shootPosition, secondIntakePosition))
-                .setLinearHeadingInterpolation(shootPosition.getHeading(), secondIntakeTakePosition.getHeading())
+                .setLinearHeadingInterpolation(shootPosition.getHeading(), secondIntakePosition.getHeading())
                 .addPath(new BezierLine(secondIntakePosition, secondIntakeTakePosition))
                 .build();
 
         goShootSecondIntake = follower.pathBuilder()
                 .addPath(new BezierCurve(secondIntakeTakePosition, shootPosition))
-                .setLinearHeadingInterpolation(secondIntakePosition.getHeading(), shootPosition.getHeading())
+                .setLinearHeadingInterpolation(secondIntakeTakePosition.getHeading(), shootPosition.getHeading())
                 .build();
 
         goHome = follower.pathBuilder()

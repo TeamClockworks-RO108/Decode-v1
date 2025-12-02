@@ -1,18 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Shooter.Shooter;
-import org.firstinspires.ftc.teamcode.opmodes.PedroOpMode;
+import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @TeleOp(name = "FieldCentricTeleop")
-public class FieldCentricTeleop extends PedroOpMode {
-    private Telemetry telemetryA;
-
+public class FieldCentricTeleop extends OpMode {
+    private Follower follower = null;
     private Shooter shooter = null;
 
     private EdgeDetector toggleShooting = new EdgeDetector(false);
@@ -23,7 +22,10 @@ public class FieldCentricTeleop extends PedroOpMode {
 
     @Override
     public void init() {
-        super.init();
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(new Pose(0,0, Math.toRadians(0)));
+        follower.update();
+
         shooter = new Shooter(hardwareMap, false);
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
@@ -33,20 +35,23 @@ public class FieldCentricTeleop extends PedroOpMode {
         toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
 
         shooter.setupShooter();
-
-        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
     @Override
     public void start() {
-        super.start();
-
+        follower.startTeleOpDrive();
         shooter.command(Shooter.Command.TOGGLE_IDLE);
     }
 
     @Override
     public void loop() {
-        super.loop();
+        follower.update();
+        follower.setTeleOpDrive(
+                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
+                false // ensure field centric
+        );
 
         // shooter controls
         toggleShooting.update(gamepad1.right_bumper);
@@ -56,9 +61,5 @@ public class FieldCentricTeleop extends PedroOpMode {
         toggleIntakeReject.update(gamepad1.circle);
 
         shooter.updateShooter();
-
-//        telemetryA.addData("flywheelVelocity", shooter.getFlywheelVelocity());
-//        telemetryA.addData("flywheelTarget", shooter.getTargetVelocity());
-//        telemetryA.update();
     }
 }
