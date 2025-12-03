@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -11,36 +9,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class Shooter {
-    private final DcMotorEx flywheel;
-    private final DcMotor intakeMotor;
-    private final Servo flap;
+    private final Intake intake;
+    private final Outtake outtake;
     private final Servo pivot;
-    private final Servo barrier;
-    private final Servo leftGripper;
-    private final Servo rightGripper;
-
-    private final double intakePower = 0.8;
-    private final double intakeShooterPower = 0.1;
-    private final double intakeHumanPower = 0.5;
-
-    private final double flapDown = 0.3;
-    private final double flapUp = 0.12;
 
     private final double pivotIntake = 0.68;
     private final double pivotIdle = 0.88;
     private final double pivotShoot = 0.96;
-
-    private final double barrierUp = 0.65;
-    private final double barrierDown = 0.1;
-
+    
     private boolean isAuto = false;
-
-    private final double leftGripperOpen = 0.5;
-    private final double leftGripperClosed = 0.32;
-    private final double rightGripperOpen = 0.5;
-    private final double rightGripperClosed = 0.35;
-
-    private double targetVelocity;
 
     private final BlockingQueue<Command> queue = new ArrayBlockingQueue<>(16);
 
@@ -67,20 +44,10 @@ public class Shooter {
     private Command unexecutedCommand;
 
     public Shooter(HardwareMap hardwareMap, boolean isAuto){
-        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
-        flap = hardwareMap.get(Servo.class, "flap");
+        intake = new Intake(hardwareMap);
+        outtake = new Outtake(hardwareMap);
+
         pivot = hardwareMap.get(Servo.class, "pivot");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
-        barrier = hardwareMap.get(Servo.class, "barrier");
-        leftGripper = hardwareMap.get(Servo.class, "leftGripper");
-        rightGripper = hardwareMap.get(Servo.class, "rightGripper");
-
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                FlywheelConstants.flywheelCoefficients);
-
-        flap.setDirection(Servo.Direction.REVERSE);
-        leftGripper.setDirection(Servo.Direction.REVERSE);
 
         this.isAuto = isAuto;
     }
@@ -95,7 +62,7 @@ public class Shooter {
     public void setupShooter(){
         // DEAD -> do nothing, wait for start
         fsm.onStateEnter(State.DEAD, () -> {
-            intakeMotor.setPower(0);
+            intake.stop();
         });
         fsm.onStateUpdate(State.DEAD, () -> {
             if (unexecutedCommand == Command.TOGGLE_IDLE) {
@@ -105,17 +72,13 @@ public class Shooter {
             return null;
         });
         fsm.onStateExit(State.DEAD, () -> {
-            flap.setPosition(flapDown);
-            barrier.setPosition(barrierDown);
-
-            leftGripper.setPosition(leftGripperClosed);
-            rightGripper.setPosition(rightGripperClosed);
+            outtake.close();
         });
 
         // IDLE -> human load position
         fsm.onStateEnter(State.IDLE, () -> {
-            intakeMotor.setPower(intakeHumanPower);
-            targetVelocity = 0;
+            intake.idle();
+            outtake.stopFlywheel();
             pivot.setPosition(pivotIdle);
         });
         fsm.onStateUpdate(State.IDLE, () -> {
@@ -136,8 +99,8 @@ public class Shooter {
 
         // SHOOTING -> launch position
         fsm.onStateEnter(State.SHOOTING,  () -> {
-            targetVelocity = FlywheelConstants.target;
-            intakeMotor.setPower(intakeShooterPower);
+            outtake.startFlywheel();
+            intake.shoot();
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
             if (timeSinceTransition > 200)
@@ -157,9 +120,9 @@ public class Shooter {
             return null;
         });
 
-        // BARRIER_RAISE and FLAP_UP -> launch sequence chain
+        // BARRIER_RAISE and FLAP_UP -> launch chain
         fsm.onStateEnter(State.BARRIER_RAISE, () -> {
-            barrier.setPosition(barrierUp);
+            outtake.raise();
         });
         fsm.onStateUpdate(State.BARRIER_RAISE, (current, timeSinceTransition) -> {
             if (timeSinceTransition > 150) {
@@ -168,7 +131,7 @@ public class Shooter {
             return null;
         });
         fsm.onStateEnter(State.FLAP_UP, () -> {
-            flap.setPosition(flapUp);
+            outtake.launch();
         });
         fsm.onStateUpdate(State.FLAP_UP, (current, timeSinceTransition) -> {
             if(timeSinceTransition > 280) {
@@ -177,19 +140,15 @@ public class Shooter {
             return null;
         });
         fsm.onStateExit(State.FLAP_UP,  () -> {
-            flap.setPosition(flapDown);
-            barrier.setPosition(barrierDown);
-            rightGripper.setPosition(rightGripperOpen);
-            leftGripper.setPosition(leftGripperOpen);
+            outtake.close();
+            intake.openGripper();
         });
 
         // INTAKE -> intake mechanism
         fsm.onStateEnter(State.INTAKE, () -> {
-            intakeMotor.setPower(intakePower);
-            targetVelocity = 0;
+            intake.start();
+            outtake.stopFlywheel();
             pivot.setPosition(pivotIntake);
-            rightGripper.setPosition(rightGripperOpen);
-            leftGripper.setPosition(leftGripperOpen);
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
@@ -207,15 +166,12 @@ public class Shooter {
             return null;
         });
         fsm.onStateExit(State.INTAKE, () -> {
-            rightGripper.setPosition(rightGripperClosed);
-            leftGripper.setPosition(leftGripperClosed);
+            intake.closeGripper();
         });
 
         // REJECT_INTAKE
         fsm.onStateEnter(State.INTAKE_REJECT, () -> {
-            intakeMotor.setPower(-intakePower);
-            rightGripper.setPosition(rightGripperOpen);
-            leftGripper.setPosition(leftGripperOpen);
+            intake.reject();
         });
         fsm.onStateUpdate(State.INTAKE_REJECT, () -> {
             if (unexecutedCommand == Command.TOGGLE_INTAKE_REJECT) {
@@ -238,6 +194,6 @@ public class Shooter {
         }
 
         fsm.update();
-        flywheel.setVelocity(targetVelocity);
+        outtake.update();
     }
 }
