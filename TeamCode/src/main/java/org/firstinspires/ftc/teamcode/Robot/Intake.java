@@ -1,17 +1,21 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
     private final DcMotor intakeMotor;
+    private final CRServo miniIntake;
     private final Servo leftGripper;
     private final Servo rightGripper;
 
     private final double intakePower = 0.8;
+    private final double pushPower = 0.5;
     private final double shootingPower = 0.1;
     private final double idlePower = 0.4;
+    private final double miniPower = 1;
 
     private final double leftGripperOpen = 0.5;
     private final double leftGripperClosed = 0.33;
@@ -20,6 +24,7 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap) {
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");
+        miniIntake = hardwareMap.get(CRServo.class, "miniIntake");
         leftGripper = hardwareMap.get(Servo.class, "leftGripper");
         rightGripper = hardwareMap.get(Servo.class, "rightGripper");
 
@@ -28,19 +33,27 @@ public class Intake {
 
     public void stop() {
         intakeMotor.setPower(0);
+        miniIntake.setPower(0);
     }
     public void start() {
         intakeMotor.setPower(intakePower);
+        miniIntake.setPower(miniPower);
         openGripper();
+    }
+    public void push() {
+        intakeMotor.setPower(pushPower);
     }
     public void idle() {
         intakeMotor.setPower(idlePower);
+        miniIntake.setPower(miniPower);
     }
     public void shoot() {
         intakeMotor.setPower(shootingPower);
+        miniIntake.setPower(miniPower);
     }
     public void reject() {
         intakeMotor.setPower(-intakePower);
+        miniIntake.setPower(-miniPower);
     }
 
     public void closeGripper() {

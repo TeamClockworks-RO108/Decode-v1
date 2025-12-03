@@ -167,7 +167,7 @@ public class AutoBlue extends OpMode {
 
     private void setShootArtifact(State startState, State nextState) {
         fsm.onStateEnter(startState, () -> {
-            shooter.command(Shooter.Command.LAUNCH);
+            shooter.command(Shooter.Command.FIRE);
         });
         fsm.onStateUpdate(startState, (current, timeSinceTransition) -> {
             if (timeSinceTransition > 1200) {

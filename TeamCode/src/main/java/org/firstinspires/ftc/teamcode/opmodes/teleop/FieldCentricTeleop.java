@@ -15,10 +15,11 @@ public class FieldCentricTeleop extends OpMode {
     private Shooter shooter = null;
 
     private EdgeDetector toggleShooting = new EdgeDetector(false);
-    private EdgeDetector launchGE = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
     private EdgeDetector toggleIdle = new EdgeDetector(false);
     private EdgeDetector toggleIntakeReject = new EdgeDetector(false);
+    private EdgeDetector fire = new EdgeDetector(false);
+    private EdgeDetector rapidFire = new EdgeDetector(false);
 
     @Override
     public void init() {
@@ -29,10 +30,11 @@ public class FieldCentricTeleop extends OpMode {
         shooter = new Shooter(hardwareMap, false);
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
-        launchGE.onPress(() -> shooter.command(Shooter.Command.LAUNCH));
         toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
         toggleIdle.onPress(() -> shooter.command(Shooter.Command.TOGGLE_IDLE));
         toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
+        fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
+        rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
         shooter.setupShooter();
     }
@@ -55,10 +57,11 @@ public class FieldCentricTeleop extends OpMode {
 
         // shooter controls
         toggleShooting.update(gamepad1.right_bumper);
-        launchGE.update(gamepad1.triangle);
         toggleIntake.update(gamepad1.left_bumper);
         toggleIdle.update(gamepad1.square);
         toggleIntakeReject.update(gamepad1.circle);
+        fire.update(gamepad1.triangle);
+        rapidFire.update(gamepad1.cross);
 
         shooter.updateShooter();
     }

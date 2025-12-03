@@ -40,6 +40,9 @@ public class Outtake {
     public void launch() {
         flap.setPosition(flapUp);
     }
+    public void reload() {
+        flap.setPosition(flapDown);
+    }
 
     public void startFlywheel() {
         targetVelocity = FlywheelConstants.target;
