@@ -1,38 +1,24 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
+import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
+import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Auto BLUE")
 public class AutoBlue extends OpMode {
+    protected TeamColor color = TeamColor.BLUE;
     private Shooter shooter;
     private Follower follower;
 
-    private PathChain goShoot,
-            goFirstIntake, goShootFirstIntake,
-            goSecondIntake, goShootSecondIntake,
-            goHome;
-
-    protected final double firstIntakeX = 49.6;
-    protected final double secondIntakeX = 73.6;
-    protected final double launchAngle = 45;
-
-    protected Pose startPosition = new Pose(10,10, Math.toRadians(45)),
-                shootPosition = new Pose( 43.4, 43.4, Math.toRadians(launchAngle)),
-                firstIntakePosition = new Pose(firstIntakeX, 42, Math.toRadians(-90)),
-                firstIntakeTakePosition = new Pose(firstIntakeX, -3, Math.toRadians(-90)),
-                secondIntakePosition = new Pose(secondIntakeX, 42, Math.toRadians(-90)),
-                secondIntakeTakePosition = new Pose(secondIntakeX, -6, Math.toRadians(-90)),
-                homePosition = new Pose(45, 15, Math.toRadians(-90));
+    private AutoPoses poses;
+    private AutoPaths paths;
 
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
@@ -56,10 +42,13 @@ public class AutoBlue extends OpMode {
         shooter.setupShooter();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startPosition);
+
+        poses = new AutoPoses(color);
+        paths = new AutoPaths(follower, poses);
+
+        follower.setStartingPose(poses.goalStart);
         follower.update();
 
-        setupPaths();
         setupFSM();
     }
 
@@ -79,7 +68,7 @@ public class AutoBlue extends OpMode {
     public void setupFSM(){
         // handle preload
         fsm.onStateEnter(State.START_POSITION, () -> {
-            follower.followPath(goShoot);
+            follower.followPath(paths.goShootPreload);
         });
         fsm.onStateUpdate(State.START_POSITION, () -> {
             if(!follower.isBusy()) {
@@ -104,7 +93,7 @@ public class AutoBlue extends OpMode {
 
         // handle first intake
         fsm.onStateEnter(State.FIRST_INTAKE, () -> {
-            follower.followPath(goFirstIntake);
+            follower.followPath(paths.goFirstIntake);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.FIRST_INTAKE, () -> {
@@ -114,7 +103,7 @@ public class AutoBlue extends OpMode {
         });
 
         fsm.onStateEnter(State.SHOOT_FIRST_INTAKE, () -> {
-            follower.followPath(goShootFirstIntake);
+            follower.followPath(paths.goShootFirstIntake);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.SHOOT_FIRST_INTAKE, () -> {
@@ -129,7 +118,7 @@ public class AutoBlue extends OpMode {
 
         // handle second intake
         fsm.onStateEnter(State.SECOND_INTAKE, () -> {
-            follower.followPath(goSecondIntake);
+            follower.followPath(paths.goSecondIntake);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.SECOND_INTAKE, () -> {
@@ -139,7 +128,7 @@ public class AutoBlue extends OpMode {
         });
 
         fsm.onStateEnter(State.SHOOT_SECOND_INTAKE, () -> {
-            follower.followPath(goShootSecondIntake);
+            follower.followPath(paths.goShootSecondIntake);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.SHOOT_SECOND_INTAKE, () -> {
@@ -153,7 +142,7 @@ public class AutoBlue extends OpMode {
         setShootArtifact(State.SHOOT_C3, State.GO_HOME);
 
         fsm.onStateEnter(State.GO_HOME, () -> {
-            follower.followPath(goHome);
+            follower.followPath(paths.goGoalHome);
             shooter.command(Shooter.Command.TOGGLE_IDLE);
         });
         fsm.onStateUpdate(State.GO_HOME, () -> {
@@ -179,39 +168,5 @@ public class AutoBlue extends OpMode {
 
     public void updateFSM() {
         fsm.update();
-    }
-
-    public void setupPaths(){
-         goShoot = follower.pathBuilder()
-                .addPath(new BezierCurve(startPosition, shootPosition))
-                .setLinearHeadingInterpolation(startPosition.getHeading(), shootPosition.getHeading())
-                .build();
-
-         goFirstIntake = follower.pathBuilder()
-                 .addPath(new BezierCurve(shootPosition, firstIntakePosition))
-                 .setLinearHeadingInterpolation(shootPosition.getHeading(), firstIntakePosition.getHeading())
-                 .addPath(new BezierLine(firstIntakePosition, firstIntakeTakePosition))
-                 .build();
-
-        goShootFirstIntake = follower.pathBuilder()
-                .addPath(new BezierCurve(firstIntakeTakePosition, shootPosition))
-                .setLinearHeadingInterpolation(firstIntakeTakePosition.getHeading(), shootPosition.getHeading())
-                .build();
-
-        goSecondIntake = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPosition, secondIntakePosition))
-                .setLinearHeadingInterpolation(shootPosition.getHeading(), secondIntakePosition.getHeading())
-                .addPath(new BezierLine(secondIntakePosition, secondIntakeTakePosition))
-                .build();
-
-        goShootSecondIntake = follower.pathBuilder()
-                .addPath(new BezierCurve(secondIntakeTakePosition, shootPosition))
-                .setLinearHeadingInterpolation(secondIntakeTakePosition.getHeading(), shootPosition.getHeading())
-                .build();
-
-        goHome = follower.pathBuilder()
-                .addPath(new BezierCurve(shootPosition, homePosition))
-                .setLinearHeadingInterpolation(shootPosition.getHeading(), homePosition.getHeading())
-                .build();
     }
 }

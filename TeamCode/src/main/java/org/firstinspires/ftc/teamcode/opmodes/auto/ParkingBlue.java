@@ -8,18 +8,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
+import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
+import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Parking BLUE")
 public class ParkingBlue extends OpMode {
+    protected TeamColor color = TeamColor.BLUE;
     private Shooter shooter;
     private Follower follower;
 
-    private PathChain goParking;
-
-    protected Pose startPosition = new Pose(0,0, Math.toRadians(0)),
-                parkingPosition = new Pose(24, 0, Math.toRadians(0));
+    private AutoPoses poses;
+    private AutoPaths paths;
 
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
@@ -34,10 +36,13 @@ public class ParkingBlue extends OpMode {
         shooter.setupShooter();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startPosition);
+
+        poses = new AutoPoses(color);
+        paths = new AutoPaths(follower, poses);
+
+        follower.setStartingPose(poses.parkStart);
         follower.update();
 
-        setupPaths();
         setupFSM();
     }
 
@@ -57,7 +62,7 @@ public class ParkingBlue extends OpMode {
     public void setupFSM(){
         // go to parking position
         fsm.onStateEnter(State.GO_PARKING, () -> {
-            follower.followPath(goParking);
+            follower.followPath(paths.goPark);
         });
         fsm.onStateUpdate(State.GO_PARKING, () -> {
             if (!follower.isBusy()) {
@@ -70,12 +75,5 @@ public class ParkingBlue extends OpMode {
 
     public void updateFSM() {
         fsm.update();
-    }
-
-    public void setupPaths(){
-        goParking = follower.pathBuilder()
-                .addPath(new BezierCurve(startPosition, parkingPosition))
-                .setLinearHeadingInterpolation(startPosition.getHeading(), parkingPosition.getHeading())
-                .build();
     }
 }

@@ -42,6 +42,7 @@ public class Intake {
     }
     public void push() {
         intakeMotor.setPower(pushPower);
+        openGripper();
     }
     public void idle() {
         intakeMotor.setPower(idlePower);
