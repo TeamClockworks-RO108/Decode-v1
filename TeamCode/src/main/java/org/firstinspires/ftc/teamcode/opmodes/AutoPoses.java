@@ -5,18 +5,18 @@ import com.pedropathing.geometry.Pose;
 public class AutoPoses {
     private static final double
             // goal start specifics
-            GOAL_START_X = 10, GOAL_START_Y = 10, GOAL_START_ANGLE = 45,
-            GOAL_HOME_X = 45, GOAL_HOME_Y = 15, GOAL_HOME_ANGLE = -90,
+            GOAL_START_X = 22, GOAL_START_Y = 144-22, GOAL_START_ANGLE = -45,
+            GOAL_HOME_X = 24, GOAL_HOME_Y = 90, GOAL_HOME_ANGLE = 180,
             // park start specifics
             PARK_START_X = 0, PARK_START_Y = 0, PARK_START_ANGLE = 0,
             PARK_HOME_X = 24, PARK_HOME_Y = 0, PARK_HOME_ANGLE = 0,
             // shoot
-            SHOOT_X = 43.4, SHOOT_Y = 43.4, SHOOT_ANGLE = 45,
+            SHOOT_X = 55.4, SHOOT_Y = 144 - 55.4, SHOOT_ANGLE = -45,
             // intake positions
-            INTAKE_START_Y = 42, INTAKE_ANGLE = -90,
-            FIRST_INTAKE_X = 49.6, FIRST_INTAKE_END_Y = -3,
-            SECOND_INTAKE_X = 73.6, SECOND_INTAKE_END_Y = -3,
-            THIRD_INTAKE_X = 100, THIRD_INTAKE_END_Y = -3;
+            INTAKE_START_X = 45, INTAKE_ANGLE = 180,
+            FIRST_INTAKE_END_X = 16, FIRST_INTAKE_Y = 84,
+            SECOND_INTAKE_END_X = 8, SECOND_INTAKE_Y = 60,
+            THIRD_INTAKE_END_X = 8, THIRD_INTAKE_Y = 36;
 
     public final Pose
             shoot,
@@ -24,7 +24,8 @@ public class AutoPoses {
             parkStart, parkHome,
             firstIntake, firstIntakeEnd,
             secondIntake, secondIntakeEnd,
-            thirdIntake, thirdIntakeEnd;
+            thirdIntake, thirdIntakeEnd,
+            gateCorner;
 
     private final TeamColor color;
 
@@ -33,7 +34,7 @@ public class AutoPoses {
             case BLUE:
                 return new Pose(x, y, Math.toRadians(heading));
             case RED:
-                return new Pose(x, -y, Math.toRadians(-heading));
+                return new Pose(-x, y, Math.toRadians(-heading));
         }
         return null;
     }
@@ -48,11 +49,13 @@ public class AutoPoses {
 
         shoot = createPose(SHOOT_X, SHOOT_Y, SHOOT_ANGLE);
 
-        firstIntake = createPose(FIRST_INTAKE_X, INTAKE_START_Y, INTAKE_ANGLE);
-        firstIntakeEnd = createPose(FIRST_INTAKE_X, FIRST_INTAKE_END_Y, INTAKE_ANGLE);
-        secondIntake = createPose(SECOND_INTAKE_X, INTAKE_START_Y, INTAKE_ANGLE);
-        secondIntakeEnd = createPose(SECOND_INTAKE_X, SECOND_INTAKE_END_Y, INTAKE_ANGLE);
-        thirdIntake = createPose(THIRD_INTAKE_X, INTAKE_START_Y, INTAKE_ANGLE);
-        thirdIntakeEnd = createPose(THIRD_INTAKE_X, THIRD_INTAKE_END_Y, INTAKE_ANGLE);
+        firstIntake = createPose(INTAKE_START_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
+        firstIntakeEnd = createPose(FIRST_INTAKE_END_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
+        secondIntake = createPose(INTAKE_START_X, SECOND_INTAKE_Y, INTAKE_ANGLE);
+        secondIntakeEnd = createPose(SECOND_INTAKE_END_X, SECOND_INTAKE_Y, INTAKE_ANGLE);
+        thirdIntake = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
+        thirdIntakeEnd = createPose(THIRD_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
+
+        gateCorner = createPose(24, 60, INTAKE_ANGLE);
     }
 }

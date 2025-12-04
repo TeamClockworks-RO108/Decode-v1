@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -63,6 +63,10 @@ public class Shooter {
             this.unexecutedCommand = command;
         else
             queue.offer(command);
+    }
+
+    public long getRapidFireTime() {
+        return raiseTime + 3 * (launchingTime + reloadTime);
     }
 
     public void setupShooter(){

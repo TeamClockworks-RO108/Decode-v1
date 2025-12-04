@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
 import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;

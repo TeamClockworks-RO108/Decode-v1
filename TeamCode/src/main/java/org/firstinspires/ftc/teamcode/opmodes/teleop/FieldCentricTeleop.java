@@ -5,7 +5,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
@@ -20,6 +20,7 @@ public class FieldCentricTeleop extends OpMode {
     private EdgeDetector toggleIntakeReject = new EdgeDetector(false);
     private EdgeDetector fire = new EdgeDetector(false);
     private EdgeDetector rapidFire = new EdgeDetector(false);
+    private EdgeDetector fieldCentricReset = new EdgeDetector(false);
 
     @Override
     public void init() {
@@ -35,6 +36,7 @@ public class FieldCentricTeleop extends OpMode {
         toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
         fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
+        fieldCentricReset.onPress(() -> follower.setPose(new Pose(0, 0, 0)));
 
         shooter.setupShooter();
     }
@@ -62,7 +64,14 @@ public class FieldCentricTeleop extends OpMode {
         toggleIntakeReject.update(gamepad1.circle);
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
+        fieldCentricReset.update(gamepad1.dpad_up);
 
         shooter.updateShooter();
+
+        // telemetry
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.update();
     }
 }

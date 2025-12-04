@@ -4,7 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Robot.Shooter;
+import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
 import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
@@ -25,15 +25,17 @@ public class AutoBlue extends OpMode {
     enum State {
         INIT,
         START_POSITION,
-        SHOOT_POSITION,
-        SHOOT_A1, SHOOT_A2, SHOOT_A3, // preload
+        SHOOT_A, // preload
         FIRST_INTAKE,
         SHOOT_FIRST_INTAKE,
-        SHOOT_B1, SHOOT_B2, SHOOT_B3,
+        SHOOT_B,
         SECOND_INTAKE,
         SHOOT_SECOND_INTAKE,
-        SHOOT_C1, SHOOT_C2, SHOOT_C3,
-        GO_HOME
+        SHOOT_C,
+        THIRD_INTAKE,
+        SHOOT_THIRD_INTAKE,
+        SHOOT_D,
+        GO_HOME,
     }
 
     @Override
@@ -63,33 +65,29 @@ public class AutoBlue extends OpMode {
         updateFSM();
         follower.update();
         shooter.updateShooter();
+
+        // telemetry
+        telemetry.addData("path state", fsm.getCurrentState());
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.update();
     }
 
     public void setupFSM(){
         // handle preload
         fsm.onStateEnter(State.START_POSITION, () -> {
             follower.followPath(paths.goShootPreload);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.START_POSITION, () -> {
             if(!follower.isBusy()) {
-                return State.SHOOT_POSITION;
+                return State.SHOOT_A;
             }
             return null;
         });
 
-        fsm.onStateEnter(State.SHOOT_POSITION, () -> {
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
-        });
-        fsm.onStateUpdate(State.SHOOT_POSITION, (current, timeSinceTransition) -> {
-            if(timeSinceTransition > 1000){
-                return State.SHOOT_A1;
-            }
-            return null;
-        });
-
-        setShootArtifact(State.SHOOT_A1, State.SHOOT_A2);
-        setShootArtifact(State.SHOOT_A2, State.SHOOT_A3);
-        setShootArtifact(State.SHOOT_A3, State.FIRST_INTAKE);
+        setShoot3Artifacts(State.SHOOT_A, State.FIRST_INTAKE);
 
         // handle first intake
         fsm.onStateEnter(State.FIRST_INTAKE, () -> {
@@ -108,13 +106,11 @@ public class AutoBlue extends OpMode {
         });
         fsm.onStateUpdate(State.SHOOT_FIRST_INTAKE, () -> {
             if (!follower.isBusy())
-                return State.SHOOT_B1;
+                return State.SHOOT_B;
             return null;
         });
 
-        setShootArtifact(State.SHOOT_B1, State.SHOOT_B2);
-        setShootArtifact(State.SHOOT_B2, State.SHOOT_B3);
-        setShootArtifact(State.SHOOT_B3, State.SECOND_INTAKE);
+        setShoot3Artifacts(State.SHOOT_B, State.SECOND_INTAKE);
 
         // handle second intake
         fsm.onStateEnter(State.SECOND_INTAKE, () -> {
@@ -133,13 +129,34 @@ public class AutoBlue extends OpMode {
         });
         fsm.onStateUpdate(State.SHOOT_SECOND_INTAKE, () -> {
             if (!follower.isBusy())
-                return State.SHOOT_C1;
+                return State.SHOOT_C;
             return null;
         });
 
-        setShootArtifact(State.SHOOT_C1, State.SHOOT_C2);
-        setShootArtifact(State.SHOOT_C2, State.SHOOT_C3);
-        setShootArtifact(State.SHOOT_C3, State.GO_HOME);
+        setShoot3Artifacts(State.SHOOT_C, State.THIRD_INTAKE);
+
+        // handle third intake
+        fsm.onStateEnter(State.THIRD_INTAKE, () -> {
+            follower.followPath(paths.goThirdIntake);
+            shooter.command(Shooter.Command.TOGGLE_INTAKE);
+        });
+        fsm.onStateUpdate(State.THIRD_INTAKE, () -> {
+            if (!follower.isBusy())
+                return State.SHOOT_THIRD_INTAKE;
+            return null;
+        });
+
+        fsm.onStateEnter(State.SHOOT_THIRD_INTAKE, () -> {
+            follower.followPath(paths.goShootThirdIntake);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        });
+        fsm.onStateUpdate(State.SHOOT_THIRD_INTAKE, () -> {
+            if (!follower.isBusy())
+                return State.SHOOT_D;
+            return null;
+        });
+
+        setShoot3Artifacts(State.SHOOT_D, State.GO_HOME);
 
         fsm.onStateEnter(State.GO_HOME, () -> {
             follower.followPath(paths.goGoalHome);
@@ -154,12 +171,12 @@ public class AutoBlue extends OpMode {
         fsm.init();
     }
 
-    private void setShootArtifact(State startState, State nextState) {
+    private void setShoot3Artifacts(State startState, State nextState) {
         fsm.onStateEnter(startState, () -> {
-            shooter.command(Shooter.Command.FIRE);
+            shooter.command(Shooter.Command.RAPID_FIRE);
         });
         fsm.onStateUpdate(startState, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 1200) {
+            if (timeSinceTransition > shooter.getRapidFireTime()) {
                 return nextState;
             }
             return null;
