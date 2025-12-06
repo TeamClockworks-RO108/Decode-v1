@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
-@Autonomous(name = "Auto RED")
+@Autonomous(name = "Auto RED 9")
 public class AutoRed extends AutoBlue {
     @Override
     protected void setColor() {

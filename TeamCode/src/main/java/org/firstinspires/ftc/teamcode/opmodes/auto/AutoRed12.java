@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
-@Autonomous(name = "Parking RED", group = "far")
-public class ParkingRed extends ParkingBlue {
+@Autonomous(name = "Auto RED 12")
+public class AutoRed12 extends AutoBlue12 {
     @Override
     protected void setColor() {
         color = TeamColor.RED;

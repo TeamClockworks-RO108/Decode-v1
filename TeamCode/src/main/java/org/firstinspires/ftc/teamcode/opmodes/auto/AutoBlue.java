@@ -1,19 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Shooter;
-import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
-import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-@Autonomous(name = "Auto BLUE")
+@Autonomous(name = "Auto BLUE 9")
 public class AutoBlue extends AutoBase {
-    private final StateMachine<State> fsm = new StateMachine<>(State.INIT);
+    final StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
     enum State {
         INIT,
@@ -91,30 +86,7 @@ public class AutoBlue extends AutoBase {
             return null;
         });
 
-        setShoot3Artifacts(State.SHOOT_C, State.THIRD_INTAKE);
-
-        // handle third intake
-        fsm.onStateEnter(State.THIRD_INTAKE, () -> {
-            follower.followPath(paths.goThirdIntake);
-            shooter.command(Shooter.Command.TOGGLE_INTAKE);
-        });
-        fsm.onStateUpdate(State.THIRD_INTAKE, () -> {
-            if (!follower.isBusy())
-                return State.SHOOT_THIRD_INTAKE;
-            return null;
-        });
-
-        fsm.onStateEnter(State.SHOOT_THIRD_INTAKE, () -> {
-            follower.followPath(paths.goShootThirdIntake);
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
-        });
-        fsm.onStateUpdate(State.SHOOT_THIRD_INTAKE, () -> {
-            if (!follower.isBusy())
-                return State.SHOOT_D;
-            return null;
-        });
-
-        setShoot3Artifacts(State.SHOOT_D, State.GO_HOME);
+        setShoot3Artifacts(State.SHOOT_C, State.GO_HOME);
 
         fsm.onStateEnter(State.GO_HOME, () -> {
             follower.followPath(paths.goGoalHome);
@@ -134,7 +106,7 @@ public class AutoBlue extends AutoBase {
     }
     protected void updateFSM() { fsm.update(); }
 
-    private void setShoot3Artifacts(State startState, State nextState) {
+    protected void setShoot3Artifacts(State startState, State nextState) {
         fsm.onStateEnter(startState, () -> {
             shooter.command(Shooter.Command.RAPID_FIRE);
         });

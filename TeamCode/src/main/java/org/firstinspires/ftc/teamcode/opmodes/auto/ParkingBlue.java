@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-@Autonomous(name = "Parking BLUE")
+@Autonomous(name = "Parking BLUE", group = "far")
 public class ParkingBlue extends AutoBase {
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
