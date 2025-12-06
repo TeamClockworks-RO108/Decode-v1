@@ -12,69 +12,27 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Auto BLUE")
-public class AutoBlue extends OpMode {
-    protected TeamColor color = TeamColor.BLUE;
-    private Shooter shooter;
-    private Follower follower;
-
-    private AutoPoses poses;
-    private AutoPaths paths;
-
-    private StateMachine<State> fsm = new StateMachine<>(State.INIT);
+public class AutoBlue extends AutoBase {
+    private final StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
     enum State {
         INIT,
         START_POSITION,
         SHOOT_A, // preload
-        FIRST_INTAKE,
-        SHOOT_FIRST_INTAKE,
-        SHOOT_B,
-        SECOND_INTAKE,
-        SHOOT_SECOND_INTAKE,
-        SHOOT_C,
-        THIRD_INTAKE,
-        SHOOT_THIRD_INTAKE,
-        SHOOT_D,
+        FIRST_INTAKE, SHOOT_FIRST_INTAKE, SHOOT_B,
+        SECOND_INTAKE, SHOOT_SECOND_INTAKE, SHOOT_C,
+        THIRD_INTAKE, SHOOT_THIRD_INTAKE, SHOOT_D,
         GO_HOME,
     }
 
-    @Override
-    public void init() {
-        shooter = new Shooter(hardwareMap, true);
-        shooter.setupShooter();
-
-        follower = Constants.createFollower(hardwareMap);
-
-        poses = new AutoPoses(color);
-        paths = new AutoPaths(follower, poses);
-
+    protected void setColor() {
+        color = TeamColor.BLUE;
+    }
+    protected void setStartingPose() {
         follower.setStartingPose(poses.goalStart);
-        follower.update();
-
-        setupFSM();
     }
 
-    @Override
-    public void start() {
-        shooter.command(Shooter.Command.TOGGLE_IDLE);
-        fsm.onStateUpdate(State.INIT, () -> State.START_POSITION);
-    }
-
-    @Override
-    public void loop() {
-        updateFSM();
-        follower.update();
-        shooter.updateShooter();
-
-        // telemetry
-        telemetry.addData("path state", fsm.getCurrentState());
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.update();
-    }
-
-    public void setupFSM(){
+    protected void setupFSM(){
         // handle preload
         fsm.onStateEnter(State.START_POSITION, () -> {
             follower.followPath(paths.goShootPreload);
@@ -171,6 +129,11 @@ public class AutoBlue extends OpMode {
         fsm.init();
     }
 
+    protected void startFSM() {
+        fsm.onStateUpdate(State.INIT, () -> State.START_POSITION);
+    }
+    protected void updateFSM() { fsm.update(); }
+
     private void setShoot3Artifacts(State startState, State nextState) {
         fsm.onStateEnter(startState, () -> {
             shooter.command(Shooter.Command.RAPID_FIRE);
@@ -181,9 +144,5 @@ public class AutoBlue extends OpMode {
             }
             return null;
         });
-    }
-
-    public void updateFSM() {
-        fsm.update();
     }
 }

@@ -8,8 +8,7 @@ import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 @Autonomous(name = "Parking RED")
 public class ParkingRed extends ParkingBlue {
     @Override
-    public void init() {
+    protected void setColor() {
         color = TeamColor.RED;
-        super.init();
     }
 }

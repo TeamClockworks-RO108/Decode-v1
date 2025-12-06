@@ -12,41 +12,12 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Parking BLUE")
-public class ParkingBlue extends OpMode {
-    protected TeamColor color = TeamColor.BLUE;
-    private Shooter shooter;
-    private Follower follower;
-
-    private AutoPoses poses;
-    private AutoPaths paths;
-
+public class ParkingBlue extends AutoBase {
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
     enum State {
         INIT,
         GO_PARKING
-    }
-
-    @Override
-    public void init() {
-        shooter = new Shooter(hardwareMap, true);
-        shooter.setupShooter();
-
-        follower = Constants.createFollower(hardwareMap);
-
-        poses = new AutoPoses(color);
-        paths = new AutoPaths(follower, poses);
-
-        follower.setStartingPose(poses.parkStart);
-        follower.update();
-
-        setupFSM();
-    }
-
-    @Override
-    public void start() {
-        shooter.command(Shooter.Command.TOGGLE_IDLE);
-        fsm.onStateUpdate(State.INIT, () -> State.GO_PARKING);
     }
 
     @Override
@@ -56,7 +27,16 @@ public class ParkingBlue extends OpMode {
         shooter.updateShooter();
     }
 
-    public void setupFSM(){
+    @Override
+    protected void setColor() {
+        color = TeamColor.BLUE;
+    }
+    @Override
+    protected void setStartingPose() {
+        follower.setStartingPose(poses.parkStart);
+    }
+
+    protected void setupFSM(){
         // go to parking position
         fsm.onStateEnter(State.GO_PARKING, () -> {
             follower.followPath(paths.goPark);
@@ -70,7 +50,11 @@ public class ParkingBlue extends OpMode {
         fsm.init();
     }
 
-    public void updateFSM() {
+    @Override
+    protected void startFSM() {
+        fsm.onStateUpdate(State.INIT, () -> State.GO_PARKING);
+    }
+    protected void updateFSM() {
         fsm.update();
     }
 }
