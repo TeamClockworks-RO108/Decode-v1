@@ -24,15 +24,15 @@ public class AutoPaths {
         this.follower = follower;
 
         goShootPreload = createPath(poses.goalStart, poses.shoot);
-        goFirstIntake = createPathWithCorner(
+        goFirstIntake = createPath(
                 poses.shoot, poses.firstIntake, poses.firstIntakeEnd);
         goShootFirstIntake = createPath(poses.firstIntakeEnd, poses.shoot);
-        goSecondIntake = createPathWithCorner(
+        goSecondIntake = createPath(
                 poses.shoot, poses.secondIntake, poses.secondIntakeEnd);
         goShootSecondIntake = createPath(poses.secondIntakeEnd, poses.gateCorner, poses.shoot);
-        goThirdIntake = createPathWithCorner(
+        goThirdIntake = createPath(
                 poses.shoot, poses.thirdIntake, poses.thirdIntakeEnd);
-        goShootThirdIntake = createPath(poses.thirdIntakeEnd, poses.gateCorner, poses.shoot);
+        goShootThirdIntake = createPath(poses.thirdIntakeEnd, poses.shoot);
         goGoalHome = createPath(poses.shoot, poses.goalHome);
 
         goPark = createPath(poses.parkStart, poses.parkHome);
@@ -52,13 +52,13 @@ public class AutoPaths {
                 .setLinearHeadingInterpolation(inter.getHeading(), end.getHeading())
                 .build();
     }
-    private PathChain createPathWithCorner(Pose start, Pose inter, Pose end) {
-        return follower.pathBuilder()
-                .addPath(new BezierLine(start, inter))
-                .setLinearHeadingInterpolation(start.getHeading(), inter.getHeading())
-                .addPath(new BezierLine(inter, end))
-                .setLinearHeadingInterpolation(inter.getHeading(), end.getHeading())
-                .build();
-    }
+//    private PathChain createPathWithCorner(Pose start, Pose inter, Pose end) {
+//        return follower.pathBuilder()
+//                .addPath(new BezierLine(start, inter))
+//                .setLinearHeadingInterpolation(start.getHeading(), inter.getHeading())
+//                .addPath(new BezierLine(inter, end))
+//                .setLinearHeadingInterpolation(inter.getHeading(), end.getHeading())
+//                .build();
+//    }
 
 }

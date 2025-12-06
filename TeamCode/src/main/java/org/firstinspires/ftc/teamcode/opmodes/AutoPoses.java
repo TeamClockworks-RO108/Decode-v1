@@ -11,12 +11,12 @@ public class AutoPoses {
             PARK_START_X = 0, PARK_START_Y = 0, PARK_START_ANGLE = 0,
             PARK_HOME_X = 24, PARK_HOME_Y = 0, PARK_HOME_ANGLE = 0,
             // shoot
-            SHOOT_X = 144-56, SHOOT_Y = 144-56, SHOOT_ANGLE = 225,
+            SHOOT_X = 144-56, SHOOT_Y = 144-56, SHOOT_ANGLE = 230,
             // intake positions
-            INTAKE_START_X = 99, INTAKE_ANGLE = 0,
-            FIRST_INTAKE_END_X = 144-17, FIRST_INTAKE_Y = 144-63,
-            SECOND_INTAKE_END_X = 144-9, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24,
-            THIRD_INTAKE_END_X = 144-9, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48,
+            INTAKE_START_X = 95, INTAKE_ANGLE = 0,
+            FIRST_INTAKE_END_X = 144-18.1, FIRST_INTAKE_Y = 81.7,
+            SECOND_INTAKE_END_X = 144-8.6, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24,
+            THIRD_INTAKE_END_X = 144-8.6, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48,
             // terrain locations
             GATE_CORNER_X = 124, GATE_CORNER_Y = 60;
 
