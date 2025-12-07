@@ -11,18 +11,18 @@ public class AutoPoses {
             PARK_START_X = 0, PARK_START_Y = 0, PARK_START_ANGLE = 0,
             PARK_HOME_X = 24, PARK_HOME_Y = 0, PARK_HOME_ANGLE = 0,
             // shoot
-            SHOOT_X = 144-56, SHOOT_Y = 144-56, SHOOT_ANGLE = 230,
+            SHOOT_X = 144-55, SHOOT_Y = 144-55, SHOOT_ANGLE = 222,
             // intake positions
             INTAKE_START_X = 95, INTAKE_ANGLE = 0,
             FIRST_INTAKE_END_X = 144-18.1, FIRST_INTAKE_Y = 81.7,
-            SECOND_INTAKE_END_X = 144-8.6, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24,
-            THIRD_INTAKE_END_X = 144-8.6, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48,
+            SECOND_INTAKE_END_X = 144-9.2, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24,
+            THIRD_INTAKE_END_X = 144-9.2, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48,
             // terrain locations
             GATE_CORNER_X = 124, GATE_CORNER_Y = 60;
 
     public final Pose
             shoot,
-            goalStart, goalHome,
+            goalStart, goalHome, goalHomeFromIntake,
             parkStart, parkHome,
             firstIntake, firstIntakeEnd,
             secondIntake, secondIntakeEnd,
@@ -45,6 +45,7 @@ public class AutoPoses {
 
         goalStart = createPose(GOAL_START_X, GOAL_START_Y, GOAL_START_ANGLE);
         goalHome = createPose(GOAL_HOME_X, GOAL_HOME_Y, GOAL_HOME_ANGLE);
+        goalHomeFromIntake = createPose(THIRD_INTAKE_END_X-24, THIRD_INTAKE_Y, GOAL_HOME_ANGLE);
 
         parkStart = createPose(PARK_START_X, PARK_START_Y, PARK_START_ANGLE);
         parkHome = createPose(PARK_HOME_X, PARK_HOME_Y, PARK_HOME_ANGLE);

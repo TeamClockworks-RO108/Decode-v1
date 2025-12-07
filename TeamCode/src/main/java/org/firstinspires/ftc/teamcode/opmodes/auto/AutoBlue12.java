@@ -17,21 +17,34 @@ public class AutoBlue12 extends AutoBlue{
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.THIRD_INTAKE, () -> {
-            if (!follower.isBusy())
-                return State.SHOOT_THIRD_INTAKE;
+            if (!follower.isBusy()) {
+                return State.GO_HOME_FROM_INTAKE;
+            }
             return null;
         });
 
-        fsm.onStateEnter(State.SHOOT_THIRD_INTAKE, () -> {
-            follower.followPath(paths.goShootThirdIntake);
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        fsm.onStateEnter(State.GO_HOME_FROM_INTAKE, () -> {
+            follower.followPath(paths.goIntakeGoalHome);
+            shooter.command(Shooter.Command.TOGGLE_IDLE);
         });
-        fsm.onStateUpdate(State.SHOOT_THIRD_INTAKE, () -> {
-            if (!follower.isBusy())
-                return State.SHOOT_D;
-            return null;
+        fsm.onStateUpdate(State.GO_HOME_FROM_INTAKE, () -> {
+            if (!follower.isBusy()) {
+                shooter.command(Shooter.Command.TOGGLE_DEAD);
+            }
         });
 
-        setShoot3Artifacts(State.SHOOT_D, State.GO_HOME);
+        fsm.init();
+
+//        fsm.onStateEnter(State.SHOOT_THIRD_INTAKE, () -> {
+//            follower.followPath(paths.goShootThirdIntake);
+//            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+//        });
+//        fsm.onStateUpdate(State.SHOOT_THIRD_INTAKE, () -> {
+//            if (!follower.isBusy())
+//                return State.SHOOT_D;
+//            return null;
+//        });
+//
+//        setShoot3Artifacts(State.SHOOT_D, State.GO_HOME);
     }
 }

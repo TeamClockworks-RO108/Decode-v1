@@ -21,6 +21,9 @@ public class FieldCentricTeleop extends OpMode {
     private EdgeDetector fire = new EdgeDetector(false);
     private EdgeDetector rapidFire = new EdgeDetector(false);
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
+    private EdgeDetector fineTuning = new EdgeDetector(false);
+
+    private boolean isFineTuning = false;
 
     @Override
     public void init() {
@@ -37,6 +40,7 @@ public class FieldCentricTeleop extends OpMode {
         fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
         fieldCentricReset.onPress(() -> follower.setPose(new Pose(0, 0, 0)));
+        fineTuning.onPress(() -> isFineTuning = !isFineTuning);
 
         shooter.setupShooter();
     }
@@ -50,12 +54,21 @@ public class FieldCentricTeleop extends OpMode {
     @Override
     public void loop() {
         follower.update();
-        follower.setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                false // ensure field centric
-        );
+        if (isFineTuning)
+            follower.setTeleOpDrive(
+                    -gamepad1.left_stick_y * 0.25,
+                    -gamepad1.left_stick_x * 0.25,
+                    -gamepad1.right_stick_x *  0.25,
+                    false
+            );
+        else
+            follower.setTeleOpDrive(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
+                    false // ensure field centric
+            );
+
 
         // shooter controls
         toggleShooting.update(gamepad1.right_bumper);
@@ -65,6 +78,7 @@ public class FieldCentricTeleop extends OpMode {
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
         fieldCentricReset.update(gamepad1.dpad_up);
+        fineTuning.update(gamepad1.dpad_down);
 
         shooter.updateShooter();
 

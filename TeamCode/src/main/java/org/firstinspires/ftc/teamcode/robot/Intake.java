@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -28,6 +29,7 @@ public class Intake {
         leftGripper = hardwareMap.get(Servo.class, "leftGripper");
         rightGripper = hardwareMap.get(Servo.class, "rightGripper");
 
+        miniIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         leftGripper.setDirection(Servo.Direction.REVERSE);
     }
 
@@ -42,6 +44,7 @@ public class Intake {
     }
     public void push() {
         intakeMotor.setPower(pushPower);
+        miniIntake.setPower(miniPower);
         openGripper();
     }
     public void idle() {
@@ -50,11 +53,12 @@ public class Intake {
     }
     public void shoot() {
         intakeMotor.setPower(shootingPower);
-        miniIntake.setPower(miniPower);
+        miniIntake.setPower(0);
     }
     public void reject() {
         intakeMotor.setPower(-intakePower);
         miniIntake.setPower(-miniPower);
+        openGripper();
     }
 
     public void closeGripper() {

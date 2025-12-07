@@ -113,7 +113,7 @@ public class Shooter {
             intake.shoot();
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 70)
+            if (timeSinceTransition > 100)
                 pivot.setPosition(pivotShoot);
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
@@ -161,6 +161,7 @@ public class Shooter {
         });
         fsm.onStateExit(State.INTAKE, () -> {
             intake.closeGripper();
+//            intake.stop();
         });
 
         // REJECT_INTAKE
@@ -210,7 +211,6 @@ public class Shooter {
     private void setupRapidFire() {
         fsm.onStateEnter(State.RAISE_RAPID_FIRE, () -> {
             outtake.raise();
-            intake.push();
         });
         fsm.onStateUpdate(State.RAISE_RAPID_FIRE, (current, timeSinceTransition) -> {
             if (timeSinceTransition > raiseTime)
@@ -229,6 +229,7 @@ public class Shooter {
         fsm.onStateEnter(State.RELOAD1, () -> {
             outtake.reload();
             intake.openGripper();
+            intake.push();
         });
         fsm.onStateUpdate(State.RELOAD1, (current, timeSinceTransition) -> {
             if (timeSinceTransition > reloadTime)

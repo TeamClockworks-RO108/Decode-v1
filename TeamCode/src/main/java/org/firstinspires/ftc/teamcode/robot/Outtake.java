@@ -13,8 +13,8 @@ public class Outtake {
     private final double flapDown = 0.3;
     private final double flapUp = 0.12;
 
-    private final double barrierUp = 0.65;
-    private final double barrierDown = 0.1;
+    private final double barrierUp = 1.0;
+    private final double barrierDown = 0.45;
 
     private double targetVelocity;
 

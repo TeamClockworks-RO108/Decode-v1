@@ -8,16 +8,16 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Auto BLUE 9")
 public class AutoBlue extends AutoBase {
-    final StateMachine<State> fsm = new StateMachine<>(State.INIT);
+    protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
-    enum State {
+    protected enum State {
         INIT,
         START_POSITION,
         SHOOT_A, // preload
         FIRST_INTAKE, SHOOT_FIRST_INTAKE, SHOOT_B,
         SECOND_INTAKE, SHOOT_SECOND_INTAKE, SHOOT_C,
         THIRD_INTAKE, SHOOT_THIRD_INTAKE, SHOOT_D,
-        GO_HOME,
+        GO_HOME, GO_HOME_FROM_INTAKE
     }
 
     protected void setColor() {

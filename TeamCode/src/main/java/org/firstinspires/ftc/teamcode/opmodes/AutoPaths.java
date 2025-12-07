@@ -15,7 +15,7 @@ public class AutoPaths {
             goFirstIntake, goShootFirstIntake,
             goSecondIntake, goShootSecondIntake,
             goThirdIntake, goShootThirdIntake,
-            goGoalHome;
+            goGoalHome, goIntakeGoalHome;
     public final PathChain
             goPark;
 
@@ -34,6 +34,8 @@ public class AutoPaths {
                 poses.shoot, poses.thirdIntake, poses.thirdIntakeEnd);
         goShootThirdIntake = createPath(poses.thirdIntakeEnd, poses.shoot);
         goGoalHome = createPath(poses.shoot, poses.goalHome);
+
+        goIntakeGoalHome = createPath(poses.thirdIntakeEnd, poses.goalHomeFromIntake);
 
         goPark = createPath(poses.parkStart, poses.parkHome);
     }
