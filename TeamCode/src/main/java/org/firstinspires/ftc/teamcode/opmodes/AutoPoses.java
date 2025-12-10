@@ -11,7 +11,7 @@ public class AutoPoses {
             PARK_START_X = 0, PARK_START_Y = 0, PARK_START_ANGLE = 0,
             PARK_HOME_X = 24, PARK_HOME_Y = 0, PARK_HOME_ANGLE = 0,
             // shoot
-            SHOOT_X = 144-55, SHOOT_Y = 144-55, SHOOT_ANGLE = 222,
+            SHOOT_X = 144-55, SHOOT_Y = 144-55, SHOOT_ANGLE = 234,
             // intake positions
             INTAKE_START_X = 95, INTAKE_ANGLE = 0,
             FIRST_INTAKE_END_X = 144-18.1, FIRST_INTAKE_Y = 81.7,

@@ -53,7 +53,6 @@ public class Intake {
     }
     public void shoot() {
         intakeMotor.setPower(shootingPower);
-        miniIntake.setPower(0);
     }
     public void reject() {
         intakeMotor.setPower(-intakePower);
