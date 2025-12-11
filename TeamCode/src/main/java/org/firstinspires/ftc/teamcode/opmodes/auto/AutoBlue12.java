@@ -13,22 +13,22 @@ public class AutoBlue12 extends AutoBlue{
 
         // handle third intake
         fsm.onStateEnter(State.THIRD_INTAKE, () -> {
-            follower.followPath(paths.goThirdIntake);
+            movement.followPath(paths.goThirdIntake);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.THIRD_INTAKE, () -> {
-            if (!follower.isBusy()) {
+            if (!movement.isBusy()) {
                 return State.GO_HOME_FROM_INTAKE;
             }
             return null;
         });
 
         fsm.onStateEnter(State.GO_HOME_FROM_INTAKE, () -> {
-            follower.followPath(paths.goIntakeGoalHome);
+            movement.followPath(paths.goIntakeGoalHome);
             shooter.command(Shooter.Command.TOGGLE_IDLE);
         });
         fsm.onStateUpdate(State.GO_HOME_FROM_INTAKE, () -> {
-            if (!follower.isBusy()) {
+            if (!movement.isBusy()) {
                 shooter.command(Shooter.Command.TOGGLE_DEAD);
             }
         });

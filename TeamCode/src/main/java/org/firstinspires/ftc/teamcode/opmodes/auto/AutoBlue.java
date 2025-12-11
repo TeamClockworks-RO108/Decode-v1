@@ -24,17 +24,17 @@ public class AutoBlue extends AutoBase {
         color = TeamColor.BLUE;
     }
     protected void setStartingPose() {
-        follower.setStartingPose(poses.goalStart);
+        startingPose = poses.goalStart;
     }
 
     protected void setupFSM(){
         // handle preload
         fsm.onStateEnter(State.START_POSITION, () -> {
-            follower.followPath(paths.goShootPreload);
+            movement.followPath(paths.goShootPreload);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.START_POSITION, () -> {
-            if(!follower.isBusy()) {
+            if(!movement.isBusy()) {
                 return State.SHOOT_A;
             }
             return null;
@@ -44,21 +44,21 @@ public class AutoBlue extends AutoBase {
 
         // handle first intake
         fsm.onStateEnter(State.FIRST_INTAKE, () -> {
-            follower.followPath(paths.goFirstIntake);
+            movement.followPath(paths.goFirstIntake);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.FIRST_INTAKE, () -> {
-            if (!follower.isBusy())
+            if (!movement.isBusy())
                 return State.SHOOT_FIRST_INTAKE;
             return null;
         });
 
         fsm.onStateEnter(State.SHOOT_FIRST_INTAKE, () -> {
-            follower.followPath(paths.goShootFirstIntake);
+            movement.followPath(paths.goShootFirstIntake);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.SHOOT_FIRST_INTAKE, () -> {
-            if (!follower.isBusy())
+            if (!movement.isBusy())
                 return State.SHOOT_B;
             return null;
         });
@@ -67,21 +67,21 @@ public class AutoBlue extends AutoBase {
 
         // handle second intake
         fsm.onStateEnter(State.SECOND_INTAKE, () -> {
-            follower.followPath(paths.goSecondIntake);
+            movement.followPath(paths.goSecondIntake);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.SECOND_INTAKE, () -> {
-            if (!follower.isBusy())
+            if (!movement.isBusy())
                 return State.SHOOT_SECOND_INTAKE;
             return null;
         });
 
         fsm.onStateEnter(State.SHOOT_SECOND_INTAKE, () -> {
-            follower.followPath(paths.goShootSecondIntake);
+            movement.followPath(paths.goShootSecondIntake);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.SHOOT_SECOND_INTAKE, () -> {
-            if (!follower.isBusy())
+            if (!movement.isBusy())
                 return State.SHOOT_C;
             return null;
         });
@@ -89,11 +89,11 @@ public class AutoBlue extends AutoBase {
         setShoot3Artifacts(State.SHOOT_C, State.GO_HOME);
 
         fsm.onStateEnter(State.GO_HOME, () -> {
-            follower.followPath(paths.goGoalHome);
+            movement.followPath(paths.goGoalHome);
             shooter.command(Shooter.Command.TOGGLE_IDLE);
         });
         fsm.onStateUpdate(State.GO_HOME, () -> {
-            if (!follower.isBusy()) {
+            if (!movement.isBusy()) {
                 shooter.command(Shooter.Command.TOGGLE_DEAD);
             }
         });

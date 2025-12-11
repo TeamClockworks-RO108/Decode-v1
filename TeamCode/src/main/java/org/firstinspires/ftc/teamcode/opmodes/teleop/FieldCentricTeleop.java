@@ -5,14 +5,18 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @TeleOp(name = "FieldCentricTeleop")
 public class FieldCentricTeleop extends OpMode {
-    private Follower follower = null;
+    private PedroMovement movement = null;
     private Shooter shooter = null;
+
+    private EdgeDetector fieldCentricReset = new EdgeDetector(false);
+    private EdgeDetector fineTuning = new EdgeDetector(false);
 
     private EdgeDetector toggleShooting = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
@@ -20,18 +24,17 @@ public class FieldCentricTeleop extends OpMode {
     private EdgeDetector toggleIntakeReject = new EdgeDetector(false);
     private EdgeDetector fire = new EdgeDetector(false);
     private EdgeDetector rapidFire = new EdgeDetector(false);
-    private EdgeDetector fieldCentricReset = new EdgeDetector(false);
-    private EdgeDetector fineTuning = new EdgeDetector(false);
-
-    private boolean isFineTuning = false;
 
     @Override
     public void init() {
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(0,0, Math.toRadians(0)));
-        follower.update();
+        movement = new PedroMovement(hardwareMap, telemetry, new Pose(0, 0, 0));
+
+        // movement command setup
+        fieldCentricReset.onPress(() -> movement.resetPose());
+        fineTuning.onPress(() -> movement.toggleFineTuning());
 
         shooter = new Shooter(hardwareMap, false);
+
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
         toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
@@ -39,53 +42,32 @@ public class FieldCentricTeleop extends OpMode {
         toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
         fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
-        fieldCentricReset.onPress(() -> follower.setPose(new Pose(0, 0, 0)));
-        fineTuning.onPress(() -> isFineTuning = !isFineTuning);
 
         shooter.setupShooter();
     }
 
     @Override
     public void start() {
-        follower.startTeleOpDrive();
+        movement.startTeleop();
         shooter.command(Shooter.Command.TOGGLE_IDLE);
     }
 
     @Override
     public void loop() {
-        follower.update();
-        if (isFineTuning)
-            follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y * 0.25,
-                    -gamepad1.left_stick_x * 0.25,
-                    -gamepad1.right_stick_x *  0.25,
-                    false
-            );
-        else
-            follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    -gamepad1.right_stick_x,
-                    false // ensure field centric
-            );
+        movement.updateTeleOp(gamepad1);
 
+        // movement options
+        fieldCentricReset.update(gamepad1.dpad_up);
+        fineTuning.update(gamepad1.dpad_down);
 
-        // shooter controls
+        // shooter options
         toggleShooting.update(gamepad1.right_bumper);
         toggleIntake.update(gamepad1.left_bumper);
         toggleIdle.update(gamepad1.square);
         toggleIntakeReject.update(gamepad1.circle);
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
-        fieldCentricReset.update(gamepad1.dpad_up);
-        fineTuning.update(gamepad1.dpad_down);
 
         shooter.updateShooter();
-
-        // telemetry
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.update();
     }
 }

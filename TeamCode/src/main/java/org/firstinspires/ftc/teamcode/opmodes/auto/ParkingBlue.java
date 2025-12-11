@@ -23,7 +23,7 @@ public class ParkingBlue extends AutoBase {
     @Override
     public void loop() {
         updateFSM();
-        follower.update();
+        movement.update();
         shooter.updateShooter();
     }
 
@@ -33,16 +33,16 @@ public class ParkingBlue extends AutoBase {
     }
     @Override
     protected void setStartingPose() {
-        follower.setStartingPose(poses.parkStart);
+        startingPose = poses.parkStart;
     }
 
     protected void setupFSM(){
         // go to parking position
         fsm.onStateEnter(State.GO_PARKING, () -> {
-            follower.followPath(paths.goPark);
+            movement.followPath(paths.goPark);
         });
         fsm.onStateUpdate(State.GO_PARKING, () -> {
-            if (!follower.isBusy()) {
+            if (!movement.isBusy()) {
                 shooter.command(Shooter.Command.TOGGLE_DEAD);
             }
         });

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
+import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
 import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
@@ -15,25 +16,24 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public abstract class AutoBase extends OpMode {
     protected TeamColor color;
+    protected PedroMovement movement;
     protected Shooter shooter;
-    protected Follower follower;
 
     protected AutoPoses poses;
     protected AutoPaths paths;
+    protected Pose startingPose;
 
     @Override
     public void init() {
         setColor();
-        shooter = new Shooter(hardwareMap, true);
-        shooter.setupShooter();
-
-        follower = Constants.createFollower(hardwareMap);
-
         poses = new AutoPoses(color);
         setStartingPose();
 
-        paths = new AutoPaths(follower, poses);
-        follower.update();
+        movement = new PedroMovement(hardwareMap, telemetry, startingPose);
+        paths = new AutoPaths(movement.getFollower(), poses);
+
+        shooter = new Shooter(hardwareMap, true);
+        shooter.setupShooter();
 
         setupFSM();
     }
@@ -47,14 +47,8 @@ public abstract class AutoBase extends OpMode {
     @Override
     public void loop() {
         updateFSM();
-        follower.update();
+        movement.update();
         shooter.updateShooter();
-
-        // telemetry
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.update();
     }
 
     protected abstract void setColor();
