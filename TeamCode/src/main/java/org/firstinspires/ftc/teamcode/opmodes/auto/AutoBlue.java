@@ -9,14 +9,15 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 @Autonomous(name = "Auto BLUE 9")
 public class AutoBlue extends AutoBase {
     protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);
+    protected final long grabTime = 200;
 
     protected enum State {
         INIT,
         START_POSITION,
         SHOOT_A, // preload
-        FIRST_INTAKE, SHOOT_FIRST_INTAKE, SHOOT_B,
-        SECOND_INTAKE, SHOOT_SECOND_INTAKE, SHOOT_C,
-        THIRD_INTAKE, SHOOT_THIRD_INTAKE, SHOOT_D,
+        FIRST_INTAKE, GRAB_B, SHOOT_FIRST_INTAKE, SHOOT_B,
+        SECOND_INTAKE, GRAB_C, SHOOT_SECOND_INTAKE, SHOOT_C,
+        THIRD_INTAKE, GRAB_D,
         GO_HOME, GO_HOME_FROM_INTAKE
     }
 
@@ -49,13 +50,21 @@ public class AutoBlue extends AutoBase {
         });
         fsm.onStateUpdate(State.FIRST_INTAKE, () -> {
             if (!movement.isBusy())
+                return State.GRAB_B;
+            return null;
+        });
+
+        fsm.onStateEnter(State.GRAB_B, () -> {
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        });
+        fsm.onStateUpdate(State.GRAB_B, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > grabTime)
                 return State.SHOOT_FIRST_INTAKE;
             return null;
         });
 
         fsm.onStateEnter(State.SHOOT_FIRST_INTAKE, () -> {
             movement.followPath(paths.goShootFirstIntake);
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.SHOOT_FIRST_INTAKE, () -> {
             if (!movement.isBusy())
@@ -72,13 +81,21 @@ public class AutoBlue extends AutoBase {
         });
         fsm.onStateUpdate(State.SECOND_INTAKE, () -> {
             if (!movement.isBusy())
+                return State.GRAB_C;
+            return null;
+        });
+
+        fsm.onStateEnter(State.GRAB_C, () -> {
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        });
+        fsm.onStateUpdate(State.GRAB_C, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > grabTime)
                 return State.SHOOT_SECOND_INTAKE;
             return null;
         });
 
         fsm.onStateEnter(State.SHOOT_SECOND_INTAKE, () -> {
             movement.followPath(paths.goShootSecondIntake);
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.SHOOT_SECOND_INTAKE, () -> {
             if (!movement.isBusy())

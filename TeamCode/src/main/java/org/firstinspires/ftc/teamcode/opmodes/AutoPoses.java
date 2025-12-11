@@ -5,18 +5,18 @@ import com.pedropathing.geometry.Pose;
 public class AutoPoses {
     private static final double
             // goal start specifics
-            GOAL_START_X = 144-22.6, GOAL_START_Y = 144-22.6, GOAL_START_ANGLE = 225,
+            GOAL_START_X = 144-23.6, GOAL_START_Y = 144-21.6, GOAL_START_ANGLE = 225,
             GOAL_HOME_X = 144-24, GOAL_HOME_Y = 144-54, GOAL_HOME_ANGLE = 0,
             // park start specifics
             PARK_START_X = 0, PARK_START_Y = 0, PARK_START_ANGLE = 0,
             PARK_HOME_X = 24, PARK_HOME_Y = 0, PARK_HOME_ANGLE = 0,
             // shoot
-            SHOOT_X = 144-55, SHOOT_Y = 144-55, SHOOT_ANGLE = 234,
+            SHOOT_X = 144-53.8, SHOOT_Y = 144-53.8, SHOOT_ANGLE = 224,
             // intake positions
             INTAKE_START_X = 95, INTAKE_ANGLE = 0,
-            FIRST_INTAKE_END_X = 144-18.1, FIRST_INTAKE_Y = 81.7,
-            SECOND_INTAKE_END_X = 144-9.2, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24,
-            THIRD_INTAKE_END_X = 144-9.2, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48,
+            FIRST_INTAKE_END_X = 144-19.2, FIRST_INTAKE_Y = 81.5,
+            SECOND_INTAKE_END_X = 144-10.2, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24,
+            THIRD_INTAKE_END_X = 144-10.2, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48,
             // terrain locations
             GATE_CORNER_X = 124, GATE_CORNER_Y = 60;
 

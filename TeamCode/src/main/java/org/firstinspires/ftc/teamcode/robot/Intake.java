@@ -44,7 +44,6 @@ public class Intake {
     }
     public void push() {
         intakeMotor.setPower(pushPower);
-        miniIntake.setPower(miniPower);
         openGripper();
     }
     public void idle() {
@@ -53,6 +52,7 @@ public class Intake {
     }
     public void shoot() {
         intakeMotor.setPower(shootingPower);
+        miniIntake.setPower(miniPower);
     }
     public void reject() {
         intakeMotor.setPower(-intakePower);

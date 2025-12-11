@@ -113,7 +113,7 @@ public class Shooter {
             intake.shoot();
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 100)
+            if (timeSinceTransition > 200)
                 pivot.setPosition(pivotShoot);
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;

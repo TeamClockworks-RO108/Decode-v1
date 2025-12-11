@@ -23,6 +23,15 @@ public class AutoBlue12 extends AutoBlue{
             return null;
         });
 
+        fsm.onStateEnter(State.GRAB_D, () -> {
+            shooter.command(Shooter.Command.TOGGLE_IDLE);
+        });
+        fsm.onStateUpdate(State.GO_HOME_FROM_INTAKE, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > grabTime)
+                return State.GO_HOME_FROM_INTAKE;
+            return null;
+        });
+
         fsm.onStateEnter(State.GO_HOME_FROM_INTAKE, () -> {
             movement.followPath(paths.goIntakeGoalHome);
             shooter.command(Shooter.Command.TOGGLE_IDLE);
@@ -34,17 +43,5 @@ public class AutoBlue12 extends AutoBlue{
         });
 
         fsm.init();
-
-//        fsm.onStateEnter(State.SHOOT_THIRD_INTAKE, () -> {
-//            follower.followPath(paths.goShootThirdIntake);
-//            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
-//        });
-//        fsm.onStateUpdate(State.SHOOT_THIRD_INTAKE, () -> {
-//            if (!follower.isBusy())
-//                return State.SHOOT_D;
-//            return null;
-//        });
-//
-//        setShoot3Artifacts(State.SHOOT_D, State.GO_HOME);
     }
 }
