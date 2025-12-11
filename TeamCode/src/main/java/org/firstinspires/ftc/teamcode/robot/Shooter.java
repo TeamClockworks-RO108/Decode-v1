@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -12,6 +13,8 @@ public class Shooter {
     private final Intake intake;
     private final Outtake outtake;
     private final Servo pivot;
+
+    private final Vision vision;
 
     private final double pivotIntake = 0.68;
     private final double pivotIdle = 0.88;
@@ -49,9 +52,10 @@ public class Shooter {
     private final StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
     private Command unexecutedCommand;
 
-    public Shooter(HardwareMap hardwareMap, boolean isAuto){
+    public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto){
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
+        vision = new Vision(hardwareMap, telemetry);
 
         pivot = hardwareMap.get(Servo.class, "pivot");
 
@@ -272,5 +276,6 @@ public class Shooter {
 
         fsm.update();
         outtake.update();
+        vision.update();
     }
 }

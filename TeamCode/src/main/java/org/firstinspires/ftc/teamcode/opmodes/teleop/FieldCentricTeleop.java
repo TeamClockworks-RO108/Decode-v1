@@ -31,7 +31,7 @@ public class FieldCentricTeleop extends OpMode {
         follower.setStartingPose(new Pose(0,0, Math.toRadians(0)));
         follower.update();
 
-        shooter = new Shooter(hardwareMap, false);
+        shooter = new Shooter(hardwareMap, telemetry, false);
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
         toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
