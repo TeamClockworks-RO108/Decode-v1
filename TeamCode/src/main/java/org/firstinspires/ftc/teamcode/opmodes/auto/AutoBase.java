@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public abstract class AutoBase extends OpMode {
+
     protected TeamColor color;
     protected PedroMovement movement;
     protected Shooter shooter;

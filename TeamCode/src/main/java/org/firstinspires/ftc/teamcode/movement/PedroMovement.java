@@ -67,7 +67,7 @@ public class PedroMovement {
         // telemetry
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("heading", follower.getPose().getHeading() * 180 / 3.14159);
         telemetry.update();
     }
 }
