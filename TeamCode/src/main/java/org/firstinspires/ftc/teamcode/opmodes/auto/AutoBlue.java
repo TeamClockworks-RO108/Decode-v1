@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 @Autonomous(name = "Auto BLUE 9")
 public class AutoBlue extends AutoBase {
     protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);
-    protected final long grabTime = 500;
+    protected final long grabTime = 400;
 
     protected enum State {
         INIT,
@@ -17,8 +17,8 @@ public class AutoBlue extends AutoBase {
         SHOOT_A, // preload
         FIRST_INTAKE, GRAB_B, SHOOT_FIRST_INTAKE, SHOOT_B,
         SECOND_INTAKE, GRAB_C, SHOOT_SECOND_INTAKE, SHOOT_C,
-        THIRD_INTAKE, GRAB_D,
-        GO_HOME, GO_HOME_FROM_INTAKE
+        THIRD_INTAKE, GRAB_D, SHOOT_THIRD_INTAKE, SHOOT_D,
+        GO_HOME, GO_HOME_FROM_INTAKE, GO_OPEN_GATE, OPEN_GATE,
     }
 
     protected void setColor() {
@@ -34,8 +34,8 @@ public class AutoBlue extends AutoBase {
             movement.followPath(paths.goShootPreload);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
-        fsm.onStateUpdate(State.START_POSITION, () -> {
-            if(!movement.isBusy()) {
+        fsm.onStateUpdate(State.START_POSITION, (current, timeSinceTransition) -> {
+            if(!movement.isBusy() || timeSinceTransition > 625) {
                 return State.SHOOT_A;
             }
             return null;

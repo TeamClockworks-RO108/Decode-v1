@@ -69,5 +69,6 @@ public class FieldCentricTeleop extends OpMode {
         rapidFire.update(gamepad1.cross);
 
         shooter.updateShooter();
+        telemetry.update();
     }
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.graphics.Point;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -12,7 +14,7 @@ public class AutoPaths {
 
     public final PathChain
             goShootPreload,
-            goFirstIntake, goShootFirstIntake,
+            goFirstIntake, goOpenGate, goGateGoal, goShootFirstIntake,
             goSecondIntake, goShootSecondIntake,
             goThirdIntake, goShootThirdIntake,
             goGoalHome, goIntakeGoalHome;
@@ -38,6 +40,12 @@ public class AutoPaths {
         goIntakeGoalHome = createPath(poses.thirdIntakeEnd, poses.goalHomeFromIntake);
 
         goPark = createPath(poses.parkStart, poses.parkHome);
+
+        goOpenGate = follower.pathBuilder()
+                .addPath(new BezierCurve(poses.firstIntakeEnd, poses.offsetPosition, poses.gateOpen))
+                .setConstantHeadingInterpolation(poses.firstIntakeEnd.getHeading())
+                .build();
+        goGateGoal = createPath(poses.gateOpen, poses.shoot);
     }
 
     private PathChain createPath(Pose start, Pose end) {
