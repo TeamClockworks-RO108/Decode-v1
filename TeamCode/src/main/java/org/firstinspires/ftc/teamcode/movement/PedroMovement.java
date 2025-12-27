@@ -39,12 +39,14 @@ public class PedroMovement {
         follower.setTeleOpDrive(y, x, heading, isRobotCentric);
     }
 
-    public void updateTeleOp(Gamepad gamepad1) {
+    public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
         update();
 
-        double y = -gamepad1.left_stick_y;
-        double x = -gamepad1.left_stick_x;
-        double heading = -gamepad1.right_stick_x;
+        double finePower = 0.3;
+
+        double y = -gamepad1.left_stick_y - gamepad2.left_stick_y * finePower;
+        double x = -gamepad1.left_stick_x - gamepad2.left_stick_x * finePower;
+        double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * finePower;
 
         if (isFineTuning)
             setTeleop(y * 0.25, x * 0.25, heading * 0.25);

@@ -63,8 +63,8 @@ public class AutoPoses {
         thirdIntakeEnd = createPose(THIRD_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
 
         gateCorner = createPose(GATE_CORNER_X, GATE_CORNER_Y, INTAKE_ANGLE);
-        gateOpen = createPose(FIRST_INTAKE_END_X + 1, FIRST_INTAKE_Y - 10, INTAKE_ANGLE);
-        offsetPosition = createPose (SHOOT_X, FIRST_INTAKE_Y - 10, INTAKE_ANGLE);
+        gateOpen = createPose(FIRST_INTAKE_END_X + 1.0, FIRST_INTAKE_Y - 10.5, INTAKE_ANGLE);
+        offsetPosition = createPose (SHOOT_X +5.5, FIRST_INTAKE_Y - 10, INTAKE_ANGLE);
 
     }
 }

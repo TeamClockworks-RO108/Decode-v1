@@ -27,16 +27,9 @@ public class AutoBlueSIGMA extends AutoBlue12 {
 
         fsm.onStateUpdate(State.GO_OPEN_GATE, () -> {
             if( !movement.isBusy()){
-                return State.OPEN_GATE;
-            }
-            return  null;
-        });
-
-        fsm.onStateUpdate(State.OPEN_GATE, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 50){
                 return State.SHOOT_FIRST_INTAKE;
             }
-                return null;
+            return  null;
         });
 
         fsm.onStateEnter(State.SHOOT_FIRST_INTAKE, () -> {

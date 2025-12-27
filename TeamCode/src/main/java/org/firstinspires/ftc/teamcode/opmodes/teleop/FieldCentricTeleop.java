@@ -54,7 +54,7 @@ public class FieldCentricTeleop extends OpMode {
 
     @Override
     public void loop() {
-        movement.updateTeleOp(gamepad1);
+        movement.updateTeleOp(gamepad1, gamepad2);
 
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);

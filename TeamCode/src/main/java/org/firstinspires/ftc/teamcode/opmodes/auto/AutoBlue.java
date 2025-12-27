@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 @Autonomous(name = "Auto BLUE 9")
 public class AutoBlue extends AutoBase {
     protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);
-    protected final long grabTime = 400;
+    protected final long grabTime = 325;
 
     protected enum State {
         INIT,
