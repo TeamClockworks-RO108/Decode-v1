@@ -28,6 +28,7 @@ public class Intake {
         leftGripper = hardwareMap.get(Servo.class, "leftGripper");
         rightGripper = hardwareMap.get(Servo.class, "rightGripper");
 
+        miniIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         leftGripper.setDirection(Servo.Direction.REVERSE);
     }
 

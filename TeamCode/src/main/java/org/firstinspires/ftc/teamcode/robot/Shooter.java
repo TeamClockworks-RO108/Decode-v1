@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.movement.Vision;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -13,14 +12,13 @@ import java.util.concurrent.BlockingQueue;
 public class Shooter {
     private final Intake intake;
     private final Outtake outtake;
-    private final Vision vision;
     private final Servo pivot;
 
     private final double pivotIntake = 0.68;
     private final double pivotIdle = 0.88;
     private final double pivotShoot = 0.96;
 
-    private final int raiseTime = 150, launchingTime = 190, reloadTime = 340;
+    private final int raiseTime = 150, launchingTime = 200, reloadTime = 350;
 
     private boolean isAuto = false;
 
@@ -32,7 +30,8 @@ public class Shooter {
         INTAKE_REJECT,
         IDLE,
         SHOOTING,
-        RAISE_FIRE, LAUNCHING,  // single launch
+        RAISE_FIRE,       // single launch
+        LAUNCHING,
         RAISE_RAPID_FIRE, // triple launch
         LAUNCH1, RELOAD1,
         LAUNCH2, RELOAD2,
@@ -51,12 +50,15 @@ public class Shooter {
     private final StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
     private Command unexecutedCommand;
 
-    public Shooter(HardwareMap hardwareMap, Telemetry telemetry){
+    public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto){
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
-        vision = new Vision(hardwareMap, telemetry);
+
+        this.isAuto = isAuto;
 
         pivot = hardwareMap.get(Servo.class, "pivot");
+
+        this.isAuto = isAuto;
     }
 
     public void command(Command command) {
@@ -273,6 +275,5 @@ public class Shooter {
 
         fsm.update();
         outtake.update();
-        vision.update();
     }
 }

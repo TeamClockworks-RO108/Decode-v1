@@ -12,6 +12,7 @@ import java.util.List;
 public class Vision {
     private final Limelight3A limelight;
     private final Telemetry telemetry;
+    private double anglex = 0;
 
     public Vision(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -34,11 +35,18 @@ public class Vision {
         List<LLResultTypes.FiducialResult> aprilTags = result.getFiducialResults();
         for (LLResultTypes.FiducialResult aprilTag : aprilTags) {
             int id = aprilTag.getFiducialId();
-            double x = aprilTag.getTargetXDegrees();
-            double y = aprilTag.getTargetYDegrees();
+            anglex = aprilTag.getTargetXDegrees();
+//            double angley = aprilTag.getTargetYDegrees();
+//            Pose3D cameraPose = aprilTag.getCameraPoseTargetSpace();
 
-            telemetry.addData("Fiducial " + id, "x: " + (int)x + " y: " + (int)y);
+//            telemetry.addData("Camera position:   ",
+//                    cameraPose.getPosition());
+//            telemetry.addData("Camera orientation:",
+//                    cameraPose.getOrientation());
         }
 
+    }
+    public double getAngleX() {
+        return anglex;
     }
 }

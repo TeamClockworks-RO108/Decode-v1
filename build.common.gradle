@@ -33,9 +33,9 @@ android {
                 storePassword System.getenv("APK_SIGNING_STORE_PASSWORD")
             } else {
                 keyAlias 'androiddebugkey'
+                storeFile rootProject.file('libs/ftc.debug.keystore')
                 keyPassword 'android'
                 storePassword 'android'
-                storeFile rootProject.file('libs/ftc.debug.keystore')
             }
         }
 
@@ -44,7 +44,6 @@ android {
             keyPassword 'android'
             storeFile rootProject.file('libs/ftc.debug.keystore')
             storePassword 'android'
-            storeFile rootProject.file('libs/ftc.debug.keystore')
         }
     }
 

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @TeleOp(name = "FieldCentricTeleop")
@@ -14,7 +16,7 @@ public class FieldCentricTeleop extends OpMode {
     private Shooter shooter = null;
 
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
-    private EdgeDetector fineTuning = new EdgeDetector(false);
+    private EdgeDetector rotateToGoal = new EdgeDetector(false);
 
     private EdgeDetector toggleShooting = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
@@ -26,11 +28,13 @@ public class FieldCentricTeleop extends OpMode {
     @Override
     public void init() {
         movement = new PedroMovement(hardwareMap, telemetry, new Pose(0, 0, 0));
-        shooter = new Shooter(hardwareMap, telemetry);
+        shooter = new Shooter(hardwareMap, telemetry, false);
 
         // movement command setup
         fieldCentricReset.onPress(() -> movement.resetPose());
-        fineTuning.onPress(() -> movement.toggleFineTuning());
+        rotateToGoal.onPress(() -> movement.command(PedroMovement.Command.START_AIMING));
+
+        shooter = new Shooter(hardwareMap, telemetry ,false);
 
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
@@ -55,7 +59,7 @@ public class FieldCentricTeleop extends OpMode {
 
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
-        fineTuning.update(gamepad1.dpad_down);
+        rotateToGoal.update(gamepad1.dpad_left);
 
         // shooter options
         toggleShooting.update(gamepad1.right_bumper);

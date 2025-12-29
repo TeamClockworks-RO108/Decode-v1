@@ -20,6 +20,8 @@ public class AutoPoses {
             // terrain locations
             GATE_CORNER_X = 124, GATE_CORNER_Y = 60;
 
+
+
     public final Pose
             shoot,
             goalStart, goalHome, goalHomeFromIntake,
