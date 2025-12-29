@@ -18,9 +18,9 @@ public class Intake {
     private final double idlePower = 0.4;
     private final double miniPower = 1;
 
-    private final double leftGripperOpen = 0.5;
+    private final double leftGripperOpen = 0.48;
     private final double leftGripperClosed = 0.33;
-    private final double rightGripperOpen = 0.47;
+    private final double rightGripperOpen = 0.45;
     private final double rightGripperClosed = 0.35;
 
     public Intake(HardwareMap hardwareMap) {

@@ -17,7 +17,7 @@ public class Shooter {
     private final double pivotIdle = 0.88;
     private final double pivotShoot = 0.96;
 
-    private final int raiseTime = 150, launchingTime = 200, reloadTime = 550;
+    private final int raiseTime = 150, launchingTime = 200, reloadTime = 350;
 
     private boolean isAuto = false;
 
