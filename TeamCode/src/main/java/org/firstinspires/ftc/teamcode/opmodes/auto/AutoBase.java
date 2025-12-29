@@ -33,7 +33,7 @@ public abstract class AutoBase extends OpMode {
         movement = new PedroMovement(hardwareMap, telemetry, startingPose);
         paths = new AutoPaths(movement.getFollower(), poses);
 
-        shooter = new Shooter(hardwareMap, true);
+        shooter = new Shooter(hardwareMap, telemetry);
         shooter.setupShooter();
 
         setupFSM();
@@ -50,6 +50,7 @@ public abstract class AutoBase extends OpMode {
         updateFSM();
         movement.update();
         shooter.updateShooter();
+        telemetry.update();
     }
 
     protected abstract void setColor();

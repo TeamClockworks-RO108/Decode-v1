@@ -11,11 +11,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class PedroMovement {
     private final Follower follower;
+    private final Vision vision;
     private final Telemetry telemetry;
     private boolean isRobotCentric = false;
     private boolean isFineTuning = false;
 
     public PedroMovement(HardwareMap hardwareMap, Telemetry telemetry, Pose startingPose) {
+        vision = new Vision(hardwareMap, telemetry);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose);
         follower.update();
@@ -64,8 +66,10 @@ public class PedroMovement {
     public void followPath(PathChain path) {
         follower.followPath(path);
     }
+
     public void update() {
         follower.update();
+        vision.update();
         // telemetry
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
