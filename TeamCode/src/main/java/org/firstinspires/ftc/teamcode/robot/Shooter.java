@@ -17,7 +17,7 @@ public class Shooter {
     private final double pivotIdle = 0.88;
     private final double pivotShoot = 0.96;
 
-    private final int raiseTime = 150, launchingTime = 200, reloadTime = 350;
+    private final int raiseTime = 150, launchingTime = 190, reloadTime = 340;
 
     private boolean isAuto = false;
 
@@ -29,8 +29,7 @@ public class Shooter {
         INTAKE_REJECT,
         IDLE,
         SHOOTING,
-        RAISE_FIRE,       // single launch
-        LAUNCHING,
+        RAISE_FIRE, LAUNCHING,  // single launch
         RAISE_RAPID_FIRE, // triple launch
         LAUNCH1, RELOAD1,
         LAUNCH2, RELOAD2,

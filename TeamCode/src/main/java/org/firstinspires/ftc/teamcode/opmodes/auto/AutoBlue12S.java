@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.robot.Shooter;
 
 
 @Autonomous(name = "Autonomia 67")
-public class AutoBlueSIGMA extends AutoBlue12 {
+public class AutoBlue12S extends AutoBlue12 {
     @Override
     protected void setupFSM(){
         super.setupFSM();
@@ -35,7 +35,6 @@ public class AutoBlueSIGMA extends AutoBlue12 {
         fsm.onStateEnter(State.SHOOT_FIRST_INTAKE, () -> {
             movement.followPath(paths.goGateGoal);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
-
         });
         fsm.onStateUpdate(State.SHOOT_FIRST_INTAKE, () -> {
             if (!movement.isBusy())

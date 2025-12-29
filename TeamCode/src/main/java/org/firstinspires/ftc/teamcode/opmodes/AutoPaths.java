@@ -56,7 +56,7 @@ public class AutoPaths {
     }
     private PathChain createPath(Pose start, Pose inter, Pose end) {
         return follower.pathBuilder()
-                .addPath(new BezierCurve(start, inter))
+                .addPath(new BezierCurve(start, inter, end))
                 .setLinearHeadingInterpolation(start.getHeading(), inter.getHeading())
                 .addPath(new BezierCurve(inter, end))
                 .setLinearHeadingInterpolation(inter.getHeading(), end.getHeading())
