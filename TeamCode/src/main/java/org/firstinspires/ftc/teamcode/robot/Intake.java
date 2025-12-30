@@ -17,9 +17,9 @@ public class Intake {
     private final double shootingPower = 0.1;
     private final double idlePower = 0.4;
 
-    private final double leftGripperOpen = 0.48;
+    private final double leftGripperOpen = 0.45;
     private final double leftGripperClosed = 0.33;
-    private final double rightGripperOpen = 0.45;
+    private final double rightGripperOpen = 0.425;
     private final double rightGripperClosed = 0.35;
 
     public Intake(HardwareMap hardwareMap) {
@@ -28,7 +28,7 @@ public class Intake {
         leftGripper = hardwareMap.get(Servo.class, "leftGripper");
         rightGripper = hardwareMap.get(Servo.class, "rightGripper");
 
-        miniIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        // miniIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         leftGripper.setDirection(Servo.Direction.REVERSE);
     }
 

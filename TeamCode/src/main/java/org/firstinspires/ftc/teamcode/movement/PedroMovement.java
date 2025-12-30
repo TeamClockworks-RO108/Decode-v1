@@ -72,6 +72,7 @@ public class PedroMovement {
         setTeleop(y, x, heading);
 
         fsm.update();
+        vision.update();
     }
 
     public Follower getFollower() {
@@ -129,7 +130,6 @@ public class PedroMovement {
         // telemetry
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading() * 180 / 3.14159);
-        telemetry.update();
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
     }
 }

@@ -59,7 +59,7 @@ public class FieldCentricTeleop extends OpMode {
 
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
-        rotateToGoal.update(gamepad1.dpad_left);
+        rotateToGoal.update(gamepad2.dpad_left);
 
         // shooter options
         toggleShooting.update(gamepad1.right_bumper);

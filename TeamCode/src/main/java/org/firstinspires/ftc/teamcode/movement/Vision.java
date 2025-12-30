@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.movement;
 
+import com.pedropathing.ftc.PoseConverter;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
 
@@ -35,14 +38,13 @@ public class Vision {
         List<LLResultTypes.FiducialResult> aprilTags = result.getFiducialResults();
         for (LLResultTypes.FiducialResult aprilTag : aprilTags) {
             int id = aprilTag.getFiducialId();
-            anglex = aprilTag.getTargetXDegrees();
-//            double angley = aprilTag.getTargetYDegrees();
-//            Pose3D cameraPose = aprilTag.getCameraPoseTargetSpace();
 
-//            telemetry.addData("Camera position:   ",
-//                    cameraPose.getPosition());
-//            telemetry.addData("Camera orientation:",
-//                    cameraPose.getOrientation());
+            if (id == 20)
+                anglex = aprilTag.getTargetXDegrees();
+
+            Pose3D relativePosition = aprilTag.getRobotPoseFieldSpace();
+            telemetry.addData("pose: ", relativePosition);
+            telemetry.addData("unit: ", relativePosition.getPosition().unit);
         }
 
     }

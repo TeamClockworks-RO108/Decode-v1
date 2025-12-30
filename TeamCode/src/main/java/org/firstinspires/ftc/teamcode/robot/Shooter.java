@@ -18,7 +18,7 @@ public class Shooter {
     private final double pivotIdle = 0.88;
     private final double pivotShoot = 0.96;
 
-    private final int raiseTime = 150, launchingTime = 200, reloadTime = 350;
+    private final int raiseTime = 150, launchingTime = 200, reloadTime = 400;
 
     private boolean isAuto = false;
 
@@ -50,13 +50,11 @@ public class Shooter {
     private final StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
     private Command unexecutedCommand;
 
-    public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto){
+    public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto) {
+        pivot = hardwareMap.get(Servo.class, "pivot");
+
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
-
-        this.isAuto = isAuto;
-
-        pivot = hardwareMap.get(Servo.class, "pivot");
 
         this.isAuto = isAuto;
     }

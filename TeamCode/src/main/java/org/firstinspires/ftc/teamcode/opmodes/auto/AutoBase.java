@@ -24,6 +24,8 @@ public abstract class AutoBase extends OpMode {
     protected AutoPaths paths;
     protected Pose startingPose;
 
+    protected final long grabTime = 250;
+
     @Override
     public void init() {
         setColor();
@@ -50,6 +52,7 @@ public abstract class AutoBase extends OpMode {
         updateFSM();
         movement.update();
         shooter.updateShooter();
+        telemetry.update();
     }
 
     protected abstract void setColor();
