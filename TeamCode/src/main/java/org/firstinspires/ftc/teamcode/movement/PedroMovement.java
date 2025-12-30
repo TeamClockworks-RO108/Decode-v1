@@ -1,14 +1,20 @@
 package org.firstinspires.ftc.teamcode.movement;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.CoordinateSystem;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
@@ -51,6 +57,9 @@ public class PedroMovement {
     public void resetPose() {
         follower.setPose(new Pose(0, 0, 0));
     }
+    public void setHomePose() {
+        follower.setPose(new Pose(9, 144-12, Math.toRadians(180)));
+    }
 
     public void startTeleop() {
         follower.startTeleOpDrive();
@@ -58,21 +67,6 @@ public class PedroMovement {
 
     private void setTeleop(double y, double x, double heading) {
         follower.setTeleOpDrive(y, x, heading, isRobotCentric);
-    }
-
-    public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
-        telemetry.addData("x angle", Math.toRadians(vision.getAngleX()));
-        update();
-
-        double finePower = 0.3;
-
-        double y = -gamepad1.left_stick_y - gamepad2.left_stick_y * finePower;
-        double x = -gamepad1.left_stick_x - gamepad2.left_stick_x * finePower;
-        double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * finePower;
-        setTeleop(y, x, heading);
-
-        fsm.update();
-        vision.update();
     }
 
     public Follower getFollower() {
@@ -87,13 +81,49 @@ public class PedroMovement {
     }
 
     public void rotateToGoal() {
-        Pose startPose = follower.getPose();
-        Pose endPose = new Pose(startPose.getX() + 1, startPose.getY() + 1, startPose.getHeading() - Math.toRadians(vision.getAngleX()));
+        Pose endPose = new Pose(144-47, 47, Math.toRadians(135));
 
         follower.followPath(follower.pathBuilder()
-                .addPath(new BezierLine(startPose, endPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), endPose.getHeading())
+                .addPath(new BezierCurve(follower.getPose(), endPose))
+                .setLinearHeadingInterpolation(follower.getHeading(), endPose.getHeading())
                 .build());
+    }
+
+//    public Pose processVisionPose() {
+//        if (vision.getLastResult() == null) return null;
+//
+//        Pose3D pose = vision.getLastResult().getBotpose();
+//        Pose pose2 = new Pose(
+//                pose.getPosition().x * 39.37008 + 144.0/2,
+//                -pose.getPosition().y * 39.37008 + 144.0/2,
+//                pose.getOrientation().getYaw(AngleUnit.RADIANS) + Math.PI * 3/2
+//        );
+//
+//        telemetry.addData("Pedro Pose", pose2);
+//
+//        return pose2;
+//    }
+
+    public void update() {
+        follower.update();
+        // telemetry
+        telemetry.addData("x, y", follower.getPose().getX() + " " + follower.getPose().getY());
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+    }
+    public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
+        vision.update();
+        telemetry.addData("x angle", vision.getAngleX());
+        processVisionPose();
+
+        update();
+
+        final double finePower = 0.3;
+        double y = -gamepad1.left_stick_y - gamepad2.left_stick_y * finePower;
+        double x = -gamepad1.left_stick_x - gamepad2.left_stick_x * finePower;
+        double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * finePower;
+        setTeleop(y, x, heading);
+
+        fsm.update();
     }
 
     private void setupTeleopFSM(){
@@ -109,7 +139,6 @@ public class PedroMovement {
         });
 
         fsm.onStateEnter(TeleopStates.AIMING, () -> {
-//            follower.pausePathFollowing();
             rotateToGoal();
         });
         fsm.onStateUpdate(TeleopStates.AIMING, () -> {
@@ -123,13 +152,5 @@ public class PedroMovement {
         });
 
         fsm.init();
-    }
-
-    public void update() {
-        follower.update();
-        // telemetry
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
     }
 }
