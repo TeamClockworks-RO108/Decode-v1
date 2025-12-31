@@ -54,4 +54,7 @@ public class Vision {
     public LLResult getLastResult() {
         return lastResult;
     }
+
+    public void processVisionPose() {
+    }
 }

@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.CoordinateSystem;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -22,16 +23,21 @@ public class PedroMovement {
     private final Follower follower;
     private final Telemetry telemetry;
 
+    private Pose endPose;
+
     private Vision vision;
     private boolean isRobotCentric = false;
 
     private enum TeleopStates {
         TELEOP,
-        AIMING
+        AIMING,
+        HOLD_AIM,
     }
 
     public enum Command {
-        START_AIMING
+        START_AIMING,
+
+        RELEASE_AIM
     }
 
     private Command unexecutedCommand = null;
@@ -81,7 +87,7 @@ public class PedroMovement {
     }
 
     public void rotateToGoal() {
-        Pose endPose = new Pose(144-47, 47, Math.toRadians(135));
+        endPose = new Pose(144-47, 47, Math.toRadians(135));
 
         follower.followPath(follower.pathBuilder()
                 .addPath(new BezierCurve(follower.getPose(), endPose))
@@ -113,7 +119,7 @@ public class PedroMovement {
     public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
         vision.update();
         telemetry.addData("x angle", vision.getAngleX());
-        processVisionPose();
+        vision.processVisionPose();
 
         update();
 
@@ -143,13 +149,23 @@ public class PedroMovement {
         });
         fsm.onStateUpdate(TeleopStates.AIMING, () -> {
             if (!follower.isBusy())
-                return TeleopStates.TELEOP;
+                return TeleopStates.HOLD_AIM;
             return null;
         });
-        fsm.onStateExit(TeleopStates.AIMING, () -> {
-//            follower.resumePathFollowing();
-//            follower.breakFollowing();
+
+        fsm.onStateEnter(TeleopStates.HOLD_AIM, () -> {
+            follower.holdPoint( new BezierPoint(endPose.getX(), endPose.getY()), endPose.getHeading(), true );
         });
+
+        fsm.onStateUpdate(TeleopStates.HOLD_AIM, () -> {
+            if (unexecutedCommand == Command.RELEASE_AIM ){
+                unexecutedCommand = null;
+                return TeleopStates.TELEOP;
+
+            }
+            return null;
+        });
+
 
         fsm.init();
     }

@@ -19,6 +19,8 @@ public class FieldCentricTeleop extends OpMode {
     private EdgeDetector setBasePose = new EdgeDetector(false);
     private EdgeDetector rotateToGoal = new EdgeDetector(false);
 
+    private EdgeDetector releaseAim = new EdgeDetector(false);
+
     private EdgeDetector toggleShooting = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
     private EdgeDetector toggleIdle = new EdgeDetector(false);
@@ -35,6 +37,8 @@ public class FieldCentricTeleop extends OpMode {
         fieldCentricReset.onPress(() -> movement.resetPose());
         rotateToGoal.onPress(() -> movement.command(PedroMovement.Command.START_AIMING));
         setBasePose.onPress(() -> movement.setHomePose());
+        releaseAim.onPress(()-> movement.command(PedroMovement.Command.RELEASE_AIM));
+
 
         shooter = new Shooter(hardwareMap, telemetry ,false);
 
@@ -63,6 +67,7 @@ public class FieldCentricTeleop extends OpMode {
         fieldCentricReset.update(gamepad1.dpad_up);
         rotateToGoal.update(gamepad2.dpad_left);
         setBasePose.update(gamepad2.dpad_down);
+        releaseAim.update(gamepad2.circle);
 
         // shooter options
         toggleShooting.update(gamepad1.right_bumper);
