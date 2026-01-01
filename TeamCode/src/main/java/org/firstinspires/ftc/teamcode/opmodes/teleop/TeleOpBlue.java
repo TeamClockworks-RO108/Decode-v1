@@ -22,7 +22,7 @@ public class TeleOpBlue extends OpMode {
     private EdgeDetector resetBase = new EdgeDetector(false);
     private EdgeDetector goToGoal = new EdgeDetector(false);
     private EdgeDetector goToPark = new EdgeDetector(false);
-    private EdgeDetector releaseAim = new EdgeDetector(false);
+    private EdgeDetector releasePath = new EdgeDetector(false);
     private EdgeDetector resetToCamera = new EdgeDetector(false);
     private EdgeDetector resetGate = new EdgeDetector(false);
 
@@ -77,8 +77,9 @@ public class TeleOpBlue extends OpMode {
             command(Command.START_AIMING);
         });
         goToPark.onPress(() -> movement.goToPose(poses.parking));
-        releaseAim.onPress(()-> {
+        releasePath.onPress(()-> {
             command(Command.RELEASE_AIM);
+            movement.breakFollowing();
         });
 
         if (color == TeamColor.RED) movement.flipControls();
@@ -112,10 +113,10 @@ public class TeleOpBlue extends OpMode {
 
 //        resetBase.update(gamepad2.dpad_down);
         resetGate.update(gamepad2.dpad_right);
-//        resetToCamera.update(gamepad2.dpad_up);
+        resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.dpad_left);
         goToPark.update(gamepad2.square);
-        releaseAim.update(gamepad2.circle);
+        releasePath.update(gamepad2.circle);
 
         // shooter options
         toggleShooting.update(gamepad1.right_bumper);
@@ -151,14 +152,11 @@ public class TeleOpBlue extends OpMode {
         fsm.onStateUpdate(TeleopStates.AIMING, () -> {
             if (!movement.isBusy())
                 return TeleopStates.HOLD_AIM;
-
-            if(unexecutedCommand == Command.RELEASE_AIM){
+            else if(unexecutedCommand == Command.RELEASE_AIM){
                 unexecutedCommand = null;
                 return TeleopStates.TELEOP;
             }
             return null;
-
-
         });
 
         fsm.onStateEnter(TeleopStates.HOLD_AIM, () -> {
