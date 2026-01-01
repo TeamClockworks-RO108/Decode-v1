@@ -1,18 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
-import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
-import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
+import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPaths;
+import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPoses;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public abstract class AutoBase extends OpMode {
 

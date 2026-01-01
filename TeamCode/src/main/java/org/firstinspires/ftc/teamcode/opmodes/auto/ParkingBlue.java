@@ -1,17 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Shooter;
-import org.firstinspires.ftc.teamcode.opmodes.AutoPaths;
-import org.firstinspires.ftc.teamcode.opmodes.AutoPoses;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-@Autonomous(name = "Parking BLUE", group = "far")
+@Autonomous(name = "Parking BLUE", group = "Far Start")
 public class ParkingBlue extends AutoBase {
     private StateMachine<State> fsm = new StateMachine<>(State.INIT);
 

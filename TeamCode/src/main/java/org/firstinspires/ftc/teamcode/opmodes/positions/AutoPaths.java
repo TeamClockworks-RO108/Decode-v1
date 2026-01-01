@@ -1,10 +1,7 @@
-package org.firstinspires.ftc.teamcode.opmodes;
-
-import android.graphics.Point;
+package org.firstinspires.ftc.teamcode.opmodes.positions;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 

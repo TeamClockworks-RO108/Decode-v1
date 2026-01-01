@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.movement.Movement;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
-@TeleOp(name = "RobotCentricTeleop")
+@TeleOp(name = "TeleOp", group = "Robot Centric")
 public class RobotCentricTeleop extends OpMode {
     private Movement movement = null;
     private Shooter shooter = null;

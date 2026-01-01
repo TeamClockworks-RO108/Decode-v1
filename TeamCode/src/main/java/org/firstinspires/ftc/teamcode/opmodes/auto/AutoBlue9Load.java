@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 
-@Autonomous(name = "Auto BLUE 12")
-public class AutoBlue12 extends AutoBlue{
+@Autonomous(name = "Auto BLUE 9 + load")
+public class AutoBlue9Load extends AutoBlue{
     @Override
     protected void setupFSM() {
         super.setupFSM();

@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.positions;
 
 import com.pedropathing.geometry.Pose;
+
+import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
 public class AutoPoses {
     private static final double
