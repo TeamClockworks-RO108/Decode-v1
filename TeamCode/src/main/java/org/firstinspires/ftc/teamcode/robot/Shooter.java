@@ -246,7 +246,7 @@ public class Shooter {
         });
         fsm.onStateEnter(State.RELOAD2, () -> outtake.reload());
         fsm.onStateUpdate(State.RELOAD2, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > reloadTime)
+            if (timeSinceTransition > reloadTime + 50)
                 return State.LAUNCH3;
             return null;
         });

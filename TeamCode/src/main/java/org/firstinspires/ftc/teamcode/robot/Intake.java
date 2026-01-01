@@ -20,7 +20,7 @@ public class Intake {
     private final double leftGripperOpen = 0.45;
     private final double leftGripperClosed = 0.33;
     private final double rightGripperOpen = 0.425;
-    private final double rightGripperClosed = 0.35;
+    private final double rightGripperClosed = 0.32;
 
     public Intake(HardwareMap hardwareMap) {
         intakeMotor = hardwareMap.get(DcMotor.class, "intake");

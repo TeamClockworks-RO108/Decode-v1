@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.movement;
 
 import com.pedropathing.ftc.PoseConverter;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
@@ -29,32 +31,35 @@ public class Vision {
         lastResult = limelight.getLatestResult();
     }
 
-    public void update() {
+    public void update() throws Exception {
         LLResult result = limelight.getLatestResult();
 
         if (result == null)
-            return;
+            throw new Exception("Invalid Camera Data");
         if (!result.isValid())
-            return;
-
-        List<LLResultTypes.FiducialResult> aprilTags = result.getFiducialResults();
-        for (LLResultTypes.FiducialResult aprilTag : aprilTags) {
-            int id = aprilTag.getFiducialId();
-            if (id != 20)
-                continue;
-            anglex = aprilTag.getTargetXDegrees();
-        }
+            throw new Exception("Invalid Camera Data");
 
         lastResult = result;
-    }
-    public double getAngleX() {
-        return anglex;
     }
 
     public LLResult getLastResult() {
         return lastResult;
     }
 
-    public void processVisionPose() {
+    public Pose processVisionPose() throws Exception {
+        update();
+        if (getLastResult() == null)
+            throw new Exception("Invalid Result");
+
+        Pose3D pose = getLastResult().getBotpose();
+        Pose pose2 = new Pose(
+                pose.getPosition().x * 39.37008 + 144.0/2,
+                -pose.getPosition().y * 39.37008 + 144.0/2,
+                pose.getOrientation().getYaw(AngleUnit.RADIANS) + Math.PI * 3/2
+        );
+
+        telemetry.addData("Pedro Pose", pose2);
+
+        return pose2;
     }
 }

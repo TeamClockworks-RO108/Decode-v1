@@ -1,26 +1,30 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
+import org.firstinspires.ftc.teamcode.opmodes.positions.TeleOpPoses;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
+import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @TeleOp(name = "TeleOp BLUE", group = "Field Centric")
 public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
+    private TeleOpPoses poses;
 
     private PedroMovement movement = null;
     private Shooter shooter = null;
 
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
-    private EdgeDetector setBasePose = new EdgeDetector(false);
-    private EdgeDetector rotateToGoal = new EdgeDetector(false);
-
+    private EdgeDetector resetBase = new EdgeDetector(false);
+    private EdgeDetector goToGoal = new EdgeDetector(false);
+    private EdgeDetector goToPark = new EdgeDetector(false);
     private EdgeDetector releaseAim = new EdgeDetector(false);
+    private EdgeDetector resetToCamera = new EdgeDetector(false);
+    private EdgeDetector resetGate = new EdgeDetector(false);
 
     private EdgeDetector toggleShooting = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
@@ -29,19 +33,55 @@ public class TeleOpBlue extends OpMode {
     private EdgeDetector fire = new EdgeDetector(false);
     private EdgeDetector rapidFire = new EdgeDetector(false);
 
+    private enum TeleopStates {
+        TELEOP,
+        AIMING,
+        HOLD_AIM,
+    }
+
+    public enum Command {
+        START_AIMING,
+        RELEASE_AIM
+    }
+
+    private Command unexecutedCommand = null;
+    private final StateMachine<TeleopStates> fsm  = new StateMachine<>(TeleopStates.TELEOP);
+
     @Override
     public void init() {
-        movement = new PedroMovement(hardwareMap, telemetry, new Pose(0, 0, 0));
+        poses = new TeleOpPoses(color);
+
+        movement = new PedroMovement(hardwareMap, telemetry, poses.start);
         shooter = new Shooter(hardwareMap, telemetry, false);
 
         // movement command setup
-        fieldCentricReset.onPress(() -> movement.resetPose());
-        rotateToGoal.onPress(() -> movement.command(PedroMovement.Command.START_AIMING));
-        setBasePose.onPress(() -> movement.setHomePose());
-        releaseAim.onPress(()-> movement.command(PedroMovement.Command.RELEASE_AIM));
+        fieldCentricReset.onPress(() -> movement.resetHeading(poses.start.getHeading()));
+        resetBase.onPress(() -> {
+            movement.setPose(poses.humanBase);
+            gamepad2.rumble(150);
+        });
+        resetGate.onPress(() -> {
+            movement.setPose(poses.gate);
+            gamepad2.rumble(150);
+        });
+        resetToCamera.onPress(() -> {
+            try {
+                movement.updateToCameraPose();
+                gamepad2.rumble(150);
+            } catch (Exception e) {
+                gamepad2.rumble(400);
+            }
+        });
 
+        goToGoal.onPress(() -> {
+            command(Command.START_AIMING);
+        });
+        goToPark.onPress(() -> movement.goToPose(poses.parking));
+        releaseAim.onPress(()-> {
+            command(Command.RELEASE_AIM);
+        });
 
-        shooter = new Shooter(hardwareMap, telemetry ,false);
+        if (color == TeamColor.RED) movement.flipControls();
 
         // shooter command setup
         toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
@@ -52,6 +92,7 @@ public class TeleOpBlue extends OpMode {
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
         shooter.setupShooter();
+        setupTeleopFSM();
     }
 
     @Override
@@ -62,12 +103,18 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void loop() {
+        fsm.update();
+
         movement.updateTeleOp(gamepad1, gamepad2);
 
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
-        rotateToGoal.update(gamepad2.dpad_left);
-        setBasePose.update(gamepad2.dpad_down);
+
+//        resetBase.update(gamepad2.dpad_down);
+        resetGate.update(gamepad2.dpad_right);
+//        resetToCamera.update(gamepad2.dpad_up);
+        goToGoal.update(gamepad2.dpad_left);
+        goToPark.update(gamepad2.square);
         releaseAim.update(gamepad2.circle);
 
         // shooter options
@@ -80,5 +127,51 @@ public class TeleOpBlue extends OpMode {
 
         shooter.updateShooter();
         telemetry.update();
+    }
+
+    private void command(Command command) {
+        unexecutedCommand = command;
+    }
+
+    private void setupTeleopFSM(){
+        fsm.onStateEnter(TeleopStates.TELEOP, () -> {
+            movement.startTeleop();
+        });
+        fsm.onStateUpdate(TeleopStates.TELEOP, () -> {
+            if (unexecutedCommand == Command.START_AIMING) {
+                unexecutedCommand = null;
+                return TeleopStates.AIMING;
+            }
+            return null;
+        });
+
+        fsm.onStateEnter(TeleopStates.AIMING, () -> {
+            movement.goToPose(poses.shooting);
+        });
+        fsm.onStateUpdate(TeleopStates.AIMING, () -> {
+            if (!movement.isBusy())
+                return TeleopStates.HOLD_AIM;
+
+            if(unexecutedCommand == Command.RELEASE_AIM){
+                unexecutedCommand = null;
+                return TeleopStates.TELEOP;
+            }
+            return null;
+
+
+        });
+
+        fsm.onStateEnter(TeleopStates.HOLD_AIM, () -> {
+            movement.hold(poses.shooting);
+        });
+        fsm.onStateUpdate(TeleopStates.HOLD_AIM, () -> {
+            if (unexecutedCommand == Command.RELEASE_AIM ){
+                unexecutedCommand = null;
+                return TeleopStates.TELEOP;
+            }
+            return null;
+        });
+
+        fsm.init();
     }
 }
