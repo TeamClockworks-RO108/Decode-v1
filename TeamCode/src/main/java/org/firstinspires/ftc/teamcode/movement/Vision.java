@@ -53,8 +53,8 @@ public class Vision {
 
         Pose3D pose = getLastResult().getBotpose();
         Pose pose2 = new Pose(
-                pose.getPosition().x * 39.37008 + 144.0/2,
-                -pose.getPosition().y * 39.37008 + 144.0/2,
+                pose.getPosition().y * 39.37008 + 144.0/2,
+                -pose.getPosition().x * 39.37008 + 144.0/2,
                 pose.getOrientation().getYaw(AngleUnit.RADIANS) + Math.PI * 3/2
         );
 

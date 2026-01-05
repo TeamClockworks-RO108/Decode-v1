@@ -80,6 +80,10 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.IDLE;
             }
+            else if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
+                unexecutedCommand = null;
+                return State.SHOOTING;
+            }
             return null;
         });
         fsm.onStateExit(State.DEAD, () -> {

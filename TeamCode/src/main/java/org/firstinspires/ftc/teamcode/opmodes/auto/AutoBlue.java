@@ -34,7 +34,7 @@ public class AutoBlue extends AutoBase {
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
         fsm.onStateUpdate(State.START_POSITION, (current, timeSinceTransition) -> {
-            if(!movement.isBusy() || timeSinceTransition > 625) {
+            if(!movement.isBusy() || timeSinceTransition > 600) {
                 return State.SHOOT_A;
             }
             return null;

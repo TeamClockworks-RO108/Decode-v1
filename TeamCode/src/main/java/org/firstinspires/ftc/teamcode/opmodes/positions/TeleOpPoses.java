@@ -15,8 +15,8 @@ public class TeleOpPoses {
 
         start = createPose(0, 0, 0);
         humanBase = createPose(9, 9, 180);
-        shooting = createPose(144-48.5, 144-48.5, 235);
-        parking = createPose(38.5, 33, 180);
+        shooting = createPose(144-48.8, 144-48.8, 220);
+        parking = createPose(36, 31, 180);
         gate = createPose(127, 69, 180);
 
         shooting.setHeading(shooting.getHeading() + SHOOT_OFFSET);

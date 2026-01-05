@@ -18,7 +18,7 @@ public class PedroMovement {
     private final Vision vision;
 
 
-    private final double finePower = 0.2;
+    private final double finePower = 0.25;
     private boolean isRobotCentric = false;
     private boolean areControlsFlipped = false;
 

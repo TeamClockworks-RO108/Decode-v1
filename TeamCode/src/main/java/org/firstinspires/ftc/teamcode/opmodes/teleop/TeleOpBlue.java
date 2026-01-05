@@ -99,7 +99,7 @@ public class TeleOpBlue extends OpMode {
     @Override
     public void start() {
         movement.startTeleop();
-        shooter.command(Shooter.Command.TOGGLE_IDLE);
+        shooter.command(Shooter.Command.TOGGLE_SHOOTING);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class TeleOpBlue extends OpMode {
 //        resetBase.update(gamepad2.dpad_down);
         resetGate.update(gamepad2.dpad_right);
         resetToCamera.update(gamepad2.dpad_up);
-        goToGoal.update(gamepad2.dpad_left);
+        goToGoal.update(gamepad2.triangle);
         goToPark.update(gamepad2.square);
         releasePath.update(gamepad2.circle);
 

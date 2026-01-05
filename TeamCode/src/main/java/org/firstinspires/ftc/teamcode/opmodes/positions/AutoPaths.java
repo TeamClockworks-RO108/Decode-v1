@@ -39,7 +39,7 @@ public class AutoPaths {
         goPark = createPath(poses.parkStart, poses.parkHome);
 
         goOpenGate = follower.pathBuilder()
-                .addPath(new BezierCurve(poses.firstIntakeEnd, poses.offsetPosition, poses.gateOpen))
+                .addPath(new BezierCurve(poses.firstIntakeEnd, poses.gateOffset, poses.gateOpen))
                 .setConstantHeadingInterpolation(poses.firstIntakeEnd.getHeading())
                 .build();
         goGateGoal = createPath(poses.gateOpen, poses.shoot);
