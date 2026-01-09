@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPaths;
-import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPoses;
+import org.firstinspires.ftc.teamcode.opmodes.positions.PosesAuto;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
 public abstract class AutoBase extends OpMode {
@@ -15,7 +15,7 @@ public abstract class AutoBase extends OpMode {
     protected PedroMovement movement;
     protected Shooter shooter;
 
-    protected AutoPoses poses;
+    protected PosesAuto poses;
     protected AutoPaths paths;
     protected Pose startingPose;
 
@@ -24,7 +24,7 @@ public abstract class AutoBase extends OpMode {
     @Override
     public void init() {
         setColor();
-        poses = new AutoPoses(color);
+        poses = new PosesAuto(color);
         setStartingPose();
 
         movement = new PedroMovement(hardwareMap, telemetry, startingPose);

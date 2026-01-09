@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
-import org.firstinspires.ftc.teamcode.opmodes.positions.TeleOpPoses;
+import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 @TeleOp(name = "TeleOp BLUE", group = "Field Centric")
 public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
-    private TeleOpPoses poses;
+    private PosesTeleOp poses;
 
     private PedroMovement movement = null;
     private Shooter shooter = null;
@@ -49,7 +49,7 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void init() {
-        poses = new TeleOpPoses(color);
+        poses = new PosesTeleOp(color);
 
         movement = new PedroMovement(hardwareMap, telemetry, poses.start);
         shooter = new Shooter(hardwareMap, telemetry, false);
@@ -147,7 +147,7 @@ public class TeleOpBlue extends OpMode {
         });
 
         fsm.onStateEnter(TeleopStates.AIMING, () -> {
-            movement.goToPose(poses.shooting);
+            movement.goToPose(poses.shootTeleOp);
         });
         fsm.onStateUpdate(TeleopStates.AIMING, () -> {
             if (!movement.isBusy())
@@ -160,7 +160,7 @@ public class TeleOpBlue extends OpMode {
         });
 
         fsm.onStateEnter(TeleopStates.HOLD_AIM, () -> {
-            movement.hold(poses.shooting);
+            movement.hold(poses.shootTeleOp);
         });
         fsm.onStateUpdate(TeleopStates.HOLD_AIM, () -> {
             if (unexecutedCommand == Command.RELEASE_AIM ){

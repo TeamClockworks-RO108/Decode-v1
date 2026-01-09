@@ -6,7 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
 public class AutoPaths {
-    private final AutoPoses poses;
+    private final PosesAuto poses;
     private final Follower follower;
 
     public final PathChain
@@ -18,31 +18,31 @@ public class AutoPaths {
     public final PathChain
             goPark;
 
-    public AutoPaths(Follower follower, AutoPoses autoPoses) {
-        this.poses = autoPoses;
+    public AutoPaths(Follower follower, PosesAuto posesAuto) {
+        this.poses = posesAuto;
         this.follower = follower;
 
-        goShootPreload = createPath(poses.goalStart, poses.shoot);
+        goShootPreload = createPath(poses.goalStart, poses.shootAuto);
         goFirstIntake = createPath(
-                poses.shoot, poses.firstIntake, poses.firstIntakeEnd);
-        goShootFirstIntake = createPath(poses.firstIntakeEnd, poses.shoot);
+                poses.shootAuto, poses.firstIntake, poses.firstIntakeEnd);
+        goShootFirstIntake = createPath(poses.firstIntakeEnd, poses.shootAuto);
         goSecondIntake = createPath(
-                poses.shoot, poses.secondIntake, poses.secondIntakeEnd);
-        goShootSecondIntake = createPath(poses.secondIntakeEnd, poses.gateCorner, poses.shoot);
+                poses.shootAuto, poses.secondIntake, poses.secondIntakeEnd);
+        goShootSecondIntake = createPath(poses.secondIntakeEnd, poses.gateCorner, poses.shootAuto);
         goThirdIntake = createPath(
-                poses.shoot, poses.thirdIntake, poses.thirdIntakeEnd);
-        goShootThirdIntake = createPath(poses.thirdIntakeEnd, poses.shoot);
-        goGoalHome = createPath(poses.shoot, poses.goalHome);
+                poses.shootAuto, poses.thirdIntake, poses.thirdIntakeEnd);
+        goShootThirdIntake = createPath(poses.thirdIntakeEnd, poses.shootAuto);
+        goGoalHome = createPath(poses.shootAuto, poses.goalHome);
 
         goIntakeGoalHome = createPath(poses.thirdIntakeEnd, poses.goalHomeFromIntake);
 
         goPark = createPath(poses.parkStart, poses.parkHome);
 
         goOpenGate = follower.pathBuilder()
-                .addPath(new BezierCurve(poses.firstIntakeEnd, poses.gateOffset, poses.gateOpen))
+                .addPath(new BezierCurve(poses.firstIntakeEnd, poses.gateOpen, poses.gateOpenEnd))
                 .setConstantHeadingInterpolation(poses.firstIntakeEnd.getHeading())
                 .build();
-        goGateGoal = createPath(poses.gateOpen, poses.shoot);
+        goGateGoal = createPath(poses.gateOpenEnd, poses.shootAuto);
     }
 
     private PathChain createPath(Pose start, Pose end) {
