@@ -46,7 +46,9 @@ public class PosesAuto extends Poses {
         gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
         gateOpen = createPose (115, 74, INTAKE_ANGLE);
 
-        // TO BE CHANGED BASED ON FIELD BEFORE EVERY MATCH!!!
+        //
+        // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!
+        // CALIBRATION NEEDED!!!
         if (color == TeamColor.RED)
             calibrateStart(1, 0, 0);
         if (color == TeamColor.BLUE)

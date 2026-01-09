@@ -66,7 +66,7 @@ public class TeleOpBlue extends OpMode {
         });
         resetToCamera.onPress(() -> {
             try {
-                movement.updateToCameraPose();
+                movement.updateToCameraPose(color);
                 gamepad2.rumble(150);
             } catch (Exception e) {
                 gamepad2.rumble(400);

@@ -17,5 +17,12 @@ public class PosesTeleOp extends Poses{
         gate = createPose(127, 69, 180);
 
         shootTeleOp.setHeading(shootTeleOp.getHeading() + SHOOT_OFFSET);
+
+        //
+        // YOU MAY TWEAK HEADINGS BASED ON FIELD FOR EVENTS!!!
+        //
+        if (color == TeamColor.RED)
+            shootTeleOp = new Pose(shootTeleOp.getX(), shootTeleOp.getY(),
+                    shootTeleOp.getHeading()+ Math.toRadians(5));
     }
 }

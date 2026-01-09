@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class PedroMovement {
@@ -73,9 +74,13 @@ public class PedroMovement {
         follower.setPose(pose);
     }
 
-    public void updateToCameraPose() throws Exception {
+    public void updateToCameraPose(TeamColor color) throws Exception {
         Pose cameraPose = vision.processVisionPose();
-        follower.setPose(cameraPose);
+        // Fine tuned. Do not touch. Unless the field is way off...
+        if (color == TeamColor.BLUE)
+            follower.setPose(new Pose(cameraPose.getX(), cameraPose.getY()+8, cameraPose.getHeading()));
+        else if (color == TeamColor.RED)
+            follower.setPose(new Pose(cameraPose.getX()+8, cameraPose.getY()-4, cameraPose.getHeading()));
     }
 
     public void flipControls() {
