@@ -19,7 +19,7 @@ public abstract class AutoBase extends OpMode {
     protected AutoPaths paths;
     protected Pose startingPose;
 
-    protected final long grabTime = 250;
+    protected final long grabTime = 300;
 
     @Override
     public void init() {

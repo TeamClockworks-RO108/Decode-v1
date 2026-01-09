@@ -17,7 +17,7 @@ public class AutoBlue67 extends AutoBlue9Load {
         });
         fsm.onStateUpdate(State.GRAB_B, (current, timeSinceTransition) -> {
             if (timeSinceTransition > grabTime)
-                return State.GO_OPEN_GATE ;
+                return State.GO_OPEN_GATE;
             return null;
         });
 

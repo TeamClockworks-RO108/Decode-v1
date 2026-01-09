@@ -7,26 +7,26 @@ import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 public class PosesAuto extends Poses {
     // intake positions
     protected static final double
-            INTAKE_START_X = 95, INTAKE_ANGLE = 0,
-            FIRST_INTAKE_END_X = 144-19.2, FIRST_INTAKE_Y = 84.5,
-            SECOND_INTAKE_END_X = 144-11.2, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24.7,
-            THIRD_INTAKE_END_X = 144-11.2, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48;
+            INTAKE_START_X = 98, INTAKE_ANGLE = 0,
+            FIRST_INTAKE_END_X = 144-18.2, FIRST_INTAKE_Y = 84,
+            SECOND_INTAKE_END_X = 144-9.8, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24.3,
+            THIRD_INTAKE_END_X = 144-9.8, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48;
 
+    public Pose goalStart, shootAuto;
     public final Pose
-            shootAuto,
-            goalStart, goalHome, goalHomeFromIntake,
+            goalHome,
+            goalHomeFromIntake,
             parkStart, parkHome,
             firstIntake, firstIntakeEnd,
             secondIntake, secondIntakeEnd,
             thirdIntake, thirdIntakeEnd,
-            gateCorner,
-            gateOpen, gateOpenEnd;
+            gateCorner, gateOpen, gateOpenEnd;
 
     public PosesAuto(TeamColor color) {
         super(color);
 
-        goalStart = createPose(144-23.6, 144-21.6, 225);
-        goalHome = createPose(144-24, 144-54, 0);
+        goalStart = createPose(144-21, 144-21, 225);
+        goalHome = createPose(144-24, 144-54, 225);
         goalHomeFromIntake = createPose(THIRD_INTAKE_END_X-24, THIRD_INTAKE_Y, 0);
 
         parkStart = createPose(0, 0, 0);
@@ -42,8 +42,22 @@ public class PosesAuto extends Poses {
         thirdIntake = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
         thirdIntakeEnd = createPose(THIRD_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
 
-        gateCorner = createPose(124, 60, INTAKE_ANGLE);
-        gateOpenEnd = createPose(FIRST_INTAKE_END_X + 1.6, 75, INTAKE_ANGLE);
-        gateOpen = createPose (101.8, 75, INTAKE_ANGLE);
+        gateCorner = createPose(122, 60, INTAKE_ANGLE);
+        gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
+        gateOpen = createPose (115, 74, INTAKE_ANGLE);
+
+        // TO BE CHANGED BASED ON FIELD BEFORE EVERY MATCH!!!
+        if (color == TeamColor.RED)
+            calibrateStart(1, 0, 0);
+        if (color == TeamColor.BLUE)
+            calibrateStart(-1.5, -1, -5);
+
+   }
+
+    public void calibrateStart(double x, double y, double shootHeading) {
+        goalStart = new Pose(goalStart.getX() + x, goalStart.getY() + y, goalStart.getHeading());
+        shootAuto = new Pose(shootAuto.getX() + x, shootAuto.getY() + y,
+                shootAuto.getHeading() + Math.toRadians(shootHeading));
+
     }
 }

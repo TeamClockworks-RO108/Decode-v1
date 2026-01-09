@@ -8,7 +8,7 @@ public class Poses {
     protected final TeamColor color;
     // shoot
     protected static final double
-            SHOOT_OFFSET = -10;
+            SHOOT_OFFSET = 0;
 
     public Poses(TeamColor color) {
         this.color = color;
