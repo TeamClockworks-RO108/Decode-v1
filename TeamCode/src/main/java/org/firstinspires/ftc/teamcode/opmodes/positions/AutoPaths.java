@@ -14,7 +14,7 @@ public class AutoPaths {
             goFirstIntake, goOpenGate, goGateGoal, goShootFirstIntake,
             goSecondIntake, goShootSecondIntake,
             goThirdIntake, goShootThirdIntake,
-            goGoalHome, goIntakeGoalHome;
+            goGoalHome, goTurnHome, goIntakeGoalHome;
     public final PathChain
             goPark;
 
@@ -43,6 +43,8 @@ public class AutoPaths {
                 .setConstantHeadingInterpolation(poses.firstIntakeEnd.getHeading())
                 .build();
         goGateGoal = createPath(poses.gateOpenEnd, poses.shootAuto);
+
+        goTurnHome = createPath(poses.goalHome, poses.goalHomeTurned);
     }
 
     private PathChain createPath(Pose start, Pose end) {

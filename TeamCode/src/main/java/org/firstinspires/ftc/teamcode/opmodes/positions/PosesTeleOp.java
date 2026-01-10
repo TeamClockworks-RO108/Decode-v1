@@ -5,12 +5,13 @@ import com.pedropathing.geometry.Pose;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
 public class PosesTeleOp extends Poses{
-    public Pose start, humanBase, shootTeleOp, parking, gate;
+    public Pose none, start, humanBase, shootTeleOp, parking, gate;
 
     public PosesTeleOp(TeamColor color) {
         super(color);
 
-        start = createPose(0, 0, 0);
+        none = createPose(0, 0, 0);
+        start = createPose(144-24, 144-54, 225);
         humanBase = createPose(9, 9, 180);
         shootTeleOp = createPose(144-47.7, 144-47.7, 220);
         parking = createPose(36, 31, 180);

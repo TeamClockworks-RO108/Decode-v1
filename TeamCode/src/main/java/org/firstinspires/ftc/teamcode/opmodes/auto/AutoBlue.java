@@ -18,6 +18,7 @@ public class AutoBlue extends AutoBase {
         SECOND_INTAKE, GRAB_C, SHOOT_SECOND_INTAKE, SHOOT_C,
         THIRD_INTAKE, GRAB_D, SHOOT_THIRD_INTAKE, SHOOT_D,
         GO_HOME, GO_HOME_FROM_INTAKE, GO_OPEN_GATE, OPEN_GATE,
+        Go_TURN_HOME
     }
 
     protected void setColor() {

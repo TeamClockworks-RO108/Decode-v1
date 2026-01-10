@@ -14,7 +14,7 @@ public class PosesAuto extends Poses {
 
     public Pose goalStart, shootAuto;
     public final Pose
-            goalHome,
+            goalHome, goalHomeTurned,
             goalHomeFromIntake,
             parkStart, parkHome,
             firstIntake, firstIntakeEnd,
@@ -27,6 +27,7 @@ public class PosesAuto extends Poses {
 
         goalStart = createPose(144-21, 144-21, 225);
         goalHome = createPose(144-24, 144-54, 225);
+        goalHomeTurned = createPose(144-24, 144-54, 0);
         goalHomeFromIntake = createPose(THIRD_INTAKE_END_X-24, THIRD_INTAKE_Y, 0);
 
         parkStart = createPose(0, 0, 0);
@@ -50,9 +51,9 @@ public class PosesAuto extends Poses {
         // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!
         // CALIBRATION NEEDED!!!
         if (color == TeamColor.RED)
-            calibrateStart(1, 0, 0);
+            calibrateStart(0.85, 0, 0);
         if (color == TeamColor.BLUE)
-            calibrateStart(-1.5, -1, -5);
+            calibrateStart(-0.85, 0, -5);
 
    }
 

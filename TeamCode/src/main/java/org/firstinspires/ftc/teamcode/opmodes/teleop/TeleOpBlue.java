@@ -55,7 +55,7 @@ public class TeleOpBlue extends OpMode {
         shooter = new Shooter(hardwareMap, telemetry, false);
 
         // movement command setup
-        fieldCentricReset.onPress(() -> movement.resetHeading(poses.start.getHeading()));
+        fieldCentricReset.onPress(() -> movement.resetHeading(poses.none.getHeading()));
         resetBase.onPress(() -> {
             movement.setPose(poses.humanBase);
             gamepad2.rumble(150);

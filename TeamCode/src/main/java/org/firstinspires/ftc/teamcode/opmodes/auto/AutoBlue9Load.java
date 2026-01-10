@@ -52,9 +52,9 @@ public class AutoBlue9Load extends AutoBlue{
             shooter.command(Shooter.Command.TOGGLE_IDLE);
         });
         fsm.onStateUpdate(State.GO_HOME, () -> {
-            if (!movement.isBusy()) {
+            if (!movement.isBusy())
                 shooter.command(Shooter.Command.TOGGLE_DEAD);
-            }
+            return null;
         });
 
         fsm.init();
