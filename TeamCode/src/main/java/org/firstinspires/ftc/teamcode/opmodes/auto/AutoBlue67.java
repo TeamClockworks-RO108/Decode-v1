@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.robot.Shooter;
 
 
 @Autonomous(name = "Auto BLUE 67")
-public class AutoBlue67 extends AutoBlue9Load {
+public class AutoBlue67 extends AutoBlue12 {
     @Override
     protected void setupFSM(){
         super.setupFSM();

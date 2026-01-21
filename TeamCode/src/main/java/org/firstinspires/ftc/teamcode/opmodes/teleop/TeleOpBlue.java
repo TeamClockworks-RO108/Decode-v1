@@ -5,7 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
-import org.firstinspires.ftc.teamcode.opmodes.positions.TeleOpPoses;
+import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
+import org.firstinspires.ftc.teamcode.robot.Brakes;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -13,10 +14,11 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 @TeleOp(name = "TeleOp BLUE", group = "Field Centric")
 public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
-    private TeleOpPoses poses;
+    private PosesTeleOp poses;
 
-    private PedroMovement movement = null;
-    private Shooter shooter = null;
+    private PedroMovement movement;
+    private Brakes brakes;
+    private Shooter shooter;
 
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
     private EdgeDetector resetBase = new EdgeDetector(false);
@@ -35,23 +37,23 @@ public class TeleOpBlue extends OpMode {
 
     private EdgeDetector toggleBrakes= new EdgeDetector(false);
 
-    private Brakes brakes;
-
     private enum TeleopStates {
         TELEOP,
         AIMING,
         HOLD_AIM,
-        BRAKING,
     }
 
     public enum Command {
         START_AIMING,
         RELEASE_AIM,
-        TOGGLE_BRAKES,
     }
 
     private Command unexecutedCommand = null;
     private final StateMachine<TeleopStates> fsm  = new StateMachine<>(TeleopStates.TELEOP);
+
+    private void command(Command command) {
+        unexecutedCommand = command;
+    }
 
     @Override
     public void init() {
@@ -64,6 +66,10 @@ public class TeleOpBlue extends OpMode {
 
         // movement command setup
         fieldCentricReset.onPress(() -> movement.resetHeading(poses.none.getHeading()));
+        toggleBrakes.onPress(() -> brakes.on());
+        toggleBrakes.onRelease(() -> brakes.off());
+
+        // field positions reset
         resetBase.onPress(() -> {
             movement.setPose(poses.humanBase);
             gamepad2.rumble(150);
@@ -81,6 +87,7 @@ public class TeleOpBlue extends OpMode {
             }
         });
 
+        // auto travel commands
         goToGoal.onPress(() -> {
             command(Command.START_AIMING);
         });
@@ -101,16 +108,13 @@ public class TeleOpBlue extends OpMode {
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
         shooter.setupShooter();
-
-        //0.5
-
-        toggleBrakes.onPress(() -> command(Command.TOGGLE_BRAKES));
         setupTeleopFSM();
     }
 
     @Override
     public void start() {
         movement.startTeleop();
+        brakes.off();
         shooter.command(Shooter.Command.TOGGLE_SHOOTING);
     }
 
@@ -122,6 +126,7 @@ public class TeleOpBlue extends OpMode {
 
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
+        toggleBrakes.update(gamepad1.left_trigger > 0.3 || gamepad2.left_trigger > 0.3);
 
 //        resetBase.update(gamepad2.dpad_down);
         resetGate.update(gamepad2.dpad_right);
@@ -139,12 +144,7 @@ public class TeleOpBlue extends OpMode {
         rapidFire.update(gamepad1.cross);
 
         shooter.updateShooter();
-        toggleBrakes.update(gamepad2.square);
         telemetry.update();
-    }
-
-    private void command(Command command) {
-        unexecutedCommand = command;
     }
 
     private void setupTeleopFSM(){
@@ -155,11 +155,6 @@ public class TeleOpBlue extends OpMode {
             if (unexecutedCommand == Command.START_AIMING) {
                 unexecutedCommand = null;
                 return TeleopStates.AIMING;
-            }
-
-            if (unexecutedCommand == Command.TOGGLE_BRAKES){
-                unexecutedCommand = null;
-                return TeleopStates.BRAKING;
             }
             return null;
         });
@@ -185,27 +180,7 @@ public class TeleOpBlue extends OpMode {
                 unexecutedCommand = null;
                 return TeleopStates.TELEOP;
             }
-            if(unexecutedCommand == Command.TOGGLE_BRAKES){
-                unexecutedCommand = null;
-                return TeleopStates.BRAKING;
-            }
             return null;
-        });
-
-        fsm.onStateEnter(TeleopStates.BRAKING, () -> {
-            brakes.brakesOn();
-        });
-
-        fsm.onStateUpdate(TeleopStates.BRAKING, () -> {
-            if(unexecutedCommand == Command.TOGGLE_BRAKES){
-                unexecutedCommand = null;
-                return TeleopStates.TELEOP;
-            }
-            return null;
-        });
-
-        fsm.onStateExit(TeleopStates.BRAKING, () -> {
-            brakes.brakesOff();
         });
 
         fsm.init();

@@ -50,9 +50,9 @@ public class Constants {
                     .rightPodY(35 / (25.4)) // millimeters to inches
                     .leftPodY(-35 / (25.4))
                     .strafePodX(-5 / (25.4))
-                    .rightEncoder_HardwareMapName("leftRear") // set manually
-                    .leftEncoder_HardwareMapName("rightRear")
-                    .strafeEncoder_HardwareMapName("rightFront")
+                    .rightEncoder_HardwareMapName("miniIntake") // set manually
+                    .leftEncoder_HardwareMapName("rightFront")
+                    .strafeEncoder_HardwareMapName("strafeEncoder")
                     .leftEncoderDirection(Encoder.FORWARD)
                     .rightEncoderDirection(Encoder.FORWARD)
                     .strafeEncoderDirection(Encoder.REVERSE)

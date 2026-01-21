@@ -4,6 +4,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
+import org.firstinspires.ftc.teamcode.robot.Brakes;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPaths;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesAuto;
@@ -12,8 +13,11 @@ import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 public abstract class AutoBase extends OpMode {
 
     protected TeamColor color;
+
+    private Brakes brakes;
     protected PedroMovement movement;
     protected Shooter shooter;
+
 
     protected PosesAuto poses;
     protected AutoPaths paths;
@@ -31,6 +35,8 @@ public abstract class AutoBase extends OpMode {
         paths = new AutoPaths(movement.getFollower(), poses);
 
         shooter = new Shooter(hardwareMap, telemetry, true);
+        brakes = new Brakes(hardwareMap);
+
         shooter.setupShooter();
 
         setupFSM();
@@ -39,6 +45,8 @@ public abstract class AutoBase extends OpMode {
     @Override
     public void start() {
         shooter.command(Shooter.Command.TOGGLE_IDLE);
+        brakes.off();
+
         startFSM();
     }
 
