@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
-import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
+import org.firstinspires.ftc.teamcode.opmodes.positions.TeleOpPoses;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 @TeleOp(name = "TeleOp BLUE", group = "Field Centric")
 public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
-    private PosesTeleOp poses;
+    private TeleOpPoses poses;
 
     private PedroMovement movement = null;
     private Shooter shooter = null;
@@ -33,15 +33,21 @@ public class TeleOpBlue extends OpMode {
     private EdgeDetector fire = new EdgeDetector(false);
     private EdgeDetector rapidFire = new EdgeDetector(false);
 
+    private EdgeDetector toggleBrakes= new EdgeDetector(false);
+
+    private Brakes brakes;
+
     private enum TeleopStates {
         TELEOP,
         AIMING,
         HOLD_AIM,
+        BRAKING,
     }
 
     public enum Command {
         START_AIMING,
-        RELEASE_AIM
+        RELEASE_AIM,
+        TOGGLE_BRAKES,
     }
 
     private Command unexecutedCommand = null;
@@ -50,6 +56,8 @@ public class TeleOpBlue extends OpMode {
     @Override
     public void init() {
         poses = new PosesTeleOp(color);
+
+        brakes = new Brakes(hardwareMap);
 
         movement = new PedroMovement(hardwareMap, telemetry, poses.start);
         shooter = new Shooter(hardwareMap, telemetry, false);
@@ -93,6 +101,10 @@ public class TeleOpBlue extends OpMode {
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
         shooter.setupShooter();
+
+        //0.5
+
+        toggleBrakes.onPress(() -> command(Command.TOGGLE_BRAKES));
         setupTeleopFSM();
     }
 
@@ -115,7 +127,7 @@ public class TeleOpBlue extends OpMode {
         resetGate.update(gamepad2.dpad_right);
         resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.triangle);
-        goToPark.update(gamepad2.square);
+     //   goToPark.update(gamepad2.square);
         releasePath.update(gamepad2.circle);
 
         // shooter options
@@ -127,6 +139,7 @@ public class TeleOpBlue extends OpMode {
         rapidFire.update(gamepad1.cross);
 
         shooter.updateShooter();
+        toggleBrakes.update(gamepad2.square);
         telemetry.update();
     }
 
@@ -142,6 +155,11 @@ public class TeleOpBlue extends OpMode {
             if (unexecutedCommand == Command.START_AIMING) {
                 unexecutedCommand = null;
                 return TeleopStates.AIMING;
+            }
+
+            if (unexecutedCommand == Command.TOGGLE_BRAKES){
+                unexecutedCommand = null;
+                return TeleopStates.BRAKING;
             }
             return null;
         });
@@ -167,7 +185,27 @@ public class TeleOpBlue extends OpMode {
                 unexecutedCommand = null;
                 return TeleopStates.TELEOP;
             }
+            if(unexecutedCommand == Command.TOGGLE_BRAKES){
+                unexecutedCommand = null;
+                return TeleopStates.BRAKING;
+            }
             return null;
+        });
+
+        fsm.onStateEnter(TeleopStates.BRAKING, () -> {
+            brakes.brakesOn();
+        });
+
+        fsm.onStateUpdate(TeleopStates.BRAKING, () -> {
+            if(unexecutedCommand == Command.TOGGLE_BRAKES){
+                unexecutedCommand = null;
+                return TeleopStates.TELEOP;
+            }
+            return null;
+        });
+
+        fsm.onStateExit(TeleopStates.BRAKING, () -> {
+            brakes.brakesOff();
         });
 
         fsm.init();
