@@ -101,12 +101,12 @@ public class PedroMovement {
     public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
         update();
 
-//        try {
-//            Pose cameraVision = vision.processVisionPose();
-//            telemetry.addData("Camera Pose", cameraVision);
-//        } catch (Exception e) {
+        try {
+            Pose cameraVision = vision.processVisionPose();
+            telemetry.addData("Camera Pose", cameraVision);
+        } catch (Exception e) {
 
-//        }
+        }
 
         double y = -gamepad1.left_stick_y - gamepad2.left_stick_y * finePower;
         double x = -gamepad1.left_stick_x - gamepad2.left_stick_x * finePower;

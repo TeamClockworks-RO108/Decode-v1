@@ -111,7 +111,7 @@ public class TeleOpBlue extends OpMode {
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
 
-//        resetBase.update(gamepad2.dpad_down);
+   //    resetBase.update(gamepad2.dpad_down);
         resetGate.update(gamepad2.dpad_right);
         resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.triangle);
