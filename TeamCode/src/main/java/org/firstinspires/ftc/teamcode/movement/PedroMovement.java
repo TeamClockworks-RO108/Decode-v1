@@ -66,7 +66,7 @@ public class PedroMovement {
     public void goToPose(Pose newPose) {
         follower.followPath(follower.pathBuilder()
                 .addPath(new BezierCurve(follower.getPose(), newPose))
-                .setLinearHeadingInterpolation(follower.getHeading(), newPose.getHeading())
+                .setLinearHeadingInterpolation(follower.getPose().getHeading(), newPose.getHeading())
                 .build());
     }
 
@@ -95,8 +95,9 @@ public class PedroMovement {
     public void update() {
         follower.update();
         // telemetry
-        telemetry.addData("x, y", follower.getPose().getX() + " " + follower.getPose().getY());
-        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("x", "%.2f", follower.getPose().getX());
+        telemetry.addData("y", "%.2f", follower.getPose().getY());
+        telemetry.addData("heading", "%.1f", Math.toDegrees(follower.getPose().getHeading()));
     }
     public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
         update();

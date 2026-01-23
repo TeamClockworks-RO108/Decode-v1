@@ -7,10 +7,10 @@ import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 public class PosesAuto extends Poses {
     // intake positions
     protected static final double
-            INTAKE_START_X = 98, INTAKE_ANGLE = 0,
-            FIRST_INTAKE_END_X = 144-18.2, FIRST_INTAKE_Y = 84,
-            SECOND_INTAKE_END_X = 144-9.8, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24.3,
-            THIRD_INTAKE_END_X = 144-9.8, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48;
+            INTAKE_START_X = 99, INTAKE_ANGLE = 0,
+            FIRST_INTAKE_END_X = 144-17.2, FIRST_INTAKE_Y = 84,
+            SECOND_INTAKE_END_X = 144-8.8, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24.3,
+            THIRD_INTAKE_END_X = 144-8.8, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48;
 
     public Pose goalStart, shootAuto;
     public final Pose
@@ -43,17 +43,17 @@ public class PosesAuto extends Poses {
         thirdIntake = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
         thirdIntakeEnd = createPose(THIRD_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
 
-        gateCorner = createPose(122, 60, INTAKE_ANGLE);
-        gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
-        gateOpen = createPose (115, 74, INTAKE_ANGLE);
+        gateCorner = createPose(123, 60, INTAKE_ANGLE);
+        gateOpenEnd = createPose(144-15.8, 72.5, INTAKE_ANGLE);
+        gateOpen = createPose (116, 74, INTAKE_ANGLE);
 
         //
         // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!
         // CALIBRATION NEEDED!!!
         if (color == TeamColor.RED)
-            calibrateStart(0.85, 0, 0);
+            calibrateStart(-0.15, 0, 0);
         if (color == TeamColor.BLUE)
-            calibrateStart(-0.85, 0, -5);
+            calibrateStart(0.15, 0, -5);
 
    }
 

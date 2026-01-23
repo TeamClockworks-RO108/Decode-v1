@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class Shooter {
     private final Intake intake;
-    private final Outtake outtake;
+    public final Outtake outtake;
     private final Servo pivot;
 
     private final double pivotIntake = 0.68;

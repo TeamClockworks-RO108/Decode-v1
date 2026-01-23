@@ -30,6 +30,14 @@ public class Outtake {
         flap.setDirection(Servo.Direction.REVERSE);
     }
 
+    public double getFlywheelTargetVelocity() {
+        return targetVelocity;
+    }
+
+    public double getFlywheelVelocity() {
+        return flywheel.getVelocity();
+    }
+
     public void close() {
         flap.setPosition(flapDown);
         barrier.setPosition(barrierDown);

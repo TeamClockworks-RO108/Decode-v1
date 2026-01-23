@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.bylazar.panels.Panels;
+import com.bylazar.telemetry.JoinedTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -57,6 +63,8 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void init() {
+        telemetry = new JoinedTelemetry(telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+
         poses = new PosesTeleOp(color);
 
         brakes = new Brakes(hardwareMap);
@@ -144,6 +152,10 @@ public class TeleOpBlue extends OpMode {
         rapidFire.update(gamepad1.cross);
 
         shooter.updateShooter();
+
+        telemetry.addData("flywheel current", shooter.outtake.getFlywheelVelocity());
+        telemetry.addData("flywheel target", shooter.outtake.getFlywheelTargetVelocity());
+
         telemetry.update();
     }
 
