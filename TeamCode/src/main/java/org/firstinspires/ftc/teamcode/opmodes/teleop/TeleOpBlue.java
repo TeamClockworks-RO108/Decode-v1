@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
+import org.firstinspires.ftc.teamcode.robot.Brakes;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -18,6 +19,8 @@ public class TeleOpBlue extends OpMode {
     private PedroMovement movement = null;
     private Shooter shooter = null;
 
+    private Brakes brakes = null;
+
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
     private EdgeDetector resetBase = new EdgeDetector(false);
     private EdgeDetector goToGoal = new EdgeDetector(false);
@@ -26,12 +29,16 @@ public class TeleOpBlue extends OpMode {
     private EdgeDetector resetToCamera = new EdgeDetector(false);
     private EdgeDetector resetGate = new EdgeDetector(false);
 
+    private final EdgeDetector shootFar = new EdgeDetector(false);
+
     private EdgeDetector toggleShooting = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
     private EdgeDetector toggleIdle = new EdgeDetector(false);
     private EdgeDetector toggleIntakeReject = new EdgeDetector(false);
     private EdgeDetector fire = new EdgeDetector(false);
     private EdgeDetector rapidFire = new EdgeDetector(false);
+
+    private EdgeDetector brake = new EdgeDetector(false);
 
     private enum TeleopStates {
         TELEOP,
@@ -51,6 +58,8 @@ public class TeleOpBlue extends OpMode {
     public void init() {
         poses = new PosesTeleOp(color);
 
+        brakes = new Brakes(hardwareMap);
+
         movement = new PedroMovement(hardwareMap, telemetry, poses.start);
         shooter = new Shooter(hardwareMap, telemetry, false);
 
@@ -59,6 +68,14 @@ public class TeleOpBlue extends OpMode {
         resetBase.onPress(() -> {
             movement.setPose(poses.humanBase);
             gamepad2.rumble(150);
+        });
+
+        brake.onHold(() -> {
+            brakes.on();
+        });
+
+        brake.onRelease(() -> {
+            brakes.off();
         });
         resetGate.onPress(() -> {
             movement.setPose(poses.gate);
@@ -92,6 +109,8 @@ public class TeleOpBlue extends OpMode {
         fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
+        shootFar.onPress(  () -> shooter.command(Shooter.Command.TOGGLE_SHOOTING_FAR));
+
         shooter.setupShooter();
         setupTeleopFSM();
     }
@@ -112,12 +131,12 @@ public class TeleOpBlue extends OpMode {
         fieldCentricReset.update(gamepad1.dpad_up);
 
    //    resetBase.update(gamepad2.dpad_down);
-        resetGate.update(gamepad2.dpad_right);
+        resetGate.update(gamepad2.left_bumper);
         resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.triangle);
         goToPark.update(gamepad2.square);
         releasePath.update(gamepad2.circle);
-
+        brake.update(gamepad2.right_trigger > 0.01);
         // shooter options
         toggleShooting.update(gamepad1.right_bumper);
         toggleIntake.update(gamepad1.left_bumper);
@@ -126,7 +145,11 @@ public class TeleOpBlue extends OpMode {
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
 
+      //  shootFar.update(gamepad2.dpad_down);
+
         shooter.updateShooter();
+
+
         telemetry.update();
     }
 

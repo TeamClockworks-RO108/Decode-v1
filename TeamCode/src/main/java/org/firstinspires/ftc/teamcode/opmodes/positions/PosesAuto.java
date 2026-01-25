@@ -13,6 +13,8 @@ public class PosesAuto extends Poses {
             THIRD_INTAKE_END_X = 144-9.8, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48;
 
     public Pose goalStart, shootAuto;
+
+    public Pose farStart, leaveFar;
     public final Pose
             goalHome, goalHomeTurned,
             goalHomeFromIntake,
@@ -26,6 +28,8 @@ public class PosesAuto extends Poses {
         super(color);
 
         goalStart = createPose(144-21, 144-21, 225);
+        farStart = createPose(57, 10, 225);
+        leaveFar = createPose(77, 10, 225);
         goalHome = createPose(144-24, 144-54, 225);
         goalHomeTurned = createPose(144-24, 144-54, 0);
         goalHomeFromIntake = createPose(THIRD_INTAKE_END_X-24, THIRD_INTAKE_Y, 0);

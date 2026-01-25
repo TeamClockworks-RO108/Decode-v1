@@ -30,16 +30,23 @@ public class Shooter {
         INTAKE_REJECT,
         IDLE,
         SHOOTING,
+
+        SHOOTING_FAR,
         RAISE_FIRE,       // single launch
         LAUNCHING,
         RAISE_RAPID_FIRE, // triple launch
         LAUNCH1, RELOAD1,
         LAUNCH2, RELOAD2,
-        LAUNCH3
+        LAUNCH3,
+        RAISE_RAPID_FIRE_FAR, // triple launcH FAR
+        LAUNCH1_FAR, RELOAD1_FAR,
+        LAUNCH2_FAR, RELOAD2_FAR,
+        LAUNCH3_FAR
     }
 
     public enum Command {
         TOGGLE_SHOOTING,
+        TOGGLE_SHOOTING_FAR,
         FIRE, RAPID_FIRE,
         TOGGLE_INTAKE,
         TOGGLE_IDLE,
@@ -105,6 +112,10 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.SHOOTING;
             }
+            if(unexecutedCommand == Command.TOGGLE_SHOOTING_FAR){
+                unexecutedCommand = null;
+                return State.SHOOTING_FAR;
+            }
             if (unexecutedCommand == Command.TOGGLE_DEAD) {
                 unexecutedCommand = null;
                 return State.DEAD;
@@ -139,9 +150,28 @@ public class Shooter {
             return null;
         });
 
+        fsm.onStateEnter(State.SHOOTING_FAR,  () -> {
+                    outtake.startFlywheelFAR();
+                    intake.shoot();
+                });
+
+        fsm.onStateUpdate(State.SHOOTING_FAR, (current, timeSinceTransition) ->{
+            if (timeSinceTransition > 200)
+                pivot.setPosition(pivotShoot);
+
+            if(unexecutedCommand == Command.RAPID_FIRE){
+                unexecutedCommand =null;
+                return State.RAISE_RAPID_FIRE_FAR;
+
+            }
+        return null;
+        });
+
         setupFire();
 
         setupRapidFire();
+
+        setupRapidFireFAR();
 
         // INTAKE -> intake mechanism
         fsm.onStateEnter(State.INTAKE, () -> {
@@ -265,6 +295,60 @@ public class Shooter {
             return null;
         });
         fsm.onStateExit(State.LAUNCH3, () -> outtake.close());
+    }
+
+    private void setupRapidFireFAR() {
+        fsm.onStateEnter(State.RAISE_RAPID_FIRE_FAR, () -> {
+            outtake.raise();
+        });
+        fsm.onStateUpdate(State.RAISE_RAPID_FIRE_FAR, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > raiseTime)
+                return State.LAUNCH1_FAR;
+            return null;
+        });
+
+        fsm.onStateEnter(State.LAUNCH1_FAR, () -> {
+            outtake.launch();
+        });
+        fsm.onStateUpdate(State.LAUNCH1_FAR, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > launchingTime)
+                return State.RELOAD1;
+            return null;
+        });
+        fsm.onStateEnter(State.RELOAD1_FAR, () -> {
+            outtake.reload();
+            intake.openGripper();
+            intake.push();
+        });
+        fsm.onStateUpdate(State.RELOAD1_FAR, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > reloadTime + 1000)
+                return State.LAUNCH2_FAR;
+            return null;
+        });
+
+        fsm.onStateEnter(State.LAUNCH2_FAR, () -> outtake.launch());
+        fsm.onStateUpdate(State.LAUNCH2_FAR, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > launchingTime)
+                return State.RELOAD2_FAR;
+            return null;
+        });
+        fsm.onStateEnter(State.RELOAD2_FAR, () -> outtake.reload());
+        fsm.onStateUpdate(State.RELOAD2_FAR, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > reloadTime + 1050)
+                return State.LAUNCH3_FAR;
+            return null;
+        });
+
+        fsm.onStateEnter(State.LAUNCH3_FAR, () -> {
+            outtake.launch();
+            intake.shoot();
+        });
+        fsm.onStateUpdate(State.LAUNCH3_FAR, (current, timeSinceTransition) -> {
+            if (timeSinceTransition > launchingTime)
+                return State.SHOOTING;
+            return null;
+        });
+        fsm.onStateExit(State.LAUNCH3_FAR, () -> outtake.close());
     }
 
     public void updateShooter() {

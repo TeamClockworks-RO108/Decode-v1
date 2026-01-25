@@ -47,6 +47,10 @@ public class Outtake {
     public void startFlywheel() {
         targetVelocity = FlywheelConstants.target;
     }
+
+    public void startFlywheelFAR(){
+        targetVelocity = FlywheelConstants.farTarget;
+    }
     public void stopFlywheel() {
         targetVelocity = 0;
     }

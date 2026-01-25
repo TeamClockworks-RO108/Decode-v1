@@ -12,4 +12,6 @@ public class FlywheelConstants {
     );
 
     public static double target = 1250;
+
+    public static double farTarget = 3500;
 }

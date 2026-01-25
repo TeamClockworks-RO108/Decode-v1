@@ -10,7 +10,7 @@ public class AutoPaths {
     private final Follower follower;
 
     public final PathChain
-            goShootPreload,
+            goShootPreload, leaveFar,
             goFirstIntake, goOpenGate, goGateGoal, goShootFirstIntake,
             goSecondIntake, goShootSecondIntake,
             goThirdIntake, goShootThirdIntake,
@@ -23,6 +23,7 @@ public class AutoPaths {
         this.follower = follower;
 
         goShootPreload = createPath(poses.goalStart, poses.shootAuto);
+        leaveFar = createPath(poses.farStart, poses.leaveFar);
         goFirstIntake = createPath(
                 poses.shootAuto, poses.firstIntake, poses.firstIntakeEnd);
         goShootFirstIntake = createPath(poses.firstIntakeEnd, poses.shootAuto);
