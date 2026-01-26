@@ -31,7 +31,7 @@ public class AutoFarBlue extends AutoFAR {
     protected void setupFSM() {
 
         fsm.onStateEnter(AutoFarBlue.State.START_POSITION, () -> {
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING_FAR);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE);
         });
 
         fsm.onStateUpdate(AutoFarBlue.State.START_POSITION, (current, timeSinceTransition) -> {

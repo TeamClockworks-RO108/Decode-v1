@@ -10,11 +10,16 @@ public class AutoPaths {
     private final Follower follower;
 
     public final PathChain
-            goShootPreload, leaveFar,
+            goShootPreload,  leaveFar,
             goFirstIntake, goOpenGate, goGateGoal, goShootFirstIntake,
             goSecondIntake, goShootSecondIntake,
             goThirdIntake, goShootThirdIntake,
-            goGoalHome, goTurnHome, goIntakeGoalHome;
+            goGoalHome, goTurnHome, goIntakeGoalHome,
+    goShootMiddlePreload,
+
+    getGoFirstIntake69, goOpenGate69, goGateGoal69, turnCollectFromGate69, goCollectFromGate69, goShootMiddleFromGate69;
+
+
     public final PathChain
             goPark;
 
@@ -23,6 +28,8 @@ public class AutoPaths {
         this.follower = follower;
 
         goShootPreload = createPath(poses.goalStart, poses.shootAuto);
+        goShootMiddlePreload = createPath(poses.goalStart, poses.shootMiddleAuto);
+
         leaveFar = createPath(poses.farStart, poses.leaveFar);
         goFirstIntake = createPath(
                 poses.shootAuto, poses.firstIntake, poses.firstIntakeEnd);
@@ -46,6 +53,19 @@ public class AutoPaths {
         goGateGoal = createPath(poses.gateOpenEnd, poses.shootAuto);
 
         goTurnHome = createPath(poses.goalHome, poses.goalHomeTurned);
+
+
+        getGoFirstIntake69 = createPath(
+                poses.shootMiddleAuto, poses.secondIntake, poses.secondIntakeEnd);
+        goOpenGate69 = follower.pathBuilder()
+                .addPath(new BezierCurve(poses.secondIntakeEnd, poses.gateOpen69, poses.gateOpenEnd))
+                .setConstantHeadingInterpolation(poses.secondIntakeEnd.getHeading())
+                .build();
+        goGateGoal69 = createPath(poses.gateOpenEnd, poses.shootMiddleAuto);
+
+        turnCollectFromGate69 =createPath(poses.shootMiddleAuto, poses.turnCollectFromGate);
+        goCollectFromGate69 =createPath(poses.turnCollectFromGate, poses.goCollectFromGate);
+        goShootMiddleFromGate69 = createPath(poses.goCollectFromGate, poses.shootMiddleAuto);
     }
 
     private PathChain createPath(Pose start, Pose end) {

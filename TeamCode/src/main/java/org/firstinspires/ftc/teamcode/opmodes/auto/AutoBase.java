@@ -21,7 +21,7 @@ public abstract class AutoBase extends OpMode {
     protected Pose startingPose;
     protected Brakes brakes;
 
-    protected final long grabTime = 300;
+    protected final long grabTime = 50;
 
     @Override
     public void init() {

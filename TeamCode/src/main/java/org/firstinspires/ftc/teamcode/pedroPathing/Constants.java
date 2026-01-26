@@ -16,17 +16,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Constants {
 
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(8)
-            .forwardZeroPowerAcceleration(-27.632)
-            .lateralZeroPowerAcceleration(-55.93984)
-            .useSecondaryTranslationalPIDF(false)
-            .useSecondaryHeadingPIDF(false)
+            .mass(10.5)
+            .forwardZeroPowerAcceleration(-28.632)
+            .lateralZeroPowerAcceleration(-66.93984)
+            .useSecondaryTranslationalPIDF(true)
+            .useSecondaryHeadingPIDF(true)
             .useSecondaryDrivePIDF(false)
             .centripetalScaling(0.00023)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.12, 0, 0.01, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(1.2, 0, 0.05, 0))
-            .drivePIDFCoefficients(
-                    new FilteredPIDFCoefficients(0.005, 0.0000, 0.0005, 0, 0)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0.0001, 0.01, 0.025))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.08, 0.0004, 0.01, 0.025))
+
+            .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.1, 0.025))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1, 1, 0.1, 0.025))
+
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.009, 0.001, 0.0005, 0.6, 0.025)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -65,10 +68,10 @@ public class Constants {
                     );
 
     public static PathConstraints pathConstraints = new PathConstraints(
-            0.995,
+            0.99,
             100,
-            1.6,
-            1
+            2.67,
+            4
     );
 
     public static Follower createFollower(HardwareMap hardwareMap) {

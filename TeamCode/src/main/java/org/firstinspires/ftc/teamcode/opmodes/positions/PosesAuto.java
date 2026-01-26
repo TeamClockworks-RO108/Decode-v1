@@ -16,13 +16,14 @@ public class PosesAuto extends Poses {
 
     public Pose farStart, leaveFar;
     public final Pose
-            goalHome, goalHomeTurned,
+            goalHome, goalHomeTurned, shootMiddleAuto,
             goalHomeFromIntake,
             parkStart, parkHome,
             firstIntake, firstIntakeEnd,
             secondIntake, secondIntakeEnd,
             thirdIntake, thirdIntakeEnd,
-            gateCorner, gateOpen, gateOpenEnd;
+    gateOpen69,
+            gateCorner, gateOpen, gateOpenEnd, turnCollectFromGate, goCollectFromGate;
 
     public PosesAuto(TeamColor color) {
         super(color);
@@ -40,6 +41,9 @@ public class PosesAuto extends Poses {
         shootAuto = createPose(144-47.7, 144-47.7, 220);
         shootAuto.setHeading(shootAuto.getHeading() + SHOOT_OFFSET);
 
+        shootMiddleAuto = createPose(144-57.7, 144-57.7, 220);
+        shootMiddleAuto.setHeading(shootMiddleAuto.getHeading() + SHOOT_OFFSET);
+
         firstIntake = createPose(INTAKE_START_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
         firstIntakeEnd = createPose(FIRST_INTAKE_END_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
         secondIntake = createPose(INTAKE_START_X, SECOND_INTAKE_Y, INTAKE_ANGLE);
@@ -50,6 +54,10 @@ public class PosesAuto extends Poses {
         gateCorner = createPose(122, 60, INTAKE_ANGLE);
         gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
         gateOpen = createPose (115, 74, INTAKE_ANGLE);
+        gateOpen69 = createPose (103, 74, INTAKE_ANGLE);
+
+        turnCollectFromGate = createPose(144-47.7, 62.8, 30);
+        goCollectFromGate = createPose (130, 62.8, 30 );
 
         //
         // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!

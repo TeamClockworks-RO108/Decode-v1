@@ -11,7 +11,7 @@ public class FlywheelConstants {
             kp, ki, kd, kf
     );
 
-    public static double target = 1100;
+    public static double target = 0; //1100
 
-    public static double farTarget = 3500;
+    public static double farTarget = 0; //1300
 }

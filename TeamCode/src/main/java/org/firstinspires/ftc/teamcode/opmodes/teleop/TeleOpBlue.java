@@ -109,7 +109,7 @@ public class TeleOpBlue extends OpMode {
         fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
-        shootFar.onPress(  () -> shooter.command(Shooter.Command.TOGGLE_SHOOTING_FAR));
+        shootFar.onPress(  () -> shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE));
 
         shooter.setupShooter();
         setupTeleopFSM();
@@ -145,7 +145,7 @@ public class TeleOpBlue extends OpMode {
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
 
-      //  shootFar.update(gamepad2.dpad_down);
+        shootFar.update(gamepad2.dpad_down);
 
         shooter.updateShooter();
 

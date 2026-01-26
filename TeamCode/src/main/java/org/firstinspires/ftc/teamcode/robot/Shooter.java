@@ -48,7 +48,7 @@ public class Shooter {
 
     public enum Command {
         TOGGLE_SHOOTING,
-        TOGGLE_SHOOTING_FAR,
+        TOGGLE_SHOOTING_MIDDLE,
         FIRE, RAPID_FIRE,
         TOGGLE_INTAKE,
         TOGGLE_IDLE,
@@ -117,7 +117,7 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.SHOOTING;
             }
-            if(unexecutedCommand == Command.TOGGLE_SHOOTING_FAR){
+            if(unexecutedCommand == Command.TOGGLE_SHOOTING_MIDDLE){
                 unexecutedCommand = null;
                 return State.SHOOTING_FAR;
             }
@@ -134,9 +134,10 @@ public class Shooter {
             intake.shoot();
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
-            if (timeSinceTransition > 200)
+            if (timeSinceTransition > 200) {
                 pivot.setPosition(pivotShoot);
                 pivot1.setPosition(pivotShoot);
+            }
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
                 return State.INTAKE;
@@ -162,8 +163,10 @@ public class Shooter {
                 });
 
         fsm.onStateUpdate(State.SHOOTING_FAR, (current, timeSinceTransition) ->{
-            if (timeSinceTransition > 200)
+            if (timeSinceTransition > 200) {
                 pivot.setPosition(pivotShoot);
+                pivot1.setPosition(pivotShoot);
+            }
 
             if(unexecutedCommand == Command.RAPID_FIRE){
                 unexecutedCommand =null;
@@ -190,6 +193,11 @@ public class Shooter {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
                 unexecutedCommand = null;
                 return State.SHOOTING;
+            }
+
+            if (unexecutedCommand == Command.TOGGLE_SHOOTING_MIDDLE) {
+                unexecutedCommand = null;
+                return State.SHOOTING_FAR;
             }
             if (unexecutedCommand == Command.TOGGLE_IDLE) {
                 unexecutedCommand = null;
