@@ -4,6 +4,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
+import org.firstinspires.ftc.teamcode.robot.Brakes;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPaths;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesAuto;
@@ -18,6 +19,7 @@ public abstract class AutoBase extends OpMode {
     protected PosesAuto poses;
     protected AutoPaths paths;
     protected Pose startingPose;
+    protected Brakes brakes;
 
     protected final long grabTime = 300;
 
@@ -32,6 +34,8 @@ public abstract class AutoBase extends OpMode {
 
         shooter = new Shooter(hardwareMap, telemetry, true);
         shooter.setupShooter();
+
+        brakes = new Brakes(hardwareMap);
 
         setupFSM();
     }

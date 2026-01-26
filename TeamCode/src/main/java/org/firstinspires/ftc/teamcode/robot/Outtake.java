@@ -2,11 +2,15 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorImplEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Outtake {
     private final DcMotorEx flywheel;
+
+    private final DcMotorEx flywheel1;
     private final Servo flap;
     private final Servo barrier;
 
@@ -20,11 +24,18 @@ public class Outtake {
 
     public Outtake(HardwareMap hardwareMap) {
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel1 = hardwareMap.get(DcMotorEx.class, "flywheel1");
+
         flap = hardwareMap.get(Servo.class, "flap");
         barrier = hardwareMap.get(Servo.class, "barrier");
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
+                FlywheelConstants.flywheelCoefficients);
+
+        flywheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel1.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                 FlywheelConstants.flywheelCoefficients);
 
         flap.setDirection(Servo.Direction.REVERSE);

@@ -13,7 +13,7 @@ public class Intake {
     private final Servo rightGripper;
 
     private final double intakePower = 0.8;
-    private final double pushPower = 0.8;
+    private final double pushPower = 0.9;
     private final double shootingPower = 0.1;
     private final double idlePower = 0.4;
 

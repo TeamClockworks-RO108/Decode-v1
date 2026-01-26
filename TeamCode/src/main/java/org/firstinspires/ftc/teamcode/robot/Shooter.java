@@ -14,11 +14,13 @@ public class Shooter {
     private final Outtake outtake;
     private final Servo pivot;
 
+    private final Servo pivot1;
+
     private final double pivotIntake = 0.68;
     private final double pivotIdle = 0.88;
     private final double pivotShoot = 0.96;
 
-    private final int raiseTime = 150, launchingTime = 200, reloadTime = 400;
+    private final int raiseTime = 150, launchingTime = 175, reloadTime = 300; //200, 400
 
     private boolean isAuto = false;
 
@@ -59,6 +61,8 @@ public class Shooter {
 
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto) {
         pivot = hardwareMap.get(Servo.class, "pivot");
+        pivot1 = hardwareMap.get(Servo.class, "pivot1");
+
 
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap);
@@ -102,6 +106,7 @@ public class Shooter {
             intake.idle();
             outtake.stopFlywheel();
             pivot.setPosition(pivotIdle);
+            pivot1.setPosition(pivotIdle);
         });
         fsm.onStateUpdate(State.IDLE, () -> {
             if (unexecutedCommand == Command.TOGGLE_INTAKE) {
@@ -131,6 +136,7 @@ public class Shooter {
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
             if (timeSinceTransition > 200)
                 pivot.setPosition(pivotShoot);
+                pivot1.setPosition(pivotShoot);
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
                 return State.INTAKE;
@@ -178,6 +184,7 @@ public class Shooter {
             intake.start();
             outtake.stopFlywheel();
             pivot.setPosition(pivotIntake);
+            pivot1.setPosition(pivotIntake);
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
@@ -231,7 +238,7 @@ public class Shooter {
             intake.push();
         });
         fsm.onStateUpdate(State.LAUNCHING, (current, timeSinceTransition) -> {
-            if(timeSinceTransition > launchingTime) {
+            if(timeSinceTransition > launchingTime + 150) {
                 return State.SHOOTING;
             }
             return null;
@@ -290,7 +297,7 @@ public class Shooter {
             intake.shoot();
         });
         fsm.onStateUpdate(State.LAUNCH3, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > launchingTime)
+            if (timeSinceTransition > launchingTime  + 200)
                 return State.SHOOTING;
             return null;
         });

@@ -52,7 +52,7 @@ public class Constants {
                     .strafePodX(-5 / (25.4))
                     .rightEncoder_HardwareMapName("rightFront") // set manually
                     .leftEncoder_HardwareMapName("miniIntake")
-                    .strafeEncoder_HardwareMapName("strafeEncoder")
+                    .strafeEncoder_HardwareMapName("intake")
                     .leftEncoderDirection(Encoder.FORWARD)
                     .rightEncoderDirection(Encoder.FORWARD)
                     .strafeEncoderDirection(Encoder.REVERSE)
