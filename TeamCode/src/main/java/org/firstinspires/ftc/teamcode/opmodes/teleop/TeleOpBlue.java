@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
@@ -40,6 +43,8 @@ public class TeleOpBlue extends OpMode {
 
     private EdgeDetector brake = new EdgeDetector(false);
 
+    private Telemetry panelsTelemetry = null;
+
     private enum TeleopStates {
         TELEOP,
         AIMING,
@@ -56,12 +61,15 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void init() {
+
+        this.panelsTelemetry = new MultipleTelemetry(this.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+
         poses = new PosesTeleOp(color);
 
         brakes = new Brakes(hardwareMap);
 
-        movement = new PedroMovement(hardwareMap, telemetry, poses.start);
-        shooter = new Shooter(hardwareMap, telemetry, false);
+        movement = new PedroMovement(hardwareMap, panelsTelemetry, poses.start);
+        shooter = new Shooter(hardwareMap, panelsTelemetry, false);
 
         // movement command setup
         fieldCentricReset.onPress(() -> movement.resetHeading(poses.none.getHeading()));
@@ -150,7 +158,7 @@ public class TeleOpBlue extends OpMode {
         shooter.updateShooter();
 
 
-        telemetry.update();
+        panelsTelemetry.update();
     }
 
     private void command(Command command) {

@@ -21,9 +21,15 @@ public class PosesAuto extends Poses {
             parkStart, parkHome,
             firstIntake, firstIntakeEnd,
             secondIntake, secondIntakeEnd,
-            thirdIntake, thirdIntakeEnd,
+            thirdIntake, thirdIntakeEnd, middleOftheField,
     gateOpen69,
-            gateCorner, gateOpen, gateOpenEnd, turnCollectFromGate, goCollectFromGate;
+            gateCorner, gateOpen, gateOpenEnd, turnCollectFromGate, goCollectFromGate,
+    firstIntake69, firstIntakeEnd69,
+
+    secondIntake69, secondIntakeEnd69,
+    thirdIntake69, thirdIntakeEnd69;
+
+
 
     public PosesAuto(TeamColor color) {
         super(color);
@@ -41,8 +47,10 @@ public class PosesAuto extends Poses {
         shootAuto = createPose(144-47.7, 144-47.7, 220);
         shootAuto.setHeading(shootAuto.getHeading() + SHOOT_OFFSET);
 
-        shootMiddleAuto = createPose(144-57.7, 144-57.7, 220);
+        shootMiddleAuto = createPose(144-55, 144-55, 222);
         shootMiddleAuto.setHeading(shootMiddleAuto.getHeading() + SHOOT_OFFSET);
+
+        middleOftheField = createPose(144-52.7, 144-66, 220); // pose so as to not touch the first a ball
 
         firstIntake = createPose(INTAKE_START_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
         firstIntakeEnd = createPose(FIRST_INTAKE_END_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
@@ -51,13 +59,21 @@ public class PosesAuto extends Poses {
         thirdIntake = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
         thirdIntakeEnd = createPose(THIRD_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
 
+        firstIntake69 = createPose(INTAKE_START_X, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
+        firstIntakeEnd69 = createPose(SECOND_INTAKE_END_X - 2.5, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
+
+        secondIntake69 = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
+        secondIntakeEnd69 = createPose(SECOND_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
+        thirdIntake69 = createPose(INTAKE_START_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
+        thirdIntakeEnd69 = createPose(THIRD_INTAKE_END_X - 7.5, FIRST_INTAKE_Y, INTAKE_ANGLE);
+
         gateCorner = createPose(122, 60, INTAKE_ANGLE);
         gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
         gateOpen = createPose (115, 74, INTAKE_ANGLE);
-        gateOpen69 = createPose (103, 74, INTAKE_ANGLE);
+        gateOpen69 = createPose (110, 74, INTAKE_ANGLE);
 
-        turnCollectFromGate = createPose(144-47.7, 62.8, 30);
-        goCollectFromGate = createPose (130, 62.8, 30 );
+        turnCollectFromGate = createPose(144-47.7, 61.5, 32.5);
+        goCollectFromGate = createPose (134, 61.5, 32.5 );
 
         //
         // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!

@@ -17,7 +17,14 @@ public class AutoPaths {
             goGoalHome, goTurnHome, goIntakeGoalHome,
     goShootMiddlePreload,
 
-    getGoFirstIntake69, goOpenGate69, goGateGoal69, turnCollectFromGate69, goCollectFromGate69, goShootMiddleFromGate69;
+    goFirstIntake69, goShootFirstIntake69,
+
+    goSecondIntake69, goShootSecondIntake69,
+    goShootThirdIntake69,
+            goThirdIntake69,
+
+
+    goOpenGate69, goGateGoal69, turnCollectFromGate69, goCollectFromGate69, goShootMiddleFromGate69;
 
 
     public final PathChain
@@ -55,8 +62,6 @@ public class AutoPaths {
         goTurnHome = createPath(poses.goalHome, poses.goalHomeTurned);
 
 
-        getGoFirstIntake69 = createPath(
-                poses.shootMiddleAuto, poses.secondIntake, poses.secondIntakeEnd);
         goOpenGate69 = follower.pathBuilder()
                 .addPath(new BezierCurve(poses.secondIntakeEnd, poses.gateOpen69, poses.gateOpenEnd))
                 .setConstantHeadingInterpolation(poses.secondIntakeEnd.getHeading())
@@ -66,6 +71,20 @@ public class AutoPaths {
         turnCollectFromGate69 =createPath(poses.shootMiddleAuto, poses.turnCollectFromGate);
         goCollectFromGate69 =createPath(poses.turnCollectFromGate, poses.goCollectFromGate);
         goShootMiddleFromGate69 = createPath(poses.goCollectFromGate, poses.shootMiddleAuto);
+
+
+        goFirstIntake69 = createPath(poses.shootMiddleAuto, poses.firstIntake69, poses.firstIntakeEnd69);
+        goShootFirstIntake69 = createPath(poses.firstIntakeEnd69, poses.middleOftheField ,  poses.shootMiddleAuto);
+
+        goSecondIntake69 = createPath(poses.shootMiddleAuto, poses.secondIntake69, poses.secondIntakeEnd69);
+        goShootSecondIntake69 = createPath(poses.secondIntakeEnd69, poses.shootMiddleAuto);
+
+        goThirdIntake69 = createPath(poses.shootMiddleAuto, poses.thirdIntake69, poses.thirdIntakeEnd69);
+        goShootThirdIntake69 = createPath(poses.thirdIntakeEnd69, poses.shootAuto);
+
+
+
+
     }
 
     private PathChain createPath(Pose start, Pose end) {

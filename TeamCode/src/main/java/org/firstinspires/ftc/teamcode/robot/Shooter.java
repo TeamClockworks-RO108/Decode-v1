@@ -65,7 +65,7 @@ public class Shooter {
 
 
         intake = new Intake(hardwareMap);
-        outtake = new Outtake(hardwareMap);
+        outtake = new Outtake(hardwareMap, telemetry);
 
         this.isAuto = isAuto;
     }
@@ -78,7 +78,7 @@ public class Shooter {
     }
 
     public long getRapidFireTime() {
-        return raiseTime + 3 * (launchingTime + reloadTime);
+        return (long)(raiseTime + 3 * launchingTime + 1.9 * reloadTime);
     }
 
     public void setupShooter(){
