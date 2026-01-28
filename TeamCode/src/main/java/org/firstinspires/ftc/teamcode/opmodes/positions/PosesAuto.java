@@ -47,7 +47,7 @@ public class PosesAuto extends Poses {
         shootAuto = createPose(144-47.7, 144-47.7, 220);
         shootAuto.setHeading(shootAuto.getHeading() + SHOOT_OFFSET);
 
-        shootMiddleAuto = createPose(144-55, 144-55, 222);
+        shootMiddleAuto = createPose(144-55, 144-55, 227.5);
         shootMiddleAuto.setHeading(shootMiddleAuto.getHeading() + SHOOT_OFFSET);
 
         middleOftheField = createPose(144-52.7, 144-66, 220); // pose so as to not touch the first a ball
@@ -62,15 +62,15 @@ public class PosesAuto extends Poses {
         firstIntake69 = createPose(INTAKE_START_X, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
         firstIntakeEnd69 = createPose(SECOND_INTAKE_END_X - 2.5, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
 
-        secondIntake69 = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
-        secondIntakeEnd69 = createPose(SECOND_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
+        secondIntake69 = createPose(INTAKE_START_X, THIRD_INTAKE_Y + 1.5, INTAKE_ANGLE);
+        secondIntakeEnd69 = createPose(SECOND_INTAKE_END_X, THIRD_INTAKE_Y + 1.5, INTAKE_ANGLE);
         thirdIntake69 = createPose(INTAKE_START_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
         thirdIntakeEnd69 = createPose(THIRD_INTAKE_END_X - 7.5, FIRST_INTAKE_Y, INTAKE_ANGLE);
 
         gateCorner = createPose(122, 60, INTAKE_ANGLE);
         gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
-        gateOpen = createPose (115, 74, INTAKE_ANGLE);
-        gateOpen69 = createPose (110, 74, INTAKE_ANGLE);
+        gateOpen = createPose (115, 74.7, INTAKE_ANGLE);
+        gateOpen69 = createPose (112.5  , 74.7, INTAKE_ANGLE);
 
         turnCollectFromGate = createPose(144-47.7, 61.5, 32.5);
         goCollectFromGate = createPose (134, 61.5, 32.5 );

@@ -40,11 +40,11 @@ public class AutoBlue69 extends AutoBase {
 
         fsm.onStateEnter(State.START_POSITION, () -> {
             movement.followPath(paths.goShootPreload);
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE);
         });
 
         fsm.onStateUpdate(State.START_POSITION, (current, timeSinceTransition) -> {
-            if(!movement.isBusy() || timeSinceTransition > 2375 ) {
+            if(!movement.isBusy() || timeSinceTransition > 3000 ) {
                 return State.SHOOT_A;
             }
             return null;
