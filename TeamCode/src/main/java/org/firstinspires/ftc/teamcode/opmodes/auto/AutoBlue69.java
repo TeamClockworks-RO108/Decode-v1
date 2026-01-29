@@ -12,7 +12,7 @@ public class AutoBlue69 extends AutoBase {
 
     protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
-    private static final double timeToCollectFromGate = 2850;
+    protected static final double timeToCollectFromGate = 2850;
 
     private final double grabTime = 100;
 
@@ -22,7 +22,8 @@ public class AutoBlue69 extends AutoBase {
         SHOOT_A, // preload
         FIRST_INTAKE, WAIT_FOR_INTAKE_B, GRAB_B, WAIT_AT_GATE, GO_OPEN_GATE, GO_GATE_MIDDLE_GOAL,  SHOOT_B,
         GATE_INTAKE, GATE_COLLECT, SHOOT_GATE_INTAKE, SHOOT_FROM_GATE, WAIT_TO_COLLECT,
-        THIRD_INTAKE,  WAIT_FOR_INTAKE_C, GRAB_C, SHOOT_C,
+        THIRD_INTAKE,  WAIT_FOR_INTAKE_C, GRAB_C, SHOOT_C, // for full terrain
+        GATE_INTAKE_2, GATE_COLLECT_2, SHOOT_GATE_INTAKE_2, SHOOT_FROM_GATE_2, WAIT_TO_COLLECT_2, // for all but last 3 artifacts
         FOURTH_INTAKE,  WAIT_FOR_INTAKE_D, GRAB_D, SHOOT_D,
         GO_HOME, GO_HOME_FROM_INTAKE,  OPEN_GATE,
         Go_TURN_HOME
@@ -90,7 +91,6 @@ public class AutoBlue69 extends AutoBase {
             movement.followPath(paths.goShootFirstIntake69);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE);
         });
-
         fsm.onStateUpdate(State.GO_GATE_MIDDLE_GOAL, () -> {
             if(!movement.isBusy()){
                 return State.SHOOT_B;
@@ -162,7 +162,6 @@ public class AutoBlue69 extends AutoBase {
             movement.followPath(paths.goShootSecondIntake69);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE);
         });
-
         fsm.onStateUpdate(State.GRAB_C, () -> {
             if(!movement.isBusy()){
                 return State.SHOOT_C;
@@ -176,7 +175,6 @@ public class AutoBlue69 extends AutoBase {
             movement.followPath(paths.goThirdIntake69);
             shooter.command(Shooter.Command.TOGGLE_INTAKE);
         });
-
         fsm.onStateUpdate(State.FOURTH_INTAKE,   () -> {
             if(!movement.isBusy()){
                 return State.WAIT_FOR_INTAKE_D;
@@ -195,7 +193,6 @@ public class AutoBlue69 extends AutoBase {
             movement.followPath(paths.goShootThirdIntake69);
             shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
-
         fsm.onStateUpdate(State.GRAB_D, () -> {
             if(!movement.isBusy()){
                 return State.SHOOT_D;
@@ -210,8 +207,6 @@ public class AutoBlue69 extends AutoBase {
         });
 
         fsm.init();
-
-
     }
 
     protected void startFSM() {
