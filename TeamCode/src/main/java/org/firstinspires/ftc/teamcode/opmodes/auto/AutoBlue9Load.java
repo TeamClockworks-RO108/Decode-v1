@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 
+@Disabled
 @Autonomous(name = "Auto BLUE 9 + load")
 public class AutoBlue9Load extends AutoBlue{
     @Override

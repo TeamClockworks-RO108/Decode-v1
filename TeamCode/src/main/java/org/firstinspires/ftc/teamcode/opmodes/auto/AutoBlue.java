@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
+@Disabled
 @Autonomous(name = "Auto BLUE 9")
 public class AutoBlue extends AutoBase {
     protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);

@@ -47,7 +47,7 @@ public class PosesAuto extends Poses {
         shootAuto = createPose(144-47.7, 144-47.7, 220);
         shootAuto.setHeading(shootAuto.getHeading() + SHOOT_OFFSET);
 
-        shootMiddleAuto = createPose(144-55, 144-55, 227.5);
+        shootMiddleAuto = createPose(144-55, 144-55, 225.0);
         shootMiddleAuto.setHeading(shootMiddleAuto.getHeading() + SHOOT_OFFSET);
 
         middleOftheField = createPose(144-52.7, 144-66, 220); // pose so as to not touch the first a ball
@@ -70,7 +70,7 @@ public class PosesAuto extends Poses {
         gateCorner = createPose(122, 60, INTAKE_ANGLE);
         gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
         gateOpen = createPose (115, 74.7, INTAKE_ANGLE);
-        gateOpen69 = createPose (112.5  , 74.7, INTAKE_ANGLE);
+        gateOpen69 = createPose (112.8  , 74.7, INTAKE_ANGLE);
 
         turnCollectFromGate = createPose(144-47.7, 61.5, 32.5);
         goCollectFromGate = createPose (134, 61.5, 32.5 );

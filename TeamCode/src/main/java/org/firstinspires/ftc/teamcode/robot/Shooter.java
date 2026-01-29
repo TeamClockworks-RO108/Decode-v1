@@ -78,7 +78,7 @@ public class Shooter {
     }
 
     public long getRapidFireTime() {
-        return (long)(raiseTime + 3 * launchingTime + 1.9 * reloadTime);
+        return (long)(raiseTime + 3 * launchingTime + 2.2 * reloadTime);
     }
 
     public void setupShooter(){
@@ -305,7 +305,7 @@ public class Shooter {
             intake.shoot();
         });
         fsm.onStateUpdate(State.LAUNCH3, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > launchingTime  + 200)
+            if (timeSinceTransition > launchingTime + 260)
                 return State.SHOOTING;
             return null;
         });

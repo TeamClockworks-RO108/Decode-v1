@@ -7,15 +7,14 @@ import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 
-@Autonomous(name = "auto BLUE 69999999999")
+@Autonomous(name = "auto BLUE 69")
 public class AutoBlue69 extends AutoBase {
 
     protected final StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
-    private final double timeToCollectFromGate = 2600
-            ;
+    private static final double timeToCollectFromGate = 2850;
 
-    private final double grabTime = 25;
+    private final double grabTime = 100;
 
     protected enum State{
         INIT,
@@ -40,11 +39,11 @@ public class AutoBlue69 extends AutoBase {
 
         fsm.onStateEnter(State.START_POSITION, () -> {
             movement.followPath(paths.goShootPreload);
-            shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE);
+            shooter.command(Shooter.Command.TOGGLE_SHOOTING);
         });
 
         fsm.onStateUpdate(State.START_POSITION, (current, timeSinceTransition) -> {
-            if(!movement.isBusy() || timeSinceTransition > 3000 ) {
+            if(!movement.isBusy() || timeSinceTransition > 1100 ) {
                 return State.SHOOT_A;
             }
             return null;
