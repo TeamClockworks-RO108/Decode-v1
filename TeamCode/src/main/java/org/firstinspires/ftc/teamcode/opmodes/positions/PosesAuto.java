@@ -7,27 +7,45 @@ import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 public class PosesAuto extends Poses {
     // intake positions
     protected static final double
-            INTAKE_START_X = 98, INTAKE_ANGLE = 0,
+            INTAKE_START_X = 98
+            , INTAKE_ANGLE = 0,
             FIRST_INTAKE_END_X = 144-18.2, FIRST_INTAKE_Y = 84,
             SECOND_INTAKE_END_X = 144-9.8, SECOND_INTAKE_Y = FIRST_INTAKE_Y - 24.3,
             THIRD_INTAKE_END_X = 144-9.8, THIRD_INTAKE_Y = FIRST_INTAKE_Y - 48;
+
+    private double calibratedXBLUE = 1.5, calibratedYBLUE= 0, calibratedHEADINGBLUE = 0;
+    private double calibratedXRED = 0 , calibratedYRED = 0 , calibratedHEADINGRED= 0 ;
 
     public Pose goalStart, shootAuto;
 
     public Pose farStart, leaveFar;
     public final Pose
-            goalHome, goalHomeTurned, shootMiddleAuto,
-            goalHomeFromIntake,
-            parkStart, parkHome,
-            firstIntake, firstIntakeEnd,
-            secondIntake, secondIntakeEnd,
-            thirdIntake, thirdIntakeEnd, middleOftheField,
-    gateOpen69,
-            gateCorner, gateOpen, gateOpenEnd, turnCollectFromGate, goCollectFromGate,
-    firstIntake69, firstIntakeEnd69,
+            goalHome;
+    public final Pose goalHomeTurned;
+    public Pose shootMiddleAuto;
+    public final Pose goalHomeFromIntake;
+    public final Pose parkStart;
+    public final Pose parkHome;
+    public final Pose firstIntake;
+    public final Pose firstIntakeEnd;
+    public final Pose secondIntake;
+    public final Pose secondIntakeEnd;
+    public final Pose thirdIntake;
+    public final Pose thirdIntakeEnd;
+    public final Pose middleOftheField;
+    public final Pose gateOpen69;
+    public final Pose gateCorner;
+    public final Pose gateOpen;
+    public final Pose gateOpenEnd;
+    public final Pose turnCollectFromGate;
+    public final Pose goCollectFromGate;
+    public final Pose firstIntake69;
+    public final Pose firstIntakeEnd69;
 
-    secondIntake69, secondIntakeEnd69,
-    thirdIntake69, thirdIntakeEnd69;
+    public final Pose secondIntake69;
+    public final Pose secondIntakeEnd69;
+    public final Pose thirdIntake69;
+    public final Pose thirdIntakeEnd69;
 
 
 
@@ -79,9 +97,9 @@ public class PosesAuto extends Poses {
         // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!
         // CALIBRATION NEEDED!!!
         if (color == TeamColor.RED)
-            calibrateStart(0.85, 0, 0);
+            calibrateStart(0, 2, -5);
         if (color == TeamColor.BLUE)
-            calibrateStart(-0.85, 0, -5);
+            calibrateStart(calibratedXBLUE, calibratedYBLUE  , calibratedHEADINGBLUE);
 
    }
 
@@ -89,6 +107,9 @@ public class PosesAuto extends Poses {
         goalStart = new Pose(goalStart.getX() + x, goalStart.getY() + y, goalStart.getHeading());
         shootAuto = new Pose(shootAuto.getX() + x, shootAuto.getY() + y,
                 shootAuto.getHeading() + Math.toRadians(shootHeading));
+        shootMiddleAuto = new Pose(shootMiddleAuto.getX() + x, shootMiddleAuto.getY() + y,
+                shootMiddleAuto.getHeading() + Math.toRadians(shootHeading));
+
 
     }
 }

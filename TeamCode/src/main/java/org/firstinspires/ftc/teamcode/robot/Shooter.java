@@ -52,6 +52,8 @@ public class Shooter {
         FIRE, RAPID_FIRE,
         TOGGLE_INTAKE,
         TOGGLE_IDLE,
+
+        TOGGLE_FOR_RESET,
         TOGGLE_DEAD,
         TOGGLE_INTAKE_REJECT
     }
@@ -125,6 +127,11 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.DEAD;
             }
+
+            if (unexecutedCommand == Command.TOGGLE_FOR_RESET) {
+                unexecutedCommand = null;
+                return State.SHOOTING;
+            }
             return null;
         });
 
@@ -153,6 +160,11 @@ public class Shooter {
             if (unexecutedCommand == Command.RAPID_FIRE) {
                 unexecutedCommand = null;
                 return State.RAISE_RAPID_FIRE;
+            }
+
+            if (unexecutedCommand == Command.TOGGLE_FOR_RESET) {
+                unexecutedCommand = null;
+                return State.IDLE;
             }
             return null;
         });
@@ -377,5 +389,10 @@ public class Shooter {
 
         fsm.update();
         outtake.update();
+    }
+
+    public void resetShooter(){
+        outtake.stopFlywheel();
+        outtake.startFlywheel();
     }
 }

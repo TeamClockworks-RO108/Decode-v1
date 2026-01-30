@@ -45,6 +45,8 @@ public class TeleOpBlue extends OpMode {
 
     private EdgeDetector brake = new EdgeDetector(false);
 
+    private EdgeDetector resetTargeting = new EdgeDetector(false);
+
     private Telemetry panelsTelemetry = null;
 
     private enum TeleopStates {
@@ -105,11 +107,17 @@ public class TeleOpBlue extends OpMode {
 
         goToGoal.onPress(() -> {
             command(Command.START_AIMING);
+
+        });
+
+        resetTargeting.onPress(  () -> {
+            shooter.command(Shooter.Command.TOGGLE_FOR_RESET);
         });
 
         goToGoalCenter.onPress(  () -> {
             command(Command.START_AIMING_CENTER);
-        });
+            shooter.resetShooter();
+                  });
         goToPark.onPress(() -> movement.goToPose(poses.parking));
         releasePath.onPress(()-> {
             command(Command.RELEASE_AIM);
@@ -152,7 +160,7 @@ public class TeleOpBlue extends OpMode {
         resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.triangle);
         goToGoalCenter.update(gamepad2.square);
-        goToPark.update(gamepad2.square);
+     //   goToPark.update(gamepad2.square);
         releasePath.update(gamepad2.circle);
         brake.update(gamepad2.right_trigger > 0.01);
         // shooter options
@@ -166,6 +174,8 @@ public class TeleOpBlue extends OpMode {
     //    shootFar.update(gamepad2.dpad_down);
 
         shooter.updateShooter();
+
+        resetTargeting.update(gamepad2.right_bumper);
 
 
         panelsTelemetry.update();
