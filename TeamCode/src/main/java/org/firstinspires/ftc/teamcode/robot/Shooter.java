@@ -158,7 +158,8 @@ public class Shooter {
         });
 
         fsm.onStateEnter(State.SHOOTING_FAR,  () -> {
-                    outtake.startFlywheelFAR();
+                    FlywheelConstants.setTargetMiddle();
+                    outtake.startFlywheel();
                     intake.shoot();
                 });
 

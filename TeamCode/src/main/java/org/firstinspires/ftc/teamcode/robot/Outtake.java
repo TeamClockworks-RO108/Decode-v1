@@ -58,6 +58,8 @@ public class Outtake {
                 constants);
 
         flap.setDirection(Servo.Direction.REVERSE);
+
+        FlywheelConstants.setTargetClose();
     }
 
     public void close() {
@@ -75,12 +77,7 @@ public class Outtake {
     }
 
     public void startFlywheel() {
-        targetVelocity = FlywheelConstants.target;
-        currentSpeed = targetVelocity;
-    }
-
-    public void startFlywheelFAR(){
-        targetVelocity = FlywheelConstants.farTarget;
+        targetVelocity = FlywheelConstants.aimingTarget;
         currentSpeed = targetVelocity;
     }
     public void stopFlywheel() {

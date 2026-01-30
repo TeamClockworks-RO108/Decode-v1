@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.movement.PedroMovement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
 import org.firstinspires.ftc.teamcode.robot.Brakes;
+import org.firstinspires.ftc.teamcode.robot.FlywheelConstants;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -27,6 +28,7 @@ public class TeleOpBlue extends OpMode {
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
     private EdgeDetector resetBase = new EdgeDetector(false);
     private EdgeDetector goToGoal = new EdgeDetector(false);
+    private EdgeDetector goToGoalCenter = new EdgeDetector(false);
     private EdgeDetector goToPark = new EdgeDetector(false);
     private EdgeDetector releasePath = new EdgeDetector(false);
     private EdgeDetector resetToCamera = new EdgeDetector(false);
@@ -48,11 +50,14 @@ public class TeleOpBlue extends OpMode {
     private enum TeleopStates {
         TELEOP,
         AIMING,
+        AIMING_CENTER,
         HOLD_AIM,
+        HOLD_AIM_CENTER,
     }
 
     public enum Command {
         START_AIMING,
+        START_AIMING_CENTER,
         RELEASE_AIM
     }
 
@@ -101,6 +106,10 @@ public class TeleOpBlue extends OpMode {
         goToGoal.onPress(() -> {
             command(Command.START_AIMING);
         });
+
+        goToGoalCenter.onPress(  () -> {
+            command(Command.START_AIMING_CENTER);
+        });
         goToPark.onPress(() -> movement.goToPose(poses.parking));
         releasePath.onPress(()-> {
             command(Command.RELEASE_AIM);
@@ -142,6 +151,7 @@ public class TeleOpBlue extends OpMode {
         resetGate.update(gamepad2.left_bumper);
         resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.triangle);
+        goToGoalCenter.update(gamepad2.square);
         goToPark.update(gamepad2.square);
         releasePath.update(gamepad2.circle);
         brake.update(gamepad2.right_trigger > 0.01);
@@ -153,7 +163,7 @@ public class TeleOpBlue extends OpMode {
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
 
-        shootFar.update(gamepad2.dpad_down);
+    //    shootFar.update(gamepad2.dpad_down);
 
         shooter.updateShooter();
 
@@ -174,11 +184,17 @@ public class TeleOpBlue extends OpMode {
                 unexecutedCommand = null;
                 return TeleopStates.AIMING;
             }
+
+            if(unexecutedCommand == Command.START_AIMING_CENTER){
+                unexecutedCommand = null;
+                return TeleopStates.AIMING_CENTER;
+            }
             return null;
         });
 
         fsm.onStateEnter(TeleopStates.AIMING, () -> {
             movement.goToPose(poses.shootTeleOp);
+            FlywheelConstants.setTargetClose();
         });
         fsm.onStateUpdate(TeleopStates.AIMING, () -> {
             if (!movement.isBusy())
@@ -190,10 +206,36 @@ public class TeleOpBlue extends OpMode {
             return null;
         });
 
+
         fsm.onStateEnter(TeleopStates.HOLD_AIM, () -> {
             movement.hold(poses.shootTeleOp);
         });
         fsm.onStateUpdate(TeleopStates.HOLD_AIM, () -> {
+            if (unexecutedCommand == Command.RELEASE_AIM ){
+                unexecutedCommand = null;
+                return TeleopStates.TELEOP;
+            }
+            return null;
+        });
+
+        fsm.onStateEnter(TeleopStates.AIMING_CENTER, () -> {
+            movement.goToPose(poses.shootTeleOpCenter);
+            FlywheelConstants.setTargetCenter();
+        });
+        fsm.onStateUpdate(TeleopStates.AIMING_CENTER, () -> {
+            if (!movement.isBusy())
+                return TeleopStates.HOLD_AIM_CENTER;
+            else if(unexecutedCommand == Command.RELEASE_AIM){
+                unexecutedCommand = null;
+                return TeleopStates.TELEOP;
+            }
+            return null;
+        });
+
+        fsm.onStateEnter(TeleopStates.HOLD_AIM_CENTER, () -> {
+            movement.hold(poses.shootTeleOpCenter);
+        });
+        fsm.onStateUpdate(TeleopStates.HOLD_AIM_CENTER, () -> {
             if (unexecutedCommand == Command.RELEASE_AIM ){
                 unexecutedCommand = null;
                 return TeleopStates.TELEOP;
