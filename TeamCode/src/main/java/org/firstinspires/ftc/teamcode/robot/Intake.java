@@ -1,12 +1,24 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.util.StateMachine;
+
 public class Intake {
+    public enum State {
+        OFF,
+        INTAKE,
+        REJECT,
+        IDLE,
+        SHOOT,
+        PUSH,
+    }
+
+    private final StateMachine<State> fsm = new StateMachine<>(State.OFF);
+    private State targetState = State.OFF;
+
     private final DcMotor intakeMotor;
     private final DcMotor miniIntake;
     private final Servo leftGripper;
@@ -28,44 +40,110 @@ public class Intake {
         leftGripper = hardwareMap.get(Servo.class, "leftGripper");
         rightGripper = hardwareMap.get(Servo.class, "rightGripper");
 
-        // miniIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         leftGripper.setDirection(Servo.Direction.REVERSE);
+
+        setupFSM();
     }
 
-    public void stop() {
-        intakeMotor.setPower(0);
-        miniIntake.setPower(0);
+    public void update() {
+        fsm.update();
     }
-    public void start() {
-        intakeMotor.setPower(intakePower);
-        miniIntake.setPower(intakePower);
-        openGripper();
+
+    public void intake() {
+        targetState = State.INTAKE;
     }
     public void push() {
-        intakeMotor.setPower(pushPower);
-        miniIntake.setPower(pushPower);
-        openGripper();
+        targetState = State.PUSH;
     }
     public void idle() {
-        intakeMotor.setPower(idlePower);
-        miniIntake.setPower(idlePower);
+        targetState = State.IDLE;
     }
     public void shoot() {
-        intakeMotor.setPower(shootingPower);
-        miniIntake.setPower(shootingPower);
+        targetState = State.SHOOT;
     }
     public void reject() {
-        intakeMotor.setPower(-intakePower);
-        miniIntake.setPower(-intakePower);
-        openGripper();
+        targetState = State.REJECT;
     }
 
-    public void closeGripper() {
+    private void closeGripper() {
         leftGripper.setPosition(leftGripperClosed);
         rightGripper.setPosition(rightGripperClosed);
     }
-    public void openGripper() {
+    private void openGripper() {
         leftGripper.setPosition(leftGripperOpen);
         rightGripper.setPosition(rightGripperOpen);
+    }
+
+    private void setupFSM() {
+        fsm.onStateUpdate(State.OFF, () -> {
+            if (targetState == State.IDLE) return State.IDLE;
+            if (targetState == State.SHOOT) return State.SHOOT;
+            if (targetState == State.INTAKE) return State.INTAKE;
+            return null;
+        });
+        fsm.onStateExit(State.OFF, () -> {
+            openGripper();
+        });
+
+        fsm.onStateEnter(State.INTAKE, () -> {
+            intakeMotor.setPower(intakePower);
+            miniIntake.setPower(intakePower);
+            openGripper();
+        });
+        fsm.onStateUpdate(State.INTAKE, () -> {
+            if (targetState == State.IDLE) return State.IDLE;
+            if (targetState == State.SHOOT) return State.SHOOT;
+            if (targetState == State.REJECT) return State.REJECT;
+            return null;
+        });
+        fsm.onStateExit(State.INTAKE, () -> {
+            closeGripper();
+        });
+
+        fsm.onStateEnter(State.REJECT, () -> {
+            intakeMotor.setPower(-intakePower);
+            miniIntake.setPower(-intakePower);
+            openGripper();
+        });
+        fsm.onStateUpdate(State.INTAKE, () -> {
+            if (targetState == State.IDLE) return State.IDLE;
+            if (targetState == State.SHOOT) return State.SHOOT;
+            if (targetState == State.INTAKE) return State.INTAKE;
+            return null;
+        });
+        fsm.onStateExit(State.INTAKE, () -> {
+            closeGripper();
+        });
+
+        fsm.onStateEnter(State.IDLE, () -> {
+            intakeMotor.setPower(idlePower);
+            miniIntake.setPower(idlePower);
+        });
+        fsm.onStateUpdate(State.IDLE, () -> {
+            if (targetState == State.SHOOT) return State.SHOOT;
+            if (targetState == State.INTAKE) return State.INTAKE;
+            return null;
+        });
+
+        fsm.onStateEnter(State.SHOOT, () -> {
+            intakeMotor.setPower(shootingPower);
+            miniIntake.setPower(shootingPower);
+        });
+        fsm.onStateUpdate(State.SHOOT, () -> {
+            if (targetState == State.IDLE) return State.IDLE;
+            if (targetState == State.INTAKE) return State.INTAKE;
+            if (targetState == State.PUSH) return State.PUSH;
+            return null;
+        });
+
+        fsm.onStateEnter(State.PUSH, () -> {
+            intakeMotor.setPower(pushPower);
+            miniIntake.setPower(pushPower);
+            openGripper();
+        });
+        fsm.onStateUpdate(State.PUSH, () -> {
+            if (targetState == State.SHOOT) return State.SHOOT;
+            return null;
+        });
     }
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
@@ -10,22 +9,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class Shooter {
-    private final Intake intake;
-    private final Outtake outtake;
-    private final Servo pivot;
-
-    private final Servo pivot1;
-
-    private final double pivotIntake = 0.68;
-    private final double pivotIdle = 0.88;
-    private final double pivotShoot = 0.96;
-
-    private final int raiseTime = 150, launchingTime = 175, reloadTime = 300; //200, 400
-
-    private boolean isAuto = false;
-
-    private final BlockingQueue<Command> queue = new ArrayBlockingQueue<>(16);
-
     private enum State {
         DEAD,
         INTAKE,
@@ -39,7 +22,6 @@ public class Shooter {
         LAUNCH2, RELOAD2,
         LAUNCH3,
     }
-
     public enum Command {
         TOGGLE_SHOOTING,
         FIRE, RAPID_FIRE,
@@ -52,10 +34,17 @@ public class Shooter {
     private final StateMachine<State> fsm = new StateMachine<>(State.DEAD);;
     private Command unexecutedCommand;
 
-    public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto) {
-        pivot = hardwareMap.get(Servo.class, "pivot");
-        pivot1 = hardwareMap.get(Servo.class, "pivot1");
+    private final Pivot pivot;
+    private final Intake intake;
+    private final Outtake outtake;
+    private final int raiseTime = 150, launchingTime = 175, reloadTime = 300; //200, 400
 
+    private boolean isAuto = false;
+
+    private final BlockingQueue<Command> queue = new ArrayBlockingQueue<>(16);
+
+    public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto) {
+        pivot = new Pivot(hardwareMap);
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap, telemetry);
 
@@ -75,9 +64,6 @@ public class Shooter {
 
     public void setupShooter(){
         // DEAD -> do nothing, wait for start
-        fsm.onStateEnter(State.DEAD, () -> {
-            intake.stop();
-        });
         fsm.onStateUpdate(State.DEAD, () -> {
             if (unexecutedCommand == Command.TOGGLE_IDLE) {
                 unexecutedCommand = null;
@@ -95,10 +81,9 @@ public class Shooter {
 
         // IDLE -> human load position
         fsm.onStateEnter(State.IDLE, () -> {
+            pivot.idle();
             intake.idle();
             outtake.stopFlywheel();
-            pivot.setPosition(pivotIdle);
-            pivot1.setPosition(pivotIdle);
         });
         fsm.onStateUpdate(State.IDLE, () -> {
             if (unexecutedCommand == Command.TOGGLE_INTAKE) {
@@ -123,8 +108,7 @@ public class Shooter {
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
             if (timeSinceTransition > 200) {
-                pivot.setPosition(pivotShoot);
-                pivot1.setPosition(pivotShoot);
+                pivot.shoot();
             }
             if(unexecutedCommand == Command.TOGGLE_INTAKE) {
                 unexecutedCommand = null;
@@ -151,10 +135,9 @@ public class Shooter {
 
         // INTAKE -> intake mechanism
         fsm.onStateEnter(State.INTAKE, () -> {
-            intake.start();
+            pivot.intake();
+            intake.intake();
             outtake.stopFlywheel();
-            pivot.setPosition(pivotIntake);
-            pivot1.setPosition(pivotIntake);
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
@@ -170,10 +153,6 @@ public class Shooter {
                 return State.INTAKE_REJECT;
             }
             return null;
-        });
-        fsm.onStateExit(State.INTAKE, () -> {
-            intake.closeGripper();
-//            intake.stop();
         });
 
         // REJECT_INTAKE
@@ -215,7 +194,6 @@ public class Shooter {
         });
         fsm.onStateExit(State.LAUNCHING, () -> {
             outtake.close();
-            intake.openGripper();
             intake.shoot();
         });
     }
@@ -240,7 +218,6 @@ public class Shooter {
         });
         fsm.onStateEnter(State.RELOAD1, () -> {
             outtake.reload();
-            intake.openGripper();
             intake.push();
         });
         fsm.onStateUpdate(State.RELOAD1, (current, timeSinceTransition) -> {
@@ -284,5 +261,6 @@ public class Shooter {
 
         fsm.update();
         outtake.update();
+        intake.update();
     }
 }
