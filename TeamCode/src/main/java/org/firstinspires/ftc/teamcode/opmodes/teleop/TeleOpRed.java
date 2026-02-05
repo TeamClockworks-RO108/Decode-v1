@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
-@TeleOp(name = "TeleOp RED", group = "Field Centric")
+@TeleOp(name = "TeleOp RED")
 public class TeleOpRed extends TeleOpBlue{
     @Override
     public void init() {

@@ -6,35 +6,28 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.movement.PedroMovement;
+import org.firstinspires.ftc.teamcode.robot.Movement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
 import org.firstinspires.ftc.teamcode.robot.Brakes;
-import org.firstinspires.ftc.teamcode.robot.FlywheelConstants;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
-import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-@TeleOp(name = "TeleOp BLUE", group = "Field Centric")
+@TeleOp(name = "TeleOp BLUE")
 public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
     private PosesTeleOp poses;
 
-    private PedroMovement movement = null;
+    private Movement movement = null;
     private Shooter shooter = null;
 
     private Brakes brakes = null;
 
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
-    private EdgeDetector resetBase = new EdgeDetector(false);
     private EdgeDetector goToGoal = new EdgeDetector(false);
-    private EdgeDetector goToGoalCenter = new EdgeDetector(false);
-    private EdgeDetector goToPark = new EdgeDetector(false);
     private EdgeDetector releasePath = new EdgeDetector(false);
     private EdgeDetector resetToCamera = new EdgeDetector(false);
     private EdgeDetector resetGate = new EdgeDetector(false);
-
-    private final EdgeDetector shootFar = new EdgeDetector(false);
 
     private EdgeDetector toggleShooting = new EdgeDetector(false);
     private EdgeDetector toggleIntake = new EdgeDetector(false);
@@ -45,26 +38,7 @@ public class TeleOpBlue extends OpMode {
 
     private EdgeDetector brake = new EdgeDetector(false);
 
-    private EdgeDetector resetTargeting = new EdgeDetector(false);
-
     private Telemetry panelsTelemetry = null;
-
-    private enum TeleopStates {
-        TELEOP,
-        AIMING,
-        AIMING_CENTER,
-        HOLD_AIM,
-        HOLD_AIM_CENTER,
-    }
-
-    public enum Command {
-        START_AIMING,
-        START_AIMING_CENTER,
-        RELEASE_AIM
-    }
-
-    private Command unexecutedCommand = null;
-    private final StateMachine<TeleopStates> fsm  = new StateMachine<>(TeleopStates.TELEOP);
 
     @Override
     public void init() {
@@ -75,23 +49,19 @@ public class TeleOpBlue extends OpMode {
 
         brakes = new Brakes(hardwareMap);
 
-        movement = new PedroMovement(hardwareMap, panelsTelemetry, poses.start);
+        movement = new Movement(hardwareMap, panelsTelemetry, poses.start);
         shooter = new Shooter(hardwareMap, panelsTelemetry, false);
 
         // movement command setup
         fieldCentricReset.onPress(() -> movement.resetHeading(poses.none.getHeading()));
-        resetBase.onPress(() -> {
-            movement.setPose(poses.humanBase);
-            gamepad2.rumble(150);
-        });
 
         brake.onHold(() -> {
             brakes.on();
         });
-
         brake.onRelease(() -> {
             brakes.off();
         });
+
         resetGate.onPress(() -> {
             movement.setPose(poses.gate);
             gamepad2.rumble(150);
@@ -106,21 +76,9 @@ public class TeleOpBlue extends OpMode {
         });
 
         goToGoal.onPress(() -> {
-            command(Command.START_AIMING);
-
+            movement.goToPose(poses.shootTeleOp);
         });
-
-        resetTargeting.onPress(  () -> {
-            shooter.command(Shooter.Command.TOGGLE_FOR_RESET);
-        });
-
-        goToGoalCenter.onPress(  () -> {
-            command(Command.START_AIMING_CENTER);
-            shooter.resetShooter();
-                  });
-        goToPark.onPress(() -> movement.goToPose(poses.parking));
         releasePath.onPress(()-> {
-            command(Command.RELEASE_AIM);
             movement.breakFollowing();
         });
 
@@ -134,10 +92,7 @@ public class TeleOpBlue extends OpMode {
         fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
         rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
 
-        shootFar.onPress(  () -> shooter.command(Shooter.Command.TOGGLE_SHOOTING_MIDDLE));
-
         shooter.setupShooter();
-        setupTeleopFSM();
     }
 
     @Override
@@ -148,21 +103,18 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void loop() {
-        fsm.update();
-
         movement.updateTeleOp(gamepad1, gamepad2);
 
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
+        brake.update(gamepad2.right_trigger > 0.01);
 
-   //    resetBase.update(gamepad2.dpad_down);
+        // localizer options
         resetGate.update(gamepad2.left_bumper);
         resetToCamera.update(gamepad2.dpad_up);
         goToGoal.update(gamepad2.triangle);
-        goToGoalCenter.update(gamepad2.square);
-     //   goToPark.update(gamepad2.square);
         releasePath.update(gamepad2.circle);
-        brake.update(gamepad2.right_trigger > 0.01);
+
         // shooter options
         toggleShooting.update(gamepad1.right_bumper);
         toggleIntake.update(gamepad1.left_bumper);
@@ -171,88 +123,8 @@ public class TeleOpBlue extends OpMode {
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
 
-    //    shootFar.update(gamepad2.dpad_down);
-
         shooter.updateShooter();
 
-        resetTargeting.update(gamepad2.right_bumper);
-
-
         panelsTelemetry.update();
-    }
-
-    private void command(Command command) {
-        unexecutedCommand = command;
-    }
-
-    private void setupTeleopFSM(){
-        fsm.onStateEnter(TeleopStates.TELEOP, () -> {
-            movement.startTeleop();
-        });
-        fsm.onStateUpdate(TeleopStates.TELEOP, () -> {
-            if (unexecutedCommand == Command.START_AIMING) {
-                unexecutedCommand = null;
-                return TeleopStates.AIMING;
-            }
-
-            if(unexecutedCommand == Command.START_AIMING_CENTER){
-                unexecutedCommand = null;
-                return TeleopStates.AIMING_CENTER;
-            }
-            return null;
-        });
-
-        fsm.onStateEnter(TeleopStates.AIMING, () -> {
-            movement.goToPose(poses.shootTeleOp);
-            FlywheelConstants.setTargetClose();
-        });
-        fsm.onStateUpdate(TeleopStates.AIMING, () -> {
-            if (!movement.isBusy())
-                return TeleopStates.HOLD_AIM;
-            else if(unexecutedCommand == Command.RELEASE_AIM){
-                unexecutedCommand = null;
-                return TeleopStates.TELEOP;
-            }
-            return null;
-        });
-
-
-        fsm.onStateEnter(TeleopStates.HOLD_AIM, () -> {
-            movement.hold(poses.shootTeleOp);
-        });
-        fsm.onStateUpdate(TeleopStates.HOLD_AIM, () -> {
-            if (unexecutedCommand == Command.RELEASE_AIM ){
-                unexecutedCommand = null;
-                return TeleopStates.TELEOP;
-            }
-            return null;
-        });
-
-        fsm.onStateEnter(TeleopStates.AIMING_CENTER, () -> {
-            movement.goToPose(poses.shootTeleOpCenter);
-            FlywheelConstants.setTargetCenter();
-        });
-        fsm.onStateUpdate(TeleopStates.AIMING_CENTER, () -> {
-            if (!movement.isBusy())
-                return TeleopStates.HOLD_AIM_CENTER;
-            else if(unexecutedCommand == Command.RELEASE_AIM){
-                unexecutedCommand = null;
-                return TeleopStates.TELEOP;
-            }
-            return null;
-        });
-
-        fsm.onStateEnter(TeleopStates.HOLD_AIM_CENTER, () -> {
-            movement.hold(poses.shootTeleOpCenter);
-        });
-        fsm.onStateUpdate(TeleopStates.HOLD_AIM_CENTER, () -> {
-            if (unexecutedCommand == Command.RELEASE_AIM ){
-                unexecutedCommand = null;
-                return TeleopStates.TELEOP;
-            }
-            return null;
-        });
-
-        fsm.init();
     }
 }

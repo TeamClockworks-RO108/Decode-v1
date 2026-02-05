@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.movement;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-public class PedroMovement {
+public class Movement {
     private final Follower follower;
     private final Telemetry telemetry;
     private final Vision vision;
@@ -22,7 +22,7 @@ public class PedroMovement {
     private boolean isRobotCentric = false;
     private boolean areControlsFlipped = false;
 
-    public PedroMovement(HardwareMap hardwareMap, Telemetry telemetry, Pose startingPose) {
+    public Movement(HardwareMap hardwareMap, Telemetry telemetry, Pose startingPose) {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose);
         follower.update();
@@ -104,7 +104,7 @@ public class PedroMovement {
         try {
             Pose cameraVision = vision.processVisionPose();
             telemetry.addData("Camera Pose", cameraVision);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
 

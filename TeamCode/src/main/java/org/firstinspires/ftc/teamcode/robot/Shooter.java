@@ -32,28 +32,19 @@ public class Shooter {
         INTAKE_REJECT,
         IDLE,
         SHOOTING,
-
-        SHOOTING_FAR,
         RAISE_FIRE,       // single launch
         LAUNCHING,
         RAISE_RAPID_FIRE, // triple launch
         LAUNCH1, RELOAD1,
         LAUNCH2, RELOAD2,
         LAUNCH3,
-        RAISE_RAPID_FIRE_FAR, // triple launcH FAR
-        LAUNCH1_FAR, RELOAD1_FAR,
-        LAUNCH2_FAR, RELOAD2_FAR,
-        LAUNCH3_FAR
     }
 
     public enum Command {
         TOGGLE_SHOOTING,
-        TOGGLE_SHOOTING_MIDDLE,
         FIRE, RAPID_FIRE,
         TOGGLE_INTAKE,
         TOGGLE_IDLE,
-
-        TOGGLE_FOR_RESET,
         TOGGLE_DEAD,
         TOGGLE_INTAKE_REJECT
     }
@@ -64,7 +55,6 @@ public class Shooter {
     public Shooter(HardwareMap hardwareMap, Telemetry telemetry, boolean isAuto) {
         pivot = hardwareMap.get(Servo.class, "pivot");
         pivot1 = hardwareMap.get(Servo.class, "pivot1");
-
 
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap, telemetry);
@@ -119,18 +109,9 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.SHOOTING;
             }
-            if(unexecutedCommand == Command.TOGGLE_SHOOTING_MIDDLE){
-                unexecutedCommand = null;
-                return State.SHOOTING_FAR;
-            }
             if (unexecutedCommand == Command.TOGGLE_DEAD) {
                 unexecutedCommand = null;
                 return State.DEAD;
-            }
-
-            if (unexecutedCommand == Command.TOGGLE_FOR_RESET) {
-                unexecutedCommand = null;
-                return State.SHOOTING;
             }
             return null;
         });
@@ -161,39 +142,12 @@ public class Shooter {
                 unexecutedCommand = null;
                 return State.RAISE_RAPID_FIRE;
             }
-
-            if (unexecutedCommand == Command.TOGGLE_FOR_RESET) {
-                unexecutedCommand = null;
-                return State.IDLE;
-            }
             return null;
-        });
-
-        fsm.onStateEnter(State.SHOOTING_FAR,  () -> {
-                    FlywheelConstants.setTargetMiddle();
-                    outtake.startFlywheel();
-                    intake.shoot();
-                });
-
-        fsm.onStateUpdate(State.SHOOTING_FAR, (current, timeSinceTransition) ->{
-            if (timeSinceTransition > 200) {
-                pivot.setPosition(pivotShoot);
-                pivot1.setPosition(pivotShoot);
-            }
-
-            if(unexecutedCommand == Command.RAPID_FIRE){
-                unexecutedCommand =null;
-                return State.RAISE_RAPID_FIRE_FAR;
-
-            }
-        return null;
         });
 
         setupFire();
 
         setupRapidFire();
-
-        setupRapidFireFAR();
 
         // INTAKE -> intake mechanism
         fsm.onStateEnter(State.INTAKE, () -> {
@@ -206,11 +160,6 @@ public class Shooter {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
                 unexecutedCommand = null;
                 return State.SHOOTING;
-            }
-
-            if (unexecutedCommand == Command.TOGGLE_SHOOTING_MIDDLE) {
-                unexecutedCommand = null;
-                return State.SHOOTING_FAR;
             }
             if (unexecutedCommand == Command.TOGGLE_IDLE) {
                 unexecutedCommand = null;
@@ -325,60 +274,6 @@ public class Shooter {
         fsm.onStateExit(State.LAUNCH3, () -> outtake.close());
     }
 
-    private void setupRapidFireFAR() {
-        fsm.onStateEnter(State.RAISE_RAPID_FIRE_FAR, () -> {
-            outtake.raise();
-        });
-        fsm.onStateUpdate(State.RAISE_RAPID_FIRE_FAR, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > raiseTime)
-                return State.LAUNCH1_FAR;
-            return null;
-        });
-
-        fsm.onStateEnter(State.LAUNCH1_FAR, () -> {
-            outtake.launch();
-        });
-        fsm.onStateUpdate(State.LAUNCH1_FAR, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > launchingTime)
-                return State.RELOAD1;
-            return null;
-        });
-        fsm.onStateEnter(State.RELOAD1_FAR, () -> {
-            outtake.reload();
-            intake.openGripper();
-            intake.push();
-        });
-        fsm.onStateUpdate(State.RELOAD1_FAR, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > reloadTime + 1000)
-                return State.LAUNCH2_FAR;
-            return null;
-        });
-
-        fsm.onStateEnter(State.LAUNCH2_FAR, () -> outtake.launch());
-        fsm.onStateUpdate(State.LAUNCH2_FAR, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > launchingTime)
-                return State.RELOAD2_FAR;
-            return null;
-        });
-        fsm.onStateEnter(State.RELOAD2_FAR, () -> outtake.reload());
-        fsm.onStateUpdate(State.RELOAD2_FAR, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > reloadTime + 1050)
-                return State.LAUNCH3_FAR;
-            return null;
-        });
-
-        fsm.onStateEnter(State.LAUNCH3_FAR, () -> {
-            outtake.launch();
-            intake.shoot();
-        });
-        fsm.onStateUpdate(State.LAUNCH3_FAR, (current, timeSinceTransition) -> {
-            if (timeSinceTransition > launchingTime)
-                return State.SHOOTING;
-            return null;
-        });
-        fsm.onStateExit(State.LAUNCH3_FAR, () -> outtake.close());
-    }
-
     public void updateShooter() {
         try {
             unexecutedCommand = (!queue.isEmpty() && unexecutedCommand == null) ?
@@ -389,10 +284,5 @@ public class Shooter {
 
         fsm.update();
         outtake.update();
-    }
-
-    public void resetShooter(){
-        outtake.stopFlywheel();
-        outtake.startFlywheel();
     }
 }

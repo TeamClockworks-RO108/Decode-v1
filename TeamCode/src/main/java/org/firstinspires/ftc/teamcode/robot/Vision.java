@@ -1,19 +1,13 @@
-package org.firstinspires.ftc.teamcode.movement;
+package org.firstinspires.ftc.teamcode.robot;
 
-import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-import java.util.List;
-import java.util.Optional;
 
 public class Vision {
     private final Limelight3A limelight;
