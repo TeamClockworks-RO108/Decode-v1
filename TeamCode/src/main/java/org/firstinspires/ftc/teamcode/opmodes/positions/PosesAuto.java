@@ -32,13 +32,15 @@ public class PosesAuto extends Poses {
     public final Pose secondIntakeEnd;
     public final Pose thirdIntake;
     public final Pose thirdIntakeEnd;
-    public final Pose middleOftheField;
+    public final Pose middleOftheFieldBLUE;
+    public final Pose middleOftheFieldRED;
     public final Pose gateOpen69;
     public final Pose gateCorner;
     public final Pose gateOpen;
     public final Pose gateOpenEnd;
     public final Pose turnCollectFromGate;
     public final Pose goCollectFromGate;
+    public final Pose goCollectFromGateOffic;
     public final Pose firstIntake69;
     public final Pose firstIntakeEnd69;
 
@@ -62,13 +64,14 @@ public class PosesAuto extends Poses {
         parkStart = createPose(0, 0, 0);
         parkHome = createPose(24, 0, 0);
 
-        shootAuto = createPose(144-47.7, 144-47.7, 220);
+        shootAuto = createPose(144-48.6, 144-48.6, 226.5);
         shootAuto.setHeading(shootAuto.getHeading() + SHOOT_OFFSET);
 
         shootMiddleAuto = createPose(144-55, 144-55, 225.0);
         shootMiddleAuto.setHeading(shootMiddleAuto.getHeading() + SHOOT_OFFSET);
 
-        middleOftheField = createPose(144-52.7, 144-66, 220); // pose so as to not touch the first a ball
+        middleOftheFieldBLUE = createPose(144-52.7, 144-66, 220); // pose so as to not touch the first a ball
+        middleOftheFieldRED = createPose(144-54.5, 144-66, 220); // pose so as to not touch the first a ball
 
         firstIntake = createPose(INTAKE_START_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
         firstIntakeEnd = createPose(FIRST_INTAKE_END_X, FIRST_INTAKE_Y, INTAKE_ANGLE);
@@ -77,8 +80,10 @@ public class PosesAuto extends Poses {
         thirdIntake = createPose(INTAKE_START_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
         thirdIntakeEnd = createPose(THIRD_INTAKE_END_X, THIRD_INTAKE_Y, INTAKE_ANGLE);
 
-        firstIntake69 = createPose(INTAKE_START_X, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
-        firstIntakeEnd69 = createPose(SECOND_INTAKE_END_X - 2.5, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
+      firstIntake69 = createPose(INTAKE_START_X, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
+       firstIntakeEnd69 = createPose(SECOND_INTAKE_END_X - 2.5, SECOND_INTAKE_Y + 1, INTAKE_ANGLE);
+    // red  firstIntake69 = createPose(INTAKE_START_X, SECOND_INTAKE_Y -2.25, INTAKE_ANGLE);
+   // red  firstIntakeEnd69 = createPose(SECOND_INTAKE_END_X - 2.5, SECOND_INTAKE_Y -2.25, INTAKE_ANGLE);
 
         secondIntake69 = createPose(INTAKE_START_X, THIRD_INTAKE_Y + 1.5, INTAKE_ANGLE);
         secondIntakeEnd69 = createPose(SECOND_INTAKE_END_X, THIRD_INTAKE_Y + 1.5, INTAKE_ANGLE);
@@ -88,18 +93,20 @@ public class PosesAuto extends Poses {
         gateCorner = createPose(122, 60, INTAKE_ANGLE);
         gateOpenEnd = createPose(144-16.8, 72.5, INTAKE_ANGLE);
         gateOpen = createPose (115, 74.7, INTAKE_ANGLE);
-        gateOpen69 = createPose (112.8  , 74.7, INTAKE_ANGLE);
+        gateOpen69 = createPose (114  , 74.7, INTAKE_ANGLE);
 
         turnCollectFromGate = createPose(144-47.7, 61.5, 32.5);
-        goCollectFromGate = createPose (134, 61.5, 32.5 );
+        goCollectFromGateOffic = createPose (135.2, 61.5, 32.5 );
+        goCollectFromGate = createPose (134.2, 59.7, 32.5 );
+      // red    goCollectFromGate = createPose (134.2, 58.5, 32.5 );
 
         //
         // TO BE CHANGED BASED ON THE FIELD BEFORE EVERY EVENT!!!
         // CALIBRATION NEEDED!!!
         if (color == TeamColor.RED)
-            calibrateStart(0, 2, -5);
+            calibrateStart(0, -1.5, -5);
         if (color == TeamColor.BLUE)
-            calibrateStart(calibratedXBLUE, calibratedYBLUE  , calibratedHEADINGBLUE);
+            calibrateStart(0, -1.5  , 0);
 
    }
 

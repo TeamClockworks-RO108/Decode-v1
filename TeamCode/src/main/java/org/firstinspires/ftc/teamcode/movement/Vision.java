@@ -24,7 +24,7 @@ public class Vision {
     public Vision(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight = hardwareMap.get(Limelight3A.class, "Ethernet Device");
         limelight.setPollRateHz(100);
         limelight.start();
         limelight.pipelineSwitch(0);

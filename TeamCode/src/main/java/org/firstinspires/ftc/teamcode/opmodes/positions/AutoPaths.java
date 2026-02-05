@@ -74,7 +74,7 @@ public class AutoPaths {
 
 
         goFirstIntake69 = createPath(poses.shootMiddleAuto, poses.firstIntake69, poses.firstIntakeEnd69);
-        goShootFirstIntake69 = createPath(poses.firstIntakeEnd69, poses.middleOftheField ,  poses.shootMiddleAuto);
+        goShootFirstIntake69 = createPath(poses.firstIntakeEnd69, poses.middleOftheFieldBLUE ,  poses.shootMiddleAuto);
 
         goSecondIntake69 = createPath(poses.shootMiddleAuto, poses.secondIntake69, poses.secondIntakeEnd69);
         goShootSecondIntake69 = createPath(poses.secondIntakeEnd69, poses.shootMiddleAuto);

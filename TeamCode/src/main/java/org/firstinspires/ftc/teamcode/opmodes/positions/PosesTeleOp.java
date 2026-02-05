@@ -13,7 +13,7 @@ public class PosesTeleOp extends Poses {
         none = createPose(0, 0, 0);
         start = createPose(144 - 24, 144 - 54, 225);
         humanBase = createPose(9, 9, 180);
-        shootTeleOp = createPose(144 - 47.7, 144 - 47.7, 220);
+        shootTeleOp = createPose(144 - 51,144 - 48.5, 223.7);
         shootTeleOpCenter = createPose(144 - 69.5, 144 - 69.5, 225);
         parking = createPose(36, 31, 180);
         gate = createPose(127, 69, 180);
