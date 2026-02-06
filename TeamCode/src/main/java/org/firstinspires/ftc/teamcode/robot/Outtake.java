@@ -19,7 +19,7 @@ public class Outtake implements Subsystem {
     }
 
     private final StateMachine<State> fsm = new StateMachine<>(State.OFF);
-    private State targetState = State.OFF;
+    private State requestedState = State.OFF;
 
     private final DcMotorEx flywheel;
     private final Servo flap;
@@ -56,19 +56,19 @@ public class Outtake implements Subsystem {
     }
 
     public void off() {
-        targetState = State.OFF;
+        requestedState = State.OFF;
     }
     public void charge() {
-        targetState = State.CHARGING;
+        requestedState = State.CHARGING;
     }
     public void raise() {
-        targetState = State.RAISED;
+        requestedState = State.RAISED;
     }
     public void launch() {
-        targetState = State.LAUNCHING;
+        requestedState = State.LAUNCHING;
     }
     public void reload() {
-        targetState = State.RELOADING;
+        requestedState = State.RELOADING;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Outtake implements Subsystem {
             targetVelocity = 0;
         });
         fsm.onStateUpdate(State.OFF, () -> {
-            if (targetState == State.CHARGING) return State.CHARGING;
+            if (requestedState == State.CHARGING) return State.CHARGING;
             return null;
         });
 
@@ -103,8 +103,8 @@ public class Outtake implements Subsystem {
             flap.setPosition(flapDown);
         });
         fsm.onStateUpdate(State.CHARGING, () -> {
-            if (targetState == State.OFF) return State.OFF;
-            if (targetState == State.RAISED) return State.RAISED;
+            if (requestedState == State.OFF) return State.OFF;
+            if (requestedState == State.RAISED) return State.RAISED;
             return null;
         });
 
@@ -112,7 +112,7 @@ public class Outtake implements Subsystem {
             barrier.setPosition(barrierUp);
         });
         fsm.onStateUpdate(State.RAISED, () -> {
-            if (targetState == State.LAUNCHING) return State.LAUNCHING;
+            if (requestedState == State.LAUNCHING) return State.LAUNCHING;
             return null;
         });
 
@@ -120,8 +120,8 @@ public class Outtake implements Subsystem {
             flap.setPosition(flapUp);
         });
         fsm.onStateUpdate(State.LAUNCHING, () -> {
-            if (targetState == State.RELOADING) return State.RELOADING;
-            if (targetState == State.CHARGING) return State.CHARGING;
+            if (requestedState == State.RELOADING) return State.RELOADING;
+            if (requestedState == State.CHARGING) return State.CHARGING;
             return null;
         });
 
@@ -129,8 +129,8 @@ public class Outtake implements Subsystem {
             flap.setPosition(flapDown);
         });
         fsm.onStateUpdate(State.RELOADING, () -> {
-            if (targetState == State.LAUNCHING) return State.LAUNCHING;
-            if (targetState == State.CHARGING) return State.CHARGING;
+            if (requestedState == State.LAUNCHING) return State.LAUNCHING;
+            if (requestedState == State.CHARGING) return State.CHARGING;
             return null;
         });
     }

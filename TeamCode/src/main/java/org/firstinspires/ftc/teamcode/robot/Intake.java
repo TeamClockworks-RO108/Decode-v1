@@ -17,7 +17,7 @@ public class Intake implements Subsystem {
     }
 
     private final StateMachine<State> fsm = new StateMachine<>(State.OFF);
-    private State targetState = State.OFF;
+    private State requestedState = State.OFF;
 
     private final DcMotor intakeMotor;
     private final DcMotor miniIntake;
@@ -50,19 +50,19 @@ public class Intake implements Subsystem {
     }
 
     public void intake() {
-        targetState = State.INTAKE;
+        requestedState = State.INTAKE;
     }
     public void push() {
-        targetState = State.PUSH;
+        requestedState = State.PUSH;
     }
     public void idle() {
-        targetState = State.IDLE;
+        requestedState = State.IDLE;
     }
     public void shoot() {
-        targetState = State.SHOOT;
+        requestedState = State.SHOOT;
     }
     public void reject() {
-        targetState = State.REJECT;
+        requestedState = State.REJECT;
     }
 
     private void closeGripper() {
@@ -76,9 +76,9 @@ public class Intake implements Subsystem {
 
     private void setupFSM() {
         fsm.onStateUpdate(State.OFF, () -> {
-            if (targetState == State.IDLE) return State.IDLE;
-            if (targetState == State.SHOOT) return State.SHOOT;
-            if (targetState == State.INTAKE) return State.INTAKE;
+            if (requestedState == State.IDLE) return State.IDLE;
+            if (requestedState == State.SHOOT) return State.SHOOT;
+            if (requestedState == State.INTAKE) return State.INTAKE;
             return null;
         });
         fsm.onStateExit(State.OFF, () -> {
@@ -91,9 +91,9 @@ public class Intake implements Subsystem {
             openGripper();
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
-            if (targetState == State.IDLE) return State.IDLE;
-            if (targetState == State.SHOOT) return State.SHOOT;
-            if (targetState == State.REJECT) return State.REJECT;
+            if (requestedState == State.IDLE) return State.IDLE;
+            if (requestedState == State.SHOOT) return State.SHOOT;
+            if (requestedState == State.REJECT) return State.REJECT;
             return null;
         });
         fsm.onStateExit(State.INTAKE, () -> {
@@ -106,9 +106,9 @@ public class Intake implements Subsystem {
             openGripper();
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
-            if (targetState == State.IDLE) return State.IDLE;
-            if (targetState == State.SHOOT) return State.SHOOT;
-            if (targetState == State.INTAKE) return State.INTAKE;
+            if (requestedState == State.IDLE) return State.IDLE;
+            if (requestedState == State.SHOOT) return State.SHOOT;
+            if (requestedState == State.INTAKE) return State.INTAKE;
             return null;
         });
         fsm.onStateExit(State.INTAKE, () -> {
@@ -120,8 +120,8 @@ public class Intake implements Subsystem {
             miniIntake.setPower(idlePower);
         });
         fsm.onStateUpdate(State.IDLE, () -> {
-            if (targetState == State.SHOOT) return State.SHOOT;
-            if (targetState == State.INTAKE) return State.INTAKE;
+            if (requestedState == State.SHOOT) return State.SHOOT;
+            if (requestedState == State.INTAKE) return State.INTAKE;
             return null;
         });
 
@@ -130,9 +130,9 @@ public class Intake implements Subsystem {
             miniIntake.setPower(shootingPower);
         });
         fsm.onStateUpdate(State.SHOOT, () -> {
-            if (targetState == State.IDLE) return State.IDLE;
-            if (targetState == State.INTAKE) return State.INTAKE;
-            if (targetState == State.PUSH) return State.PUSH;
+            if (requestedState == State.IDLE) return State.IDLE;
+            if (requestedState == State.INTAKE) return State.INTAKE;
+            if (requestedState == State.PUSH) return State.PUSH;
             return null;
         });
 
@@ -142,7 +142,7 @@ public class Intake implements Subsystem {
             openGripper();
         });
         fsm.onStateUpdate(State.PUSH, () -> {
-            if (targetState == State.SHOOT) return State.SHOOT;
+            if (requestedState == State.SHOOT) return State.SHOOT;
             return null;
         });
     }
