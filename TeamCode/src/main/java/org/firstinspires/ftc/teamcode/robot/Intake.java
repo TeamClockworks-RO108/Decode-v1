@@ -45,6 +45,7 @@ public class Intake implements Subsystem {
         setupFSM();
     }
 
+    @Override
     public void update() {
         fsm.update();
     }
@@ -105,13 +106,13 @@ public class Intake implements Subsystem {
             miniIntake.setPower(-intakePower);
             openGripper();
         });
-        fsm.onStateUpdate(State.INTAKE, () -> {
+        fsm.onStateUpdate(State.REJECT, () -> {
             if (requestedState == State.IDLE) return State.IDLE;
             if (requestedState == State.SHOOT) return State.SHOOT;
             if (requestedState == State.INTAKE) return State.INTAKE;
             return null;
         });
-        fsm.onStateExit(State.INTAKE, () -> {
+        fsm.onStateExit(State.REJECT, () -> {
             closeGripper();
         });
 
@@ -145,5 +146,7 @@ public class Intake implements Subsystem {
             if (requestedState == State.SHOOT) return State.SHOOT;
             return null;
         });
+
+        fsm.init();
     }
 }

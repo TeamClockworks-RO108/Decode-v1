@@ -15,7 +15,7 @@ public class Outtake implements Subsystem {
         CHARGING,
         RAISED,
         LAUNCHING,
-        RELOADING
+        RELOADING,
     }
 
     private final StateMachine<State> fsm = new StateMachine<>(State.OFF);
@@ -74,6 +74,9 @@ public class Outtake implements Subsystem {
     @Override
     public void update() {
         fsm.update();
+
+        telemetry.addData("Flywheel velocity ticks/sec", flywheel.getVelocity());
+
         flywheel.setVelocity(targetVelocity);
 
         boolean changed = constants.d != FlywheelConstants.kd ||
@@ -133,5 +136,7 @@ public class Outtake implements Subsystem {
             if (requestedState == State.CHARGING) return State.CHARGING;
             return null;
         });
+
+        fsm.init();
     }
 }
