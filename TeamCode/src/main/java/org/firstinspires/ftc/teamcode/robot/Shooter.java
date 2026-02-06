@@ -75,15 +75,12 @@ public class Shooter {
             }
             return null;
         });
-        fsm.onStateExit(State.DEAD, () -> {
-            outtake.close();
-        });
 
         // IDLE -> human load position
         fsm.onStateEnter(State.IDLE, () -> {
             pivot.idle();
             intake.idle();
-            outtake.stopFlywheel();
+            outtake.off();
         });
         fsm.onStateUpdate(State.IDLE, () -> {
             if (unexecutedCommand == Command.TOGGLE_INTAKE) {
@@ -103,7 +100,7 @@ public class Shooter {
 
         // SHOOTING -> launch position
         fsm.onStateEnter(State.SHOOTING,  () -> {
-            outtake.startFlywheel();
+            outtake.charge();
             intake.shoot();
         });
         fsm.onStateUpdate(State.SHOOTING,  (current, timeSinceTransition) -> {
@@ -137,7 +134,7 @@ public class Shooter {
         fsm.onStateEnter(State.INTAKE, () -> {
             pivot.intake();
             intake.intake();
-            outtake.stopFlywheel();
+            outtake.off();
         });
         fsm.onStateUpdate(State.INTAKE, () -> {
             if (unexecutedCommand == Command.TOGGLE_SHOOTING) {
@@ -193,7 +190,7 @@ public class Shooter {
             return null;
         });
         fsm.onStateExit(State.LAUNCHING, () -> {
-            outtake.close();
+            outtake.charge();
             intake.shoot();
         });
     }
@@ -248,7 +245,7 @@ public class Shooter {
                 return State.SHOOTING;
             return null;
         });
-        fsm.onStateExit(State.LAUNCH3, () -> outtake.close());
+        fsm.onStateExit(State.LAUNCH3, () -> outtake.charge());
     }
 
     public void updateShooter() {

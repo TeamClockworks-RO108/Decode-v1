@@ -10,4 +10,8 @@ public class FlywheelConstants {
     public static double kd = 5;
     public static double kf = 0;
     public static double target = 1250;
+
+    public static PIDFCoefficients getPIDF() {
+        return new PIDFCoefficients(kp, ki, kd, kf);
+    }
 }

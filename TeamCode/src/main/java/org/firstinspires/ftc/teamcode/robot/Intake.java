@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-public class Intake {
+public class Intake implements Subsystem {
     public enum State {
         OFF,
         INTAKE,

@@ -1,19 +1,26 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.bylazar.graph.GraphManager;
-import com.bylazar.graph.PanelsGraph;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorImplEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-public class Outtake {
+public class Outtake implements Subsystem {
+    public enum State {
+        OFF,
+        CHARGING,
+        RAISED,
+        LAUNCHING,
+        RELOADING
+    }
+
+    private final StateMachine<State> fsm = new StateMachine<>(State.OFF);
+    private State targetState = State.OFF;
+
     private final DcMotorEx flywheel;
     private final Servo flap;
     private final Servo barrier;
@@ -24,7 +31,7 @@ public class Outtake {
     private final double barrierUp = 0.95;
     private final double barrierDown = 0.40;
 
-    private final PIDFCoefficients constants = new PIDFCoefficients();
+    private PIDFCoefficients constants;
 
     private Telemetry telemetry;
 
@@ -37,39 +44,36 @@ public class Outtake {
 
         this.telemetry = telemetry;
 
-        constants.d = FlywheelConstants.kd;
-        constants.p = FlywheelConstants.kp;
-        constants.i = FlywheelConstants.ki;
-        constants.f = FlywheelConstants.kf;
+        constants = FlywheelConstants.getPIDF();
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                 constants);
 
         flap.setDirection(Servo.Direction.REVERSE);
+
+        setupFSM();
     }
 
-    public void close() {
-        flap.setPosition(flapDown);
-        barrier.setPosition(barrierDown);
+    public void off() {
+        targetState = State.OFF;
+    }
+    public void charge() {
+        targetState = State.CHARGING;
     }
     public void raise() {
-        barrier.setPosition(barrierUp);
+        targetState = State.RAISED;
     }
     public void launch() {
-        flap.setPosition(flapUp);
+        targetState = State.LAUNCHING;
     }
     public void reload() {
-        flap.setPosition(flapDown);
+        targetState = State.RELOADING;
     }
 
-    public void startFlywheel() {
-        targetVelocity = FlywheelConstants.target;
-    }
-    public void stopFlywheel() {
-        targetVelocity = 0;
-    }
+    @Override
     public void update() {
+        fsm.update();
         flywheel.setVelocity(targetVelocity);
 
         boolean changed = constants.d != FlywheelConstants.kd ||
@@ -78,11 +82,56 @@ public class Outtake {
                 constants.f != FlywheelConstants.kf;
 
         if (changed) {
-            constants.d = FlywheelConstants.kd;
-            constants.p = FlywheelConstants.kp;
-            constants.i = FlywheelConstants.ki;
-            constants.f = FlywheelConstants.kf;
+            constants = FlywheelConstants.getPIDF();
             flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                     constants);
         }
-    }}
+    }
+
+    private void setupFSM() {
+        fsm.onStateEnter(State.OFF, () -> {
+            targetVelocity = 0;
+        });
+        fsm.onStateUpdate(State.OFF, () -> {
+            if (targetState == State.CHARGING) return State.CHARGING;
+            return null;
+        });
+
+        fsm.onStateEnter(State.CHARGING, () -> {
+            targetVelocity = FlywheelConstants.target;
+            barrier.setPosition(barrierDown);
+            flap.setPosition(flapDown);
+        });
+        fsm.onStateUpdate(State.CHARGING, () -> {
+            if (targetState == State.OFF) return State.OFF;
+            if (targetState == State.RAISED) return State.RAISED;
+            return null;
+        });
+
+        fsm.onStateEnter(State.RAISED, () -> {
+            barrier.setPosition(barrierUp);
+        });
+        fsm.onStateUpdate(State.RAISED, () -> {
+            if (targetState == State.LAUNCHING) return State.LAUNCHING;
+            return null;
+        });
+
+        fsm.onStateEnter(State.LAUNCHING, () -> {
+            flap.setPosition(flapUp);
+        });
+        fsm.onStateUpdate(State.LAUNCHING, () -> {
+            if (targetState == State.RELOADING) return State.RELOADING;
+            if (targetState == State.CHARGING) return State.CHARGING;
+            return null;
+        });
+
+        fsm.onStateEnter(State.RELOADING, () -> {
+            flap.setPosition(flapDown);
+        });
+        fsm.onStateUpdate(State.RELOADING, () -> {
+            if (targetState == State.LAUNCHING) return State.LAUNCHING;
+            if (targetState == State.CHARGING) return State.CHARGING;
+            return null;
+        });
+    }
+}
