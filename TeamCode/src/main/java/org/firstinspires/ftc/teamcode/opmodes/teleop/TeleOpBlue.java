@@ -6,10 +6,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.command.RobotTaskFactory;
+import org.firstinspires.ftc.teamcode.command.TaskScheduler;
+import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.Movement;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
 import org.firstinspires.ftc.teamcode.robot.Brakes;
+import org.firstinspires.ftc.teamcode.robot.Outtake;
+import org.firstinspires.ftc.teamcode.robot.Pivot;
 import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
@@ -18,8 +23,13 @@ public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
     private PosesTeleOp poses;
 
+    private TaskScheduler scheduler = new TaskScheduler();
+    private RobotTaskFactory robotTasks = null;
+
     private Movement movement = null;
-    private Shooter shooter = null;
+    private Pivot pivot = null;
+    private Intake intake = null;
+    private Outtake outtake = null;
 
     private Brakes brakes = null;
 
@@ -48,9 +58,12 @@ public class TeleOpBlue extends OpMode {
         poses = new PosesTeleOp(color);
 
         brakes = new Brakes(hardwareMap);
-
         movement = new Movement(hardwareMap, panelsTelemetry, poses.start);
-        shooter = new Shooter(hardwareMap, panelsTelemetry, false);
+        pivot = new Pivot(hardwareMap);
+        intake = new Intake(hardwareMap);
+        outtake = new Outtake(hardwareMap, telemetry);
+
+        robotTasks = new RobotTaskFactory(pivot, intake, outtake);
 
         // movement command setup
         fieldCentricReset.onPress(() -> movement.resetHeading(poses.none.getHeading()));
@@ -85,26 +98,22 @@ public class TeleOpBlue extends OpMode {
         if (color == TeamColor.RED) movement.flipControls();
 
         // shooter command setup
-        toggleShooting.onPress(() -> shooter.command(Shooter.Command.TOGGLE_SHOOTING));
-        toggleIntake.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE));
-        toggleIdle.onPress(() -> shooter.command(Shooter.Command.TOGGLE_IDLE));
-        toggleIntakeReject.onPress(() -> shooter.command(Shooter.Command.TOGGLE_INTAKE_REJECT));
-        fire.onPress(() -> shooter.command(Shooter.Command.FIRE));
-        rapidFire.onPress(() -> shooter.command(Shooter.Command.RAPID_FIRE));
-
-        shooter.setupShooter();
+        toggleShooting.onPress(() -> scheduler.schedule(robotTasks.pivotShoot()));
+        toggleIntake.onPress(() -> scheduler.schedule(robotTasks.pivotIntake()));
+        toggleIdle.onPress(() -> scheduler.schedule(robotTasks.pivotIdle()));
+        toggleIntakeReject.onPress(() -> scheduler.schedule(robotTasks.intakeRejectToggle()));
+        fire.onPress(() -> scheduler.schedule(robotTasks.outtakeFire()));
+        rapidFire.onPress(() -> scheduler.schedule(robotTasks.outtakeRapidFire()));
     }
 
     @Override
     public void start() {
         movement.startTeleop();
-        shooter.command(Shooter.Command.TOGGLE_SHOOTING);
+        scheduler.schedule(robotTasks.pivotShoot());
     }
 
     @Override
     public void loop() {
-        movement.updateTeleOp(gamepad1, gamepad2);
-
         // movement options
         fieldCentricReset.update(gamepad1.dpad_up);
         brake.update(gamepad2.right_trigger > 0.01);
@@ -123,7 +132,14 @@ public class TeleOpBlue extends OpMode {
         fire.update(gamepad1.triangle);
         rapidFire.update(gamepad1.cross);
 
-        shooter.updateShooter();
+        // run updates
+        // Sensors first, then the scheduler
+        // Actuators last
+        scheduler.run();
+        intake.update();
+        outtake.update();
+
+        movement.updateTeleOp(gamepad1, gamepad2);
 
         panelsTelemetry.update();
     }

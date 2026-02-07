@@ -11,7 +11,6 @@ import java.util.Set;
 
 public class TaskScheduler {
     private final List<Task> activeTasks = new ArrayList<>();
-    private final Set<Subsystem> registeredSubsystems = new HashSet<>();
 
     public void schedule(Task task, boolean isHighPriority) {
         if (isHighPriority) {
@@ -23,15 +22,18 @@ public class TaskScheduler {
                 return false;
             });
         } else {
-            if (!Collections.disjoint(registeredSubsystems, task.getRequirements())) {
-                return; // skip if systems are busy
+            for (Task active : activeTasks) {
+                if (!Collections.disjoint(active.getRequirements(), task.getRequirements()))
+                    return; // skip if necessary systems are busy
             }
         }
 
         // start new task
         task.init();
-        registerSubsystem(task.getRequirements().toArray(new Subsystem[0]));
         activeTasks.add(task);
+    }
+    public void schedule(Task task) {
+        schedule(task, false);
     }
 
     public void run() {
@@ -45,10 +47,6 @@ public class TaskScheduler {
                 iterator.remove();
             }
         }
-    }
-
-    public void registerSubsystem(Subsystem... subsystems) {
-        Collections.addAll(registeredSubsystems, subsystems);
     }
 
     public void reset() {

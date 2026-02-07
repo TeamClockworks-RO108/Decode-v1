@@ -66,6 +66,10 @@ public class Intake implements Subsystem {
         requestedState = State.REJECT;
     }
 
+    public State getState() {
+        return fsm.getCurrentState();
+    }
+
     private void closeGripper() {
         leftGripper.setPosition(leftGripperClosed);
         rightGripper.setPosition(rightGripperClosed);

@@ -88,6 +88,10 @@ public class Outtake implements Subsystem {
         }
     }
 
+    public State getState() {
+        return fsm.getCurrentState();
+    }
+
     private void setupFSM() {
         fsm.onStateEnter(State.OFF, () -> {
             targetVelocity = 0;
