@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.command.Subsystem;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public class Intake implements Subsystem {
@@ -45,7 +46,6 @@ public class Intake implements Subsystem {
         setupFSM();
     }
 
-    @Override
     public void update() {
         fsm.update();
     }

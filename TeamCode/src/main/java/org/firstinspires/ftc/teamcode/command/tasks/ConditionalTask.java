@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.command;
+package org.firstinspires.ftc.teamcode.command.tasks;
 
 import java.util.function.Supplier;
 

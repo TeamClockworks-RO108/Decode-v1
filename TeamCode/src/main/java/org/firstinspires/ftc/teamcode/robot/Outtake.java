@@ -7,9 +7,15 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.command.Subsystem;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 public class Outtake implements Subsystem {
+    private static final double flapDown = 0.3;
+    private static final double flapUp = 0.02;
+    private static final double barrierUp = 0.95;
+    private static final double barrierDown = 0.40;
+
     public enum State {
         OFF,
         CHARGING,
@@ -25,15 +31,8 @@ public class Outtake implements Subsystem {
     private final Servo flap;
     private final Servo barrier;
 
-    private final double flapDown = 0.3;
-    private final double flapUp = 0.02;
-
-    private final double barrierUp = 0.95;
-    private final double barrierDown = 0.40;
-
     private PIDFCoefficients constants;
-
-    private Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private double targetVelocity;
 
@@ -43,7 +42,6 @@ public class Outtake implements Subsystem {
         barrier = hardwareMap.get(Servo.class, "barrier");
 
         this.telemetry = telemetry;
-
         constants = FlywheelConstants.getPIDF();
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -71,7 +69,6 @@ public class Outtake implements Subsystem {
         requestedState = State.RELOADING;
     }
 
-    @Override
     public void update() {
         fsm.update();
 
@@ -116,6 +113,7 @@ public class Outtake implements Subsystem {
         });
         fsm.onStateUpdate(State.RAISED, () -> {
             if (requestedState == State.LAUNCHING) return State.LAUNCHING;
+            if (requestedState == State.CHARGING) return State.CHARGING;
             return null;
         });
 

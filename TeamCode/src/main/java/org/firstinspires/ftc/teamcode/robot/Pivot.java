@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.command.Subsystem;
+
 public class Pivot implements Subsystem {
     public enum State {
         OFF,
@@ -39,9 +41,6 @@ public class Pivot implements Subsystem {
         pivot1.setPosition(pivotIntake);
         state = State.INTAKE;
     }
-
-    @Override
-    public void update() {}
 
     public State getState() {
         return state;

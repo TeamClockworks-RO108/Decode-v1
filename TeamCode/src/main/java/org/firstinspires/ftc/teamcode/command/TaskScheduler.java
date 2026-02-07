@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import org.firstinspires.ftc.teamcode.robot.Subsystem;
+import org.firstinspires.ftc.teamcode.command.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,18 +13,24 @@ public class TaskScheduler {
     private final List<Task> activeTasks = new ArrayList<>();
     private final Set<Subsystem> registeredSubsystems = new HashSet<>();
 
-    public void schedule(Task task) {
-        // check for dependencies?
-        activeTasks.removeIf(existing -> {
-            if (!Collections.disjoint(existing.getRequirements(), task.getRequirements())) {
-                existing.end(true); // Interrupted
-                return true;
+    public void schedule(Task task, boolean isHighPriority) {
+        if (isHighPriority) {
+            activeTasks.removeIf(existing -> {
+                if (!Collections.disjoint(existing.getRequirements(), task.getRequirements())) {
+                    existing.end(true); // end tasks of busy systems
+                    return true;
+                }
+                return false;
+            });
+        } else {
+            if (!Collections.disjoint(registeredSubsystems, task.getRequirements())) {
+                return; // skip if systems are busy
             }
-            return false;
-        });
+        }
 
         // start new task
         task.init();
+        registerSubsystem(task.getRequirements().toArray(new Subsystem[0]));
         activeTasks.add(task);
     }
 
