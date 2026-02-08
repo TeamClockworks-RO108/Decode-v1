@@ -9,58 +9,46 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.command.Subsystem;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-public class Movement {
+public class Movement implements Subsystem {
+    private static final double FINE_POWER = 0.25;
+
     private final Follower follower;
     private final Telemetry telemetry;
-    private final Vision vision;
 
-
-    private final double finePower = 0.25;
-    private boolean isRobotCentric = false;
     private boolean areControlsFlipped = false;
 
     public Movement(HardwareMap hardwareMap, Telemetry telemetry, Pose startingPose) {
+        this.telemetry = telemetry;
+
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose);
         follower.update();
-
-        vision = new Vision(hardwareMap, telemetry);
-
-        this.telemetry = telemetry;
     }
 
-    // teleop functions
+    public void update() {
+        follower.update();
+
+        // telemetry
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+    }
+    // TeleOp specific update
+    public void update(Gamepad gamepad1, Gamepad gamepad2) {
+        update();
+
+        double y = -gamepad1.left_stick_y - gamepad2.left_stick_y * FINE_POWER;
+        double x = -gamepad1.left_stick_x - gamepad2.left_stick_x * FINE_POWER;
+        double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * FINE_POWER;
+        setTeleop(y, x, heading);
+    }
+
     public void resetHeading(double heading) {
         follower.setPose(follower.getPose().setHeading(heading));
-    }
-
-    public void hold(Pose pose) {
-        follower.holdPoint(new BezierPoint(pose.getX(), pose.getY()), pose.getHeading());
-    }
-
-    public void startTeleop() {
-        follower.startTeleOpDrive();
-    }
-
-    private void setTeleop(double y, double x, double heading) {
-        if (!areControlsFlipped)
-            follower.setTeleOpDrive(-y, -x, heading, isRobotCentric);
-        else
-            follower.setTeleOpDrive(y, x, heading, isRobotCentric);
-    }
-
-    public Follower getFollower() {
-        return follower;
-    }
-    public boolean isBusy() {
-        return follower.isBusy();
-    }
-
-    public void followPath(PathChain path) {
-        follower.followPath(path);
     }
 
     public void goToPose(Pose newPose) {
@@ -70,47 +58,23 @@ public class Movement {
                 .build());
     }
 
-    public void setPose(Pose pose) {
-        follower.setPose(pose);
-    }
-
-    public void updateToCameraPose(TeamColor color) throws Exception {
-        Pose cameraPose = vision.processVisionPose();
-        // Fine tuned. Do not touch. Unless the field is way off...
-        if (color == TeamColor.BLUE)
-            follower.setPose(new Pose(cameraPose.getX(), cameraPose.getY()+8, cameraPose.getHeading()));
-        else if (color == TeamColor.RED)
-            follower.setPose(new Pose(cameraPose.getX()+8, cameraPose.getY()-4, cameraPose.getHeading()));
-    }
-
     public void flipControls() {
         areControlsFlipped = true;
     }
 
     public void breakFollowing() {
         follower.breakFollowing();
-        startTeleop();
+        follower.startTeleopDrive();
     }
 
-    public void update() {
-        follower.update();
-        // telemetry
-        telemetry.addData("x, y", follower.getPose().getX() + " " + follower.getPose().getY());
-        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+    public Follower getFollower() {
+        return follower;
     }
-    public void updateTeleOp(Gamepad gamepad1, Gamepad gamepad2) {
-        update();
 
-        try {
-            Pose cameraVision = vision.processVisionPose();
-            telemetry.addData("Camera Pose", cameraVision);
-        } catch (Exception ignored) {
-
-        }
-
-        double y = -gamepad1.left_stick_y - gamepad2.left_stick_y * finePower;
-        double x = -gamepad1.left_stick_x - gamepad2.left_stick_x * finePower;
-        double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * finePower;
-        setTeleop(y, x, heading);
+    private void setTeleop(double y, double x, double heading) {
+        if (!areControlsFlipped)
+            follower.setTeleOpDrive(-y, -x, heading, false);
+        else
+            follower.setTeleOpDrive(y, x, heading, false);
     }
 }

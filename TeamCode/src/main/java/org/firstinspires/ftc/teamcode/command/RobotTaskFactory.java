@@ -1,21 +1,26 @@
 package org.firstinspires.ftc.teamcode.command;
 
+import com.pedropathing.geometry.Pose;
+
 import org.firstinspires.ftc.teamcode.command.tasks.InstantTask;
 import org.firstinspires.ftc.teamcode.command.tasks.Task;
 import org.firstinspires.ftc.teamcode.command.tasks.SequenceTask;
 import org.firstinspires.ftc.teamcode.command.tasks.WaitTask;
 import org.firstinspires.ftc.teamcode.robot.Intake;
+import org.firstinspires.ftc.teamcode.robot.Movement;
 import org.firstinspires.ftc.teamcode.robot.Outtake;
 import org.firstinspires.ftc.teamcode.robot.Pivot;
 
 public class RobotTaskFactory {
     private static final int RAISE_TIME = 150, LAUNCHING_TIME = 175, RELOAD_TIME = 300;
 
+    private final Movement movement;
     private final Pivot pivot;
     private final Intake intake;
     private final Outtake outtake;
 
-    public RobotTaskFactory(Pivot pivot, Intake intake, Outtake outtake) {
+    public RobotTaskFactory(Movement movement, Pivot pivot, Intake intake, Outtake outtake) {
+        this.movement = movement;
         this.pivot = pivot;
         this.intake = intake;
         this.outtake = outtake;
@@ -51,18 +56,30 @@ public class RobotTaskFactory {
     public Task outtakeFire() {
         return new SequenceTask(
                 new InstantTask(outtake::raise, outtake), new WaitTask(RAISE_TIME, outtake),
-                new InstantTask(outtake::launch, outtake), new WaitTask(LAUNCHING_TIME + 150, outtake),
-                new InstantTask(outtake::charge)
+                new InstantTask(() -> {
+                    outtake.launch();
+                    intake.push();
+                }, outtake, intake), new WaitTask(LAUNCHING_TIME + 150, intake, outtake),
+                new InstantTask(() -> {
+                    outtake.charge();
+                    intake.shoot();
+                }, outtake, intake)
         ).onCondition(() -> outtake.getState() == Outtake.State.CHARGING);
     }
     public Task outtakeRapidFire() {
         return new SequenceTask(
                 new InstantTask(outtake::raise, outtake),  new WaitTask(RAISE_TIME, outtake),
                 new InstantTask(outtake::launch, outtake), new WaitTask(LAUNCHING_TIME, outtake),
-                new InstantTask(outtake::reload, outtake), new WaitTask(RELOAD_TIME, outtake),
+                new InstantTask( () -> {
+                    outtake.reload();
+                    intake.push();
+                }, outtake, intake), new WaitTask(RELOAD_TIME, outtake),
                 new InstantTask(outtake::launch, outtake), new WaitTask(LAUNCHING_TIME, outtake),
                 new InstantTask(outtake::reload, outtake), new WaitTask(RELOAD_TIME + 50, outtake),
-                new InstantTask(outtake::launch, outtake), new WaitTask(LAUNCHING_TIME + 200, outtake),
+                new InstantTask(() -> {
+                    outtake.launch();
+                    intake.shoot();
+                }, outtake, intake), new WaitTask(LAUNCHING_TIME + 200, outtake),
                 new InstantTask(outtake::charge, outtake)
         ).onCondition(() -> outtake.getState() == Outtake.State.CHARGING);
     }
@@ -75,5 +92,29 @@ public class RobotTaskFactory {
             else if (intake.getState() == Intake.State.REJECT)
                 intake.intake();
         }, intake).onCondition(() -> pivot.getState() == Pivot.State.INTAKE);
+    }
+
+    // MOVEMENT TASKS
+    public Task driveToAim(Pose shootPose) {
+        return new InstantTask(() -> movement.goToPose(shootPose), movement) {
+            @Override
+            public boolean isFinished() {
+                return !movement.getFollower().isBusy();
+            }
+            @Override
+            public void end(boolean interrupted) {
+                if (interrupted)
+                    movement.breakFollowing();
+            }
+        }.then(new InstantTask(() -> movement.getFollower().holdPoint(shootPose), movement) {
+            @Override
+            public boolean isFinished() {
+                return !movement.getFollower().isBusy();
+            }
+            @Override
+            public void end(boolean interrupted) {
+                movement.breakFollowing();
+            }
+        });
     }
 }

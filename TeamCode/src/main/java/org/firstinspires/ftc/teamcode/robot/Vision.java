@@ -8,11 +8,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 
 public class Vision {
     private final Limelight3A limelight;
     private final Telemetry telemetry;
-    private double anglex = 0;
     private LLResult lastResult;
 
     public Vision(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -22,38 +22,42 @@ public class Vision {
         limelight.setPollRateHz(100);
         limelight.start();
         limelight.pipelineSwitch(0);
+
         lastResult = limelight.getLatestResult();
     }
 
-    public void update() throws Exception {
+    public void update() throws RuntimeException {
         LLResult result = limelight.getLatestResult();
 
         if (result == null)
-            throw new Exception("Invalid Camera Data");
+            throw new RuntimeException("Invalid Camera Data");
         if (!result.isValid())
-            throw new Exception("Invalid Camera Data");
+            throw new RuntimeException("Invalid Camera Data");
 
         lastResult = result;
     }
 
-    public LLResult getLastResult() {
-        return lastResult;
-    }
-
-    public Pose processVisionPose() throws Exception {
+    public Pose processVisionPose(TeamColor color) throws RuntimeException {
         update();
-        if (getLastResult() == null)
-            throw new Exception("Invalid Result");
+        if (lastResult == null)
+            throw new RuntimeException("Invalid Result");
 
-        Pose3D pose = getLastResult().getBotpose();
-        Pose pose2 = new Pose(
-                pose.getPosition().y * 39.37008 + 144.0/2,
-                -pose.getPosition().x * 39.37008 + 144.0/2,
-                pose.getOrientation().getYaw(AngleUnit.RADIANS) + Math.PI * 3/2
+        Pose3D poseFTC = lastResult.getBotpose();
+        Pose pedroPose = new Pose(
+                poseFTC.getPosition().y * 39.37008 + 144.0/2,
+                -poseFTC.getPosition().x * 39.37008 + 144.0/2,
+                poseFTC.getOrientation().getYaw(AngleUnit.RADIANS) + Math.PI * 3/2
         );
 
-        telemetry.addData("Pedro Pose", pose2);
+        Pose cameraPose;
+        // Fine tuned. Do not touch. Unless the field is way off...
+        if (color == TeamColor.BLUE)
+            cameraPose = new Pose(pedroPose.getX(), pedroPose.getY()+8, pedroPose.getHeading());
+        else if (color == TeamColor.RED)
+            cameraPose = new Pose(pedroPose.getX()+8, pedroPose.getY()-4, pedroPose.getHeading());
+        else
+            cameraPose = new Pose(0, 0, 0);
 
-        return pose2;
+        return cameraPose;
     }
 }

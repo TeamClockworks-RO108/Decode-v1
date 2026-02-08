@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Movement;
 import org.firstinspires.ftc.teamcode.robot.Brakes;
-import org.firstinspires.ftc.teamcode.robot.Shooter;
 import org.firstinspires.ftc.teamcode.opmodes.positions.AutoPaths;
 import org.firstinspires.ftc.teamcode.opmodes.positions.PosesAuto;
 import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
@@ -14,7 +13,6 @@ public abstract class AutoBase extends OpMode {
 
     protected TeamColor color;
     protected Movement movement;
-    protected Shooter shooter;
 
     protected PosesAuto poses;
     protected AutoPaths paths;
@@ -32,21 +30,17 @@ public abstract class AutoBase extends OpMode {
         movement = new Movement(hardwareMap, telemetry, startingPose);
         paths = new AutoPaths(movement.getFollower(), poses);
 
-        shooter = new Shooter(hardwareMap, telemetry, true);
-        shooter.setupShooter();
-
         brakes = new Brakes(hardwareMap);
     }
 
     @Override
     public void start() {
-        shooter.command(Shooter.Command.TOGGLE_IDLE);
+
     }
 
     @Override
     public void loop() {
         movement.update();
-        shooter.updateShooter();
         telemetry.update();
     }
 

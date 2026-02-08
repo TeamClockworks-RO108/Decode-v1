@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.opmodes.positions.PosesTeleOp;
 import org.firstinspires.ftc.teamcode.robot.Brakes;
 import org.firstinspires.ftc.teamcode.robot.Outtake;
 import org.firstinspires.ftc.teamcode.robot.Pivot;
-import org.firstinspires.ftc.teamcode.robot.Shooter;
+import org.firstinspires.ftc.teamcode.robot.Vision;
 import org.firstinspires.ftc.teamcode.util.EdgeDetector;
 
 @TeleOp(name = "TeleOp BLUE")
@@ -23,15 +23,15 @@ public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
     private PosesTeleOp poses;
 
-    private TaskScheduler scheduler = new TaskScheduler();
-    private RobotTaskFactory robotTasks = null;
+    private final TaskScheduler scheduler = new TaskScheduler();
+    private RobotTaskFactory robotTasks;
 
-    private Movement movement = null;
-    private Pivot pivot = null;
-    private Intake intake = null;
-    private Outtake outtake = null;
-
-    private Brakes brakes = null;
+    private Brakes brakes;
+    private Movement movement;
+    private Vision vision;
+    private Pivot pivot;
+    private Intake intake;
+    private Outtake outtake;
 
     private EdgeDetector fieldCentricReset = new EdgeDetector(false);
     private EdgeDetector goToGoal = new EdgeDetector(false);
@@ -52,18 +52,19 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void init() {
-
         this.panelsTelemetry = new MultipleTelemetry(this.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
+        if (color == TeamColor.RED) movement.flipControls();
 
         poses = new PosesTeleOp(color);
 
         brakes = new Brakes(hardwareMap);
-        movement = new Movement(hardwareMap, panelsTelemetry, poses.start);
+        movement = new Movement(hardwareMap, telemetry, poses.start);
+        vision = new Vision(hardwareMap, telemetry);
         pivot = new Pivot(hardwareMap);
         intake = new Intake(hardwareMap);
         outtake = new Outtake(hardwareMap, telemetry);
 
-        robotTasks = new RobotTaskFactory(pivot, intake, outtake);
+        robotTasks = new RobotTaskFactory(movement, pivot, intake, outtake);
 
         // movement command setup
         fieldCentricReset.onPress(() -> movement.resetHeading(poses.none.getHeading()));
@@ -76,26 +77,22 @@ public class TeleOpBlue extends OpMode {
         });
 
         resetGate.onPress(() -> {
-            movement.setPose(poses.gate);
+            movement.getFollower().setPose(poses.gate);
             gamepad2.rumble(150);
         });
         resetToCamera.onPress(() -> {
             try {
-                movement.updateToCameraPose(color);
+                movement.getFollower().setPose(vision.processVisionPose(color));
                 gamepad2.rumble(150);
-            } catch (Exception ignored) {
+            } catch (RuntimeException ignored) {
 
             }
         });
 
         goToGoal.onPress(() -> {
-            movement.goToPose(poses.shootTeleOp);
+            scheduler.schedule(robotTasks.driveToAim(poses.shootTeleOp));
         });
-        releasePath.onPress(()-> {
-            movement.breakFollowing();
-        });
-
-        if (color == TeamColor.RED) movement.flipControls();
+        releasePath.onPress(scheduler::reset);
 
         // shooter command setup
         toggleShooting.onPress(() -> scheduler.schedule(robotTasks.pivotShoot()));
@@ -108,7 +105,7 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void start() {
-        movement.startTeleop();
+        movement.getFollower().startTeleopDrive();
         scheduler.schedule(robotTasks.pivotShoot());
     }
 
@@ -135,11 +132,11 @@ public class TeleOpBlue extends OpMode {
         // run updates
         // Sensors first, then the scheduler
         // Actuators last
+        vision.update();
         scheduler.run();
         intake.update();
         outtake.update();
-
-        movement.updateTeleOp(gamepad1, gamepad2);
+        movement.update(gamepad1, gamepad2);
 
         panelsTelemetry.update();
     }
