@@ -15,7 +15,7 @@ public class WaitTask extends Task {
 
     @Override
     public void init() {
-        timer = new ElapsedTime(0);
+        timer = new ElapsedTime();
     }
 
     @Override

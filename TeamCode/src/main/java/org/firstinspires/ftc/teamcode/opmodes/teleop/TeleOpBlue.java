@@ -90,7 +90,7 @@ public class TeleOpBlue extends OpMode {
         });
 
         goToGoal.onPress(() -> {
-            scheduler.schedule(robotTasks.driveToAim(poses.shootTeleOp));
+            scheduler.schedule(robotTasks.driveToAim(poses.shootTeleOp, true));
         });
         releasePath.onPress(scheduler::reset);
 
@@ -132,7 +132,7 @@ public class TeleOpBlue extends OpMode {
         // run updates
         // Sensors first, then the scheduler
         // Actuators last
-        vision.update();
+        // vision.update();
         scheduler.run();
         intake.update();
         outtake.update();

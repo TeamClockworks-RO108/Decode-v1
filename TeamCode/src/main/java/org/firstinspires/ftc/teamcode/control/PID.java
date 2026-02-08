@@ -17,17 +17,17 @@ public class PID {
         this.ki = ki;
         this.kd = kd;
 
-        timer = new ElapsedTime(0);
+        timer = new ElapsedTime();
     }
 
     public double calculate(double inputValue) {
         double error = targetValue - inputValue;
-        double derviative = (error - lastError) / timer.seconds();
+        double derivative = (error - lastError) / timer.seconds();
         integral += error * timer.seconds();
 
         lastError = error;
         timer.reset();
-        return kp * error + kd * derviative + ki * integral;
+        return kp * error + kd * derivative + ki * integral;
     }
 
     public void reset() {

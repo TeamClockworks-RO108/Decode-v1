@@ -81,7 +81,14 @@ public class RobotTaskFactory {
                     intake.shoot();
                 }, outtake, intake), new WaitTask(LAUNCHING_TIME + 200, outtake),
                 new InstantTask(outtake::charge, outtake)
-        ).onCondition(() -> outtake.getState() == Outtake.State.CHARGING);
+        ) {
+            @Override
+            public void end(boolean interrupted) {
+                outtake.charge();
+                intake.shoot();
+                super.end(interrupted);
+            }
+        }.onCondition(() -> outtake.getState() == Outtake.State.CHARGING) ;
     }
 
     // INTAKE TASKS
@@ -95,7 +102,7 @@ public class RobotTaskFactory {
     }
 
     // MOVEMENT TASKS
-    public Task driveToAim(Pose shootPose) {
+    public Task driveToAim(Pose shootPose, boolean isTeleOp) {
         return new InstantTask(() -> movement.goToPose(shootPose), movement) {
             @Override
             public boolean isFinished() {
@@ -103,8 +110,11 @@ public class RobotTaskFactory {
             }
             @Override
             public void end(boolean interrupted) {
-                if (interrupted)
-                    movement.breakFollowing();
+                if (interrupted) {
+                    movement.getFollower().breakFollowing();
+                    if (isTeleOp)
+                        movement.getFollower().startTeleopDrive();
+                }
             }
         }.then(new InstantTask(() -> movement.getFollower().holdPoint(shootPose), movement) {
             @Override
@@ -113,7 +123,9 @@ public class RobotTaskFactory {
             }
             @Override
             public void end(boolean interrupted) {
-                movement.breakFollowing();
+                movement.getFollower().breakFollowing();
+                if (isTeleOp)
+                    movement.getFollower().startTeleopDrive();
             }
         });
     }

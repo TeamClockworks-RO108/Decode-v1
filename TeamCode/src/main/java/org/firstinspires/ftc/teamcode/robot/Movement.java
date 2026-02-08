@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.BezierPoint;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.command.Subsystem;
-import org.firstinspires.ftc.teamcode.opmodes.TeamColor;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 public class Movement implements Subsystem {
@@ -53,18 +51,13 @@ public class Movement implements Subsystem {
 
     public void goToPose(Pose newPose) {
         follower.followPath(follower.pathBuilder()
-                .addPath(new BezierCurve(follower.getPose(), newPose))
+                .addPath(new BezierLine(follower.getPose(), newPose))
                 .setLinearHeadingInterpolation(follower.getHeading(), newPose.getHeading())
                 .build());
     }
 
     public void flipControls() {
         areControlsFlipped = true;
-    }
-
-    public void breakFollowing() {
-        follower.breakFollowing();
-        follower.startTeleopDrive();
     }
 
     public Follower getFollower() {
